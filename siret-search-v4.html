@@ -41,6 +41,13 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
 .btn-sec{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
 .btn-sec:hover{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.07)}
 .result-fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin-top:12px}
+.hist-panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:14px}
+.hist-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.hist-list{display:flex;flex-wrap:wrap;gap:6px}
+.hist-item{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--accent);cursor:pointer;transition:all .2s}
+.hist-item:hover{background:rgba(249,115,22,.18);border-color:var(--accent)}
+.copy-all-btn{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600;transition:all .2s;margin-left:auto}
+.copy-all-btn:hover{background:rgba(249,115,22,.2)}
 .rf-group{display:flex;flex-direction:column;gap:4px}
 .rf-title{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--border)}
 .rf{display:flex;align-items:baseline;gap:6px;padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)}
@@ -324,22 +331,29 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
       <!-- SINGLE -->
       <div class="help-section" id="help-single">
         <div class="help-h3">&#128269; Recherche unitaire</div>
-        <p class="help-p">Recherche un fournisseur par son nom dans SIRENE et affiche jusqu&apos;&agrave; 8 r&eacute;sultats avec leur SIRET, adresse, forme juridique et statut. Un bouton d&apos;export Excel est disponible d&egrave;s qu&apos;un r&eacute;sultat est affich&eacute;.</p>
+        <p class="help-p">Recherche un fournisseur par son nom dans SIRENE et affiche jusqu&apos;&agrave; 8 r&eacute;sultats sous forme de fiches d&eacute;taill&eacute;es avec tous les champs Sage FRP&nbsp;1000.</p>
         <div class="help-h4">D&eacute;roulement</div>
         <div class="step-guide">
           <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Nom du fournisseur</strong> &mdash; Une partie du nom suffit. Ex&nbsp;: <em>PHARMAT</em>, <em>Boehringer</em>, <em>SUPER U 67</em></div></div>
-          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Code postal (optionnel)</strong> &mdash; Affine les r&eacute;sultats pour les enseignes nationales avec plusieurs &eacute;tablissements</div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Code postal (optionnel)</strong> &mdash; Affine les r&eacute;sultats pour les enseignes nationales</div></div>
           <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Entr&eacute;e</strong> ou clic <em>Rechercher</em> &mdash; R&eacute;sultats class&eacute;s par pertinence SIRENE</div></div>
-          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>Bouton Copier</strong> sur le SIRET souhait&eacute; pour le coller directement dans Sage</div></div>
-          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong> &mdash; T&eacute;l&eacute;charge un fichier <code>.xlsx</code> avec tous les r&eacute;sultats au format <code>CT_*</code> et un onglet <em>Notice import Sage</em></div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>&#128203; Copier un champ</strong> &mdash; Bouton <code>&#128203;</code> sur chaque ligne CT_* pour coller directement dans Sage</div></div>
+          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>&#128203; Tout copier</strong> &mdash; Copie tous les champs CT_* en une seule fois, pr&ecirc;ts &agrave; coller dans Excel ou Sage</div></div>
+          <div class="sg-item"><div class="sg-num">6</div><div class="sg-text"><strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong> &mdash; Fichier <code>.xlsx</code> avec tous les r&eacute;sultats + onglet <em>Notice import</em></div></div>
+          <div class="sg-item"><div class="sg-num">7</div><div class="sg-text"><strong>&#10006; Nouvelle recherche</strong> &mdash; Remet les champs et les r&eacute;sultats &agrave; z&eacute;ro</div></div>
         </div>
-        <div class="help-h4">Contenu du fichier Excel export&eacute;</div>
-        <ul class="help-ul">
-          <li>Colonnes&nbsp;: CT_Num (vide &mdash; &agrave; renseigner), CT_Intitule, CT_Siret, CT_Siren, CT_Adresse, CT_CodePostal, CT_Ville, CT_NatureJuridique, CT_NumTVAIntracomm, CT_Telephone, CT_Email, CT_Site, CODE_NAF, ACTIF_SIRENE</li>
-          <li>Lignes color&eacute;es&nbsp;: vert = &eacute;tablissement actif, rouge = ferm&eacute;</li>
-          <li>Onglet <em>Notice import Sage</em> inclus avec la proc&eacute;dure d&apos;import</li>
-        </ul>
-        <div class="help-alert ha-info">&#128161; <strong>Astuce</strong> &mdash; Pour les associations (EHPAD, SSIAD&hellip;), ajouter le code postal pr&eacute;cise l&apos;&eacute;tablissement local plut&ocirc;t que le si&egrave;ge national.</div>
+        <div class="help-h4">Grille de champs affich&eacute;s par r&eacute;sultat</div>
+        <table class="help-table">
+          <thead><tr><th>Colonne Identification</th><th>Colonne Adresse &amp; contact</th></tr></thead>
+          <tbody>
+            <tr><td>CT_Intitule, CT_Siret, CT_Siren</td><td>CT_Adresse, CT_CodePostal, CT_Ville</td></tr>
+            <tr><td>CT_NatureJuridique, CT_NumTVAIntracomm</td><td>CT_Telephone, CT_Email, CT_Site (si disponibles)</td></tr>
+            <tr><td colspan="2">Code NAF + libell&eacute; activit&eacute;</td></tr>
+          </tbody>
+        </table>
+        <div class="help-h4">Historique des recherches</div>
+        <p class="help-p">Les 20 derniers termes recherch&eacute;s sont affich&eacute;s en badges sous le formulaire. Cliquer sur un badge relance la recherche instantan&eacute;ment. L&apos;historique est conserv&eacute; durant toute la session navigateur et effac&eacute; &agrave; sa fermeture.</p>
+        <div class="help-alert ha-info">&#128161; <strong>Astuce saisie Sage</strong> &mdash; Utilisez <em>Tout copier</em> pour coller un tableau champ/valeur directement dans Excel, puis saisissez la fiche tiers 1/3 depuis ce r&eacute;capitulatif sans jongler entre l&apos;outil et Sage.</div>
       </div>
 
       <!-- BATCH -->
@@ -373,18 +387,25 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
 
       <!-- DIRECT -->
       <div class="help-section" id="help-direct">
-        <div class="help-h3">&#9989; V&eacute;rifier un SIRET</div>
-        <p class="help-p">Valide un num&eacute;ro SIRET existant (14 chiffres) en interrogeant directement SIRENE. Utile avant une saisie manuelle dans Sage pour s&apos;assurer que l&apos;&eacute;tablissement est actif et que les informations sont &agrave; jour.</p>
-        <div class="help-h4">Informations affich&eacute;es</div>
+        <div class="help-h3">&#9989; V&eacute;rifier un SIRET ou un SIREN</div>
+        <p class="help-p">Valide un num&eacute;ro SIRET (14 chiffres) ou interroge tous les &eacute;tablissements d&apos;une entreprise via son SIREN (9 chiffres). Affiche la m&ecirc;me fiche d&eacute;taill&eacute;e que la recherche unitaire avec copie champ par champ et export Excel.</p>
+        <div class="help-h4">Deux modes selon la saisie</div>
+        <table class="help-table">
+          <thead><tr><th>Saisie</th><th>Comportement</th><th>Cas d&apos;usage</th></tr></thead>
+          <tbody>
+            <tr><td><strong>14 chiffres</strong> (SIRET)</td><td>V&eacute;rifie l&apos;&eacute;tablissement exact</td><td>Contr&ocirc;le avant saisie dans Sage</td></tr>
+            <tr><td><strong>9 chiffres</strong> (SIREN)</td><td>Liste tous les &eacute;tablissements de l&apos;entreprise</td><td>Trouver le bon &eacute;tablissement parmi plusieurs sites</td></tr>
+          </tbody>
+        </table>
+        <div class="help-h4">Fonctionnalit&eacute;s disponibles sur chaque r&eacute;sultat</div>
         <ul class="help-ul">
-          <li>Raison sociale officielle SIRENE</li>
-          <li>Statut actif / ferm&eacute;</li>
-          <li>Adresse de l&apos;&eacute;tablissement (sans doublons CP/ville)</li>
-          <li>Code NAF et libell&eacute; d&apos;activit&eacute;</li>
-          <li>Forme juridique</li>
-          <li>Bouton <em>Copier</em> pour r&eacute;cup&eacute;rer le SIRET format&eacute;</li>
+          <li>Fiche 2 colonnes : <strong>Identification</strong> (CT_Intitule, CT_Siret, CT_Siren, CT_NatureJuridique, CT_NumTVAIntracomm) + <strong>Adresse &amp; contact</strong></li>
+          <li>Bouton <code>&#128203;</code> sur chaque champ CT_* pour copier individuellement</li>
+          <li>Bouton <strong>Tout copier</strong> pour copier tous les champs en un tableau</li>
+          <li>Bouton <strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong></li>
+          <li>Bouton <strong>&#10006; Nouvelle v&eacute;rification</strong> pour r&eacute;initialiser</li>
         </ul>
-        <div class="help-alert ha-info">&#128204; Entrez les 14 chiffres avec ou sans espaces, les deux formats sont accept&eacute;s.</div>
+        <div class="help-alert ha-info">&#128204; Saisir le SIREN ou SIRET avec ou sans espaces &mdash; les chiffres seuls sont extraits automatiquement.</div>
       </div>
 
       <!-- AUDIT -->
@@ -475,6 +496,15 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="help-h4">Peut-on utiliser cet outil hors connexion ?</div>
         <p class="help-p">Non. Les 4 modules interrogent l&apos;API SIRENE en temps r&eacute;el. Une connexion internet est indispensable. En revanche, le fichier HTML s&apos;ouvre directement dans le navigateur sans installation ni serveur.</p>
 
+        <div class="help-h4">&Agrave; quoi sert le bouton &laquo;&nbsp;Tout copier&nbsp;&raquo; ?</div>
+        <p class="help-p">Il copie tous les champs CT_* du r&eacute;sultat s&eacute;lectionn&eacute; sous forme d&apos;un tableau champ/valeur (s&eacute;parateur tabulation). Vous pouvez le coller directement dans Excel ou dans un email pour saisir la fiche 1/3 dans Sage sans revenir &agrave; l&apos;outil. Les champs vides sont inclus avec une valeur vide.</p>
+
+        <div class="help-h4">&Agrave; quoi sert la recherche par SIREN&nbsp;?</div>
+        <p class="help-p">Le SIREN (9 chiffres) identifie une entreprise, le SIRET (14 chiffres) identifie un &eacute;tablissement pr&eacute;cis. En saisissant un SIREN dans l&apos;onglet <em>V&eacute;rifier</em>, l&apos;outil liste tous les &eacute;tablissements de l&apos;entreprise (si&egrave;ge + annexes), utile pour les fournisseurs ayant plusieurs sites.</p>
+
+        <div class="help-h4">L&apos;historique des recherches est-il permanent ?</div>
+        <p class="help-p">Non. L&apos;historique est stock&eacute; dans le <em>sessionStorage</em> du navigateur&nbsp;: il persiste tant que l&apos;onglet reste ouvert mais est effac&eacute; lorsque vous fermez le navigateur. Il n&apos;est pas partag&eacute; entre deux onglets diff&eacute;rents.</p>
+
         <div class="help-h4">Diff&eacute;rence entre le fichier HTML et le script Python ?</div>
         <table class="help-table">
           <thead><tr><th></th><th>HTML (navigateur)</th><th>Python (ligne de commande)</th></tr></thead>
@@ -482,9 +512,10 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
             <tr><td>Usage</td><td>Interface graphique, accessible &agrave; tous</td><td>Automatisation, workflow batch</td></tr>
             <tr><td>Format entr&eacute;e</td><td>CSV, Excel (.xlsx / .xls)</td><td>Excel uniquement (.xlsx)</td></tr>
             <tr><td>Format sortie</td><td>CSV + Excel (.xlsx)</td><td>Excel color&eacute; + CSV</td></tr>
-            <tr><td>Export recherche unitaire</td><td>&#9989; Excel Sage FRP&nbsp;1000</td><td>&mdash;</td></tr>
+            <tr><td>Copie champ par champ</td><td>&#9989; Bouton &#128203; sur chaque CT_*</td><td>&mdash;</td></tr>
+            <tr><td>Recherche SIREN</td><td>&#9989; Onglet V&eacute;rifier</td><td>&mdash;</td></tr>
+            <tr><td>Historique recherches</td><td>&#9989; Session navigateur</td><td>&mdash;</td></tr>
             <tr><td>Mode audit</td><td>Onglet d&eacute;di&eacute;</td><td><code>--mode verify</code></td></tr>
-            <tr><td>Mise en forme Excel</td><td>Couleurs par statut actif/ferm&eacute;</td><td>Couleurs par statut d&eacute;taill&eacute;</td></tr>
           </tbody>
         </table>
       </div>
@@ -504,7 +535,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
   <!-- TAB 1 -->
   <div id="tab-single" class="panel active">
     <div class="card">
-      <h2>&#128270; Rechercher un fournisseur par nom</h2>
+      <h2>&#128270; Rechercher un fournisseur</h2>
       <div class="form-row fr4">
         <div class="field"><label>Nom du fournisseur</label><input type="text" id="q-name" placeholder="PHARMAT, SUPER U, Boehringer..." onkeydown="if(event.key==='Enter')search()"></div>
         <div class="field"><label>Code postal (optionnel)</label><input type="text" id="q-cp" placeholder="67000" maxlength="5" onkeydown="if(event.key==='Enter')search()"></div>
@@ -512,6 +543,10 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <button class="btn btn-p" id="search-btn" onclick="search()">&#128269; Rechercher</button>
         <button class="btn btn-sec" id="reset-btn" onclick="resetSearch()" style="display:none">&#10006; Nouvelle recherche</button>
       </div>
+    </div>
+    <div id="hist-area" style="display:none" class="hist-panel">
+      <div class="hist-title">&#128336; Historique des recherches <button class="btn-sec" onclick="clearHistory()" style="font-size:11px;padding:2px 8px;border-radius:5px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer">Effacer</button></div>
+      <div class="hist-list" id="hist-list"></div>
     </div>
     <div id="result-area"><div class="empty-state"><div class="es-icon">&#127981;</div><p>Entrez un nom de fournisseur</p></div></div>
   </div>
@@ -670,14 +705,15 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
   <!-- TAB 3 -->
   <div id="tab-direct" class="panel">
     <div class="card">
-      <h2>&#9989; V&eacute;rifier un num&eacute;ro SIRET</h2>
+      <h2>&#9989; V&eacute;rifier un SIRET ou un SIREN</h2>
       <div class="form-row fr2">
-        <div class="field"><label>Num&eacute;ro SIRET (14 chiffres)</label><input type="text" id="q-siret" placeholder="35240913400060" maxlength="14" onkeydown="if(event.key==='Enter')searchSiret()"></div>
+        <div class="field"><label>SIRET (14 chiffres) ou SIREN (9 chiffres)</label><input type="text" id="q-siret" placeholder="35240913400060 ou 352409134" maxlength="14" onkeydown="if(event.key==='Enter')searchSiret()"></div>
         <button class="btn btn-p" id="verify-btn" onclick="searchSiret()">&#9989; V&eacute;rifier</button>
         <button class="btn btn-sec" id="verify-reset-btn" onclick="resetSiret()" style="display:none">&#10006; Nouvelle v&eacute;rification</button>
       </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">&#128161; Saisir un <strong>SIREN (9 chiffres)</strong> pour lister tous les &eacute;tablissements de l&apos;entreprise</div>
     </div>
-    <div id="direct-result"><div class="empty-state"><div class="es-icon">&#128270;</div><p>Entrez un SIRET &agrave; valider</p></div></div>
+    <div id="direct-result"><div class="empty-state"><div class="es-icon">&#128270;</div><p>Entrez un SIRET ou un SIREN</p></div></div>
   </div>
   <!-- TAB 4 — AUDIT BASE FOURNISSEURS -->
   <div id="tab-audit" class="panel">
@@ -911,12 +947,13 @@ function renderResults(data,container){
   if(!res.length){container.innerHTML='<div class="alert a-err">&#10060; Aucun r&eacute;sultat.</div>';lastSingleResults=[];return;}
   // Stocker pour export
   lastSingleResults=res.slice(0,8).map(r=>{
-    const etab=(r.matching_etablissements||[r.siege||{}])[0]||{};
     const siege=r.siege||{};
-    const siret=(etab.siret||'').replace(/\D/g,'');
+    const etab=((r.matching_etablissements&&r.matching_etablissements.length)?r.matching_etablissements:[siege])[0]||siege;
+    const siret=(etab.siret||siege.siret||'').replace(/\D/g,'');
+    const siren=r.siren||(siret.length>=9?siret.slice(0,9):'');
     const naf=(r.activite_principale||'')+(r.libelle_activite_principale?' \u2014 '+r.libelle_activite_principale:'');
-    return{siret,siren:siret.slice(0,9),nom:r.nom_complet||r.nom_raison_sociale||'',
-      actif:etab.etat_administratif==='A',
+    return{siret,siren,nom:r.nom_complet||r.nom_raison_sociale||'',
+      actif:etab.etat_administratif==='A'||siege.etat_administratif==='A',
       adresse:etab.adresse||siege.adresse||'',
       cp:etab.code_postal||siege.code_postal||'',
       commune:etab.libelle_commune||siege.libelle_commune||'',
@@ -924,15 +961,17 @@ function renderResults(data,container){
       naf,tva:r.numero_tva_intra||'',
       telephone:siege.telephone||'',email:siege.email||'',siteWeb:siege.site_internet||''};
   });
+  const isVerify = container.id==='direct-result';
   let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
     +'<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--accent)">'+res.length+'</strong> r&eacute;sultat(s)</span>'
     +'<button class="btn btn-p" onclick="exportSingleXlsx()" style="font-size:12px;padding:7px 16px">&#128229; Export Excel Sage FRP&nbsp;1000</button>'
     +'</div>';
-  res.slice(0,8).forEach(r=>{
-    const etab=(r.matching_etablissements||[r.siege||{}])[0]||{};
+  res.slice(0,8).forEach((r,idx)=>{
     const siege=r.siege||{};
-    const siret=(etab.siret||'').replace(/\D/g,''), siren=siret.slice(0,9);
-    const actif=etab.etat_administratif==='A';
+    const etab=((r.matching_etablissements&&r.matching_etablissements.length)?r.matching_etablissements:[siege])[0]||siege;
+    const siret=(etab.siret||siege.siret||'').replace(/\D/g,'');
+    const siren=r.siren||(siret.length>=9?siret.slice(0,9):'');
+    const actif=etab.etat_administratif==='A'||siege.etat_administratif==='A';
     const _adr=etab.adresse||siege.adresse||'';
     const _cp=etab.code_postal||siege.code_postal||'';
     const _ville=etab.libelle_commune||siege.libelle_commune||'';
@@ -985,6 +1024,9 @@ function renderResults(data,container){
           +'<div class="rf"><label>Code NAF</label><div class="rf-val" style="font-size:12px">'+cfv(naf)+'</div></div>'
         +'</div>'
       +'</div>'
+    +'<div style="margin-top:10px;text-align:right">'
+      +'<button class="copy-all-btn" onclick="copyAllFields('+idx+',this)">&#128203; Tout copier (tableau)</button>'
+    +'</div>'
     +'</div>';
   });
   container.innerHTML=html;
@@ -992,6 +1034,8 @@ function renderResults(data,container){
 
 // =================== EXPORT XLSX RECHERCHE UNITAIRE ===================
 let lastSingleResults=[];
+// Init historique au chargement
+document.addEventListener('DOMContentLoaded',()=>renderHistory());
 function exportSingleXlsx(){
   if(!lastSingleResults.length){alert('Aucun r\u00e9sultat \u00e0 exporter.');return;}
   const headers=['CT_Num','CT_Intitule','CT_Siret','CT_Siren','CT_Adresse','CT_CodePostal','CT_Ville','CT_NatureJuridique','CT_NumTVAIntracomm','CT_Telephone','CT_Email','CT_Site','CODE_NAF','ACTIF_SIRENE'];
@@ -1044,16 +1088,38 @@ async function search(){
   const cp=document.getElementById('q-cp').value.trim(), btn=document.getElementById('search-btn');
   const area=document.getElementById('result-area');
   btn.disabled=true; area.innerHTML='<div class="loader"><div class="spinner"></div>Recherche en cours...</div>';
-  try{const data=await apiSearch(nom,cp);renderResults(data,area);}
+  try{const data=await apiSearch(nom,cp);renderResults(data,area);saveHistory(nom);}
   catch(e){area.innerHTML='<div class="alert a-err">Erreur: '+e.message+'</div>';}
   finally{document.getElementById('reset-btn').style.display='';btn.disabled=false;}
 }
 async function searchSiret(){
-  const siret=document.getElementById('q-siret').value.replace(/\D/g,'');
-  if(siret.length!==14){alert('SIRET = 14 chiffres.');return;}
+  const val=document.getElementById('q-siret').value.replace(/\D/g,'');
+  if(val.length!==14&&val.length!==9){alert('Saisissez un SIRET (14 chiffres) ou un SIREN (9 chiffres).');return;}
   const area=document.getElementById('direct-result');
   area.innerHTML='<div class="loader"><div class="spinner"></div>V&eacute;rification...</div>';
-  try{const r=await fetch(API+'?q='+siret+'&per_page=3');renderResults(await r.json(),area);}
+  try{
+    if(val.length===9){
+      // SIREN : récupérer tous les établissements
+      const r=await fetch(API+'?q='+val+'&per_page=25');
+      const data=await r.json();
+      // Filtrer uniquement les résultats dont le SIREN correspond exactement
+      if(data.results) data.results=data.results.filter(x=>x.siren===val);
+      renderResults(data,area);
+    } else {
+      // SIRET exact : recherche directe
+      const r=await fetch(API+'?q='+val+'&per_page=5');
+      const data=await r.json();
+      // Prioritiser le résultat dont le SIRET correspond exactement
+      if(data.results&&data.results.length>1){
+        const exact=data.results.find(x=>{
+          const etab=((x.matching_etablissements&&x.matching_etablissements.length)?x.matching_etablissements:[x.siege||{}])[0]||{};
+          return (etab.siret||'').replace(/\D/g,'')=== val;
+        });
+        if(exact) data.results=[exact];
+      }
+      renderResults(data,area);
+    }
+  }
   catch(e){area.innerHTML='<div class="alert a-err">Erreur: '+e.message+'</div>';}
   finally{document.getElementById('verify-reset-btn').style.display='';}
 }
@@ -1073,6 +1139,65 @@ function resetSearch(){
   document.getElementById('reset-btn').style.display='none';
   lastSingleResults=[];
   document.getElementById('q-name').focus();
+}
+
+// =================== HISTORIQUE RECHERCHES ===================
+const HIST_KEY='siret_search_history';
+function loadHistory(){
+  try{return JSON.parse(sessionStorage.getItem(HIST_KEY)||'[]');}catch{return[];}
+}
+function saveHistory(term){
+  if(!term||term.length<2)return;
+  let h=loadHistory().filter(x=>x.toLowerCase()!==term.toLowerCase());
+  h.unshift(term);
+  if(h.length>20)h=h.slice(0,20);
+  sessionStorage.setItem(HIST_KEY,JSON.stringify(h));
+  renderHistory();
+}
+function renderHistory(){
+  const h=loadHistory();
+  const area=document.getElementById('hist-area');
+  const list=document.getElementById('hist-list');
+  if(!h.length){area.style.display='none';return;}
+  area.style.display='';
+  list.innerHTML=h.map((t,i)=>'<span class="hist-item" data-idx="'+i+'" onclick="replaySearch(this.dataset.idx)">'+t+'</span>').join('');
+}
+function replaySearch(idx){
+  const h=loadHistory();
+  const term=h[parseInt(idx)];
+  if(!term)return;
+  document.getElementById('q-name').value=term;
+  search();
+}
+function clearHistory(){
+  sessionStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+// =================== COPIER TOUT EN TABLEAU ===================
+function copyAllFields(idx,btn){
+  const r=lastSingleResults[idx];
+  if(!r)return;
+  const rows=[
+    ['CT_Num',''],
+    ['CT_Intitule',r.nom],
+    ['CT_Siret',r.siret],
+    ['CT_Siren',r.siren],
+    ['CT_Adresse',r.adresse],
+    ['CT_CodePostal',r.cp],
+    ['CT_Ville',r.commune],
+    ['CT_NatureJuridique',r.formeJuridique],
+    ['CT_NumTVAIntracomm',r.tva],
+    ['CT_Telephone',r.telephone],
+    ['CT_Email',r.email],
+    ['CT_Site',r.siteWeb],
+  ];
+  const text=rows.map(([k,v])=>k+'\t'+(v||'')).join('\n');
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✅ Copié !';btn.style.background='rgba(34,197,94,.2)';btn.style.color='#22c55e';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';},1800);
+  });
 }
 
 // =================== CSV PARSING ===================
