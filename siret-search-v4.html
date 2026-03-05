@@ -38,6 +38,17 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
 .btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
 .btn-p{background:var(--accent);color:#fff}
 .btn-p:hover:not(:disabled){background:#ea6600;transform:translateY(-1px)}
+.btn-sec{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
+.btn-sec:hover{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.07)}
+.result-fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin-top:12px}
+.rf-group{display:flex;flex-direction:column;gap:4px}
+.rf-title{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.rf{display:flex;align-items:baseline;gap:6px;padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)}
+.rf label{font-size:11px;color:var(--muted);font-weight:600;min-width:120px;flex-shrink:0;font-family:monospace}
+.rf-val{display:flex;align-items:center;gap:5px;flex:1;font-size:13px;word-break:break-word}
+.copy-field{background:none;border:none;cursor:pointer;font-size:13px;padding:1px 3px;opacity:.45;transition:opacity .2s}
+.copy-field:hover{opacity:1}
+@media(max-width:640px){.result-fields-grid{grid-template-columns:1fr}}
 .btn-s{background:var(--card);color:var(--text);border:1px solid var(--border)}
 .btn-s:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 .btn-g{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--success)}
@@ -278,21 +289,21 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
       <!-- INTRO -->
       <div class="help-section active" id="help-intro">
         <div class="help-h3">&#127968; Pr&eacute;sentation g&eacute;n&eacute;rale</div>
-        <p class="help-p">Cet outil interroge l&apos;<strong>API SIRENE officielle</strong> (recherche-entreprises.api.gouv.fr, INSEE / data.gouv.fr) pour enrichir et auditer la base fournisseurs ABRAPA dans Sage FRP&nbsp;1000.</p>
+        <p class="help-p">Cet outil interroge l&apos;<strong>API SIRENE officielle</strong> (recherche-entreprises.api.gouv.fr, INSEE / data.gouv.fr) pour enrichir et auditer la base fournisseurs ABRAPA dans Sage FRP&nbsp;1000. Il peut &ecirc;tre renomm&eacute; librement sans impact sur son fonctionnement.</p>
         <div class="help-h4">4 modules disponibles</div>
         <table class="help-table">
-          <thead><tr><th>Onglet</th><th>Usage</th><th>Quand l&apos;utiliser</th></tr></thead>
+          <thead><tr><th>Onglet</th><th>Usage</th><th>Export</th></tr></thead>
           <tbody>
-            <tr><td>&#128269; Recherche unitaire</td><td>Trouver le SIRET d&apos;un fournisseur par son nom</td><td>Saisie ponctuelle, v&eacute;rification rapide</td></tr>
-            <tr><td>&#128203; Traitement par lot</td><td>Compl&eacute;ter les SIRET manquants d&apos;un fichier CSV</td><td>Enrichissement initial de la base</td></tr>
-            <tr><td>&#9989; V&eacute;rifier un SIRET</td><td>Valider un SIRET 14 chiffres existant</td><td>Contr&ocirc;le avant saisie manuelle dans Sage</td></tr>
-            <tr><td>&#128202; Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse</td><td>Audit p&eacute;riodique, nettoyage base tiers</td></tr>
+            <tr><td>&#128269; Recherche unitaire</td><td>Trouver le SIRET d&apos;un fournisseur par son nom</td><td>&#128229; Excel Sage FRP&nbsp;1000</td></tr>
+            <tr><td>&#128203; Traitement par lot</td><td>Compl&eacute;ter les SIRET manquants d&apos;un fichier CSV / Excel</td><td>&#128229; CSV complet + CSV Sage</td></tr>
+            <tr><td>&#9989; V&eacute;rifier un SIRET</td><td>Valider un SIRET 14 chiffres existant</td><td>&mdash;</td></tr>
+            <tr><td>&#128202; Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse</td><td>&#128229; 3 formats</td></tr>
           </tbody>
         </table>
-        <div class="help-alert ha-info">&#128204; <strong>Donn&eacute;es en temps r&eacute;el</strong> — Chaque requ&ecirc;te interroge directement l&apos;API SIRENE. Les informations refl&egrave;tent l&apos;&eacute;tat actuel du registre officiel des entreprises.</div>
+        <div class="help-alert ha-info">&#128204; <strong>Donn&eacute;es en temps r&eacute;el</strong> &mdash; Chaque requ&ecirc;te interroge directement l&apos;API SIRENE. Une connexion internet est indispensable. Le fichier HTML fonctionne sans installation ni serveur.</div>
         <div class="help-h4">Champs remont&eacute;s par l&apos;API</div>
         <table class="help-table">
-          <thead><tr><th>Champ API</th><th>Colonne Sage FRP 1000</th><th>Disponibilit&eacute;</th></tr></thead>
+          <thead><tr><th>Champ API</th><th>Colonne Sage FRP&nbsp;1000</th><th>Disponibilit&eacute;</th></tr></thead>
           <tbody>
             <tr><td>siret</td><td>CT_Siret</td><td><span class="help-tag ht-ok">Toujours</span></td></tr>
             <tr><td>siren</td><td>CT_Siren</td><td><span class="help-tag ht-ok">Toujours</span></td></tr>
@@ -307,98 +318,106 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
             <tr><td>site_internet</td><td>CT_Site</td><td><span class="help-tag ht-warn">Minorit&eacute;</span></td></tr>
           </tbody>
         </table>
-        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Champs vides dans l&apos;export</strong> — Si l&apos;API ne retourne pas un champ (t&eacute;l&eacute;phone, email, site), la cellule est vide dans le CSV. Sage FRP&nbsp;1000 peut &eacute;craser les valeurs existantes lors de l&apos;import. <strong>Les IBAN et RIB ne sont pas concern&eacute;s</strong> (table F_REGLEMENTT distincte).</div>
+        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Champs vides dans l&apos;export</strong> &mdash; Si l&apos;API ne retourne pas un champ (t&eacute;l&eacute;phone, email, site), la cellule est vide. Sage FRP&nbsp;1000 peut &eacute;craser les valeurs existantes lors de l&apos;import. <strong>Les IBAN et RIB ne sont jamais concern&eacute;s</strong> (table F_REGLEMENTT distincte).</div>
       </div>
 
       <!-- SINGLE -->
       <div class="help-section" id="help-single">
         <div class="help-h3">&#128269; Recherche unitaire</div>
-        <p class="help-p">Recherche un fournisseur par son nom dans SIRENE et affiche jusqu&apos;&agrave; 8 r&eacute;sultats avec leur SIRET, adresse, forme juridique et statut.</p>
-        <div class="help-h4">Utilisation</div>
+        <p class="help-p">Recherche un fournisseur par son nom dans SIRENE et affiche jusqu&apos;&agrave; 8 r&eacute;sultats avec leur SIRET, adresse, forme juridique et statut. Un bouton d&apos;export Excel est disponible d&egrave;s qu&apos;un r&eacute;sultat est affich&eacute;.</p>
+        <div class="help-h4">D&eacute;roulement</div>
         <div class="step-guide">
-          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Nom du fournisseur</strong> — Saisir une partie du nom suffit. Ex&nbsp;: <em>PHARMAT</em>, <em>Boehringer</em>, <em>SUPER U 67</em></div></div>
-          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Code postal (optionnel)</strong> — Affine les r&eacute;sultats pour les enseignes nationales avec plusieurs &eacute;tablissements</div></div>
-          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Entr&eacute;e</strong> ou clic <em>Rechercher</em> — R&eacute;sultats class&eacute;s par pertinence SIRENE</div></div>
-          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>Bouton Copier</strong> sur chaque SIRET pour le coller directement dans Sage</div></div>
+          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Nom du fournisseur</strong> &mdash; Une partie du nom suffit. Ex&nbsp;: <em>PHARMAT</em>, <em>Boehringer</em>, <em>SUPER U 67</em></div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Code postal (optionnel)</strong> &mdash; Affine les r&eacute;sultats pour les enseignes nationales avec plusieurs &eacute;tablissements</div></div>
+          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Entr&eacute;e</strong> ou clic <em>Rechercher</em> &mdash; R&eacute;sultats class&eacute;s par pertinence SIRENE</div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>Bouton Copier</strong> sur le SIRET souhait&eacute; pour le coller directement dans Sage</div></div>
+          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong> &mdash; T&eacute;l&eacute;charge un fichier <code>.xlsx</code> avec tous les r&eacute;sultats au format <code>CT_*</code> et un onglet <em>Notice import Sage</em></div></div>
         </div>
-        <div class="help-alert ha-info">&#128161; <strong>Astuce</strong> — Pour les associations (EHPAD, SSIAD&hellip;), ajouter le code postal pr&eacute;cise l&apos;&eacute;tablissement local plut&ocirc;t que le si&egrave;ge national.</div>
+        <div class="help-h4">Contenu du fichier Excel export&eacute;</div>
+        <ul class="help-ul">
+          <li>Colonnes&nbsp;: CT_Num (vide &mdash; &agrave; renseigner), CT_Intitule, CT_Siret, CT_Siren, CT_Adresse, CT_CodePostal, CT_Ville, CT_NatureJuridique, CT_NumTVAIntracomm, CT_Telephone, CT_Email, CT_Site, CODE_NAF, ACTIF_SIRENE</li>
+          <li>Lignes color&eacute;es&nbsp;: vert = &eacute;tablissement actif, rouge = ferm&eacute;</li>
+          <li>Onglet <em>Notice import Sage</em> inclus avec la proc&eacute;dure d&apos;import</li>
+        </ul>
+        <div class="help-alert ha-info">&#128161; <strong>Astuce</strong> &mdash; Pour les associations (EHPAD, SSIAD&hellip;), ajouter le code postal pr&eacute;cise l&apos;&eacute;tablissement local plut&ocirc;t que le si&egrave;ge national.</div>
       </div>
 
       <!-- BATCH -->
       <div class="help-section" id="help-batch">
         <div class="help-h3">&#128203; Traitement par lot</div>
-        <p class="help-p">Lit un fichier CSV, d&eacute;tecte les lignes sans SIRET (ou avec SIRET nul/z&eacute;ro) et interroge SIRENE pour chacune. Les SIRET d&eacute;j&agrave; renseign&eacute;s sont conserv&eacute;s sans appel API.</p>
-        <div class="help-h4">Pr&eacute;parer le fichier CSV</div>
+        <p class="help-p">Lit un fichier CSV ou Excel, d&eacute;tecte les lignes sans SIRET (ou avec SIRET nul/z&eacute;ro) et interroge SIRENE pour chacune. Les SIRET d&eacute;j&agrave; renseign&eacute;s sont conserv&eacute;s sans appel API.</p>
+        <div class="help-h4">Formats accept&eacute;s</div>
         <ul class="help-ul">
-          <li>Exportez la liste tiers depuis Sage FRP&nbsp;1000 (menu <em>Fichier &rarr; Export</em>)</li>
-          <li>Formats accept&eacute;s : <strong>CSV</strong> (s&eacute;parateur <code>;</code> ou <code>,</code>), encodage ISO-8859-1 ou UTF-8</li>
+          <li><strong>Excel</strong> (.xlsx, .xls) &mdash; Export direct depuis Sage FRP&nbsp;1000</li>
+          <li><strong>CSV / TXT</strong> &mdash; S&eacute;parateur <code>;</code> ou <code>,</code> auto-d&eacute;tect&eacute;, encodage ISO-8859-1 ou UTF-8</li>
           <li>Colonnes minimales&nbsp;: <strong>Nom fournisseur</strong> + optionnel SIRET + optionnel Code postal</li>
         </ul>
         <div class="help-h4">D&eacute;roulement</div>
         <div class="step-guide">
-          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Import</strong> — Glisser-d&eacute;poser ou cliquer la zone de d&eacute;p&ocirc;t</div></div>
-          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Mapping</strong> — Associer chaque colonne (d&eacute;tection automatique). Si la colonne CP contient des r&eacute;f&eacute;rences Sage (F1000&hellip;) : laisser sur <em>(aucune)</em></div></div>
-          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Recherche</strong> — Cliquer <em>Lancer</em>. Pause possible &agrave; tout moment, session sauvegard&eacute;e automatiquement</div></div>
-          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>Export</strong> — CSV complet ou <strong>Export Sage FRP&nbsp;1000</strong> (colonnes CT_* pr&ecirc;tes &agrave; importer)</div></div>
+          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Import</strong> &mdash; Glisser-d&eacute;poser ou cliquer la zone de d&eacute;p&ocirc;t</div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Mapping</strong> &mdash; Associer chaque colonne (d&eacute;tection automatique des colonnes Sage <code>CT_*</code>). Si le champ CP contient des r&eacute;f&eacute;rences Sage (F1000&hellip;)&nbsp;: laisser sur <em>(aucune)</em></div></div>
+          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Recherche</strong> &mdash; Cliquer <em>Lancer</em>. Pause/reprise possible &agrave; tout moment. Session sauvegard&eacute;e automatiquement toutes les 10 lignes</div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>Export</strong> &mdash; CSV complet ou <strong>Export Sage FRP&nbsp;1000</strong> (colonnes <code>CT_*</code> enrichies pr&ecirc;tes &agrave; importer)</div></div>
         </div>
         <div class="help-h4">Statuts possibles</div>
         <table class="help-table">
           <thead><tr><th>Statut</th><th>Signification</th></tr></thead>
           <tbody>
-            <tr><td>&#9989; Trouv&eacute;</td><td>SIRET localis&eacute; via SIRENE — champs enrichis disponibles</td></tr>
-            <tr><td>&#128309; Conserv&eacute;</td><td>SIRET d&eacute;j&agrave; pr&eacute;sent dans le fichier source — aucune requ&ecirc;te API</td></tr>
-            <tr><td>&#10060; Introuvable</td><td>Aucun r&eacute;sultat — v&eacute;rifier le nom ou saisir manuellement</td></tr>
+            <tr><td>&#9989; Trouv&eacute;</td><td>SIRET localis&eacute; via SIRENE &mdash; tous les champs CT_* enrichis</td></tr>
+            <tr><td>&#128309; Conserv&eacute;</td><td>SIRET d&eacute;j&agrave; pr&eacute;sent dans le fichier source &mdash; aucune requ&ecirc;te API</td></tr>
+            <tr><td>&#10060; Introuvable</td><td>Aucun r&eacute;sultat &mdash; v&eacute;rifier le nom ou saisir manuellement</td></tr>
           </tbody>
         </table>
-        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Session</strong> — En cas de fermeture accidentelle, un bandeau de restauration appara&icirc;t au rechargement pour reprendre l&apos;o&ugrave; vous en &eacute;tiez.</div>
+        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Session</strong> &mdash; En cas de fermeture accidentelle de l&apos;onglet, un bandeau de restauration appara&icirc;t au rechargement pour reprendre l&apos;o&ugrave; vous en &eacute;tiez. Fermer compl&egrave;tement le navigateur efface la session.</div>
       </div>
 
       <!-- DIRECT -->
       <div class="help-section" id="help-direct">
         <div class="help-h3">&#9989; V&eacute;rifier un SIRET</div>
-        <p class="help-p">Valide un num&eacute;ro SIRET existant (14 chiffres) en interrogeant directement SIRENE. Utile avant une saisie manuelle dans Sage pour s&apos;assurer que l&apos;&eacute;tablissement est bien actif.</p>
+        <p class="help-p">Valide un num&eacute;ro SIRET existant (14 chiffres) en interrogeant directement SIRENE. Utile avant une saisie manuelle dans Sage pour s&apos;assurer que l&apos;&eacute;tablissement est actif et que les informations sont &agrave; jour.</p>
         <div class="help-h4">Informations affich&eacute;es</div>
         <ul class="help-ul">
           <li>Raison sociale officielle SIRENE</li>
           <li>Statut actif / ferm&eacute;</li>
-          <li>Adresse compl&egrave;te de l&apos;&eacute;tablissement</li>
-          <li>Code NAF et forme juridique</li>
-          <li>Bouton copier pour r&eacute;cup&eacute;rer le SIRET format&eacute;</li>
+          <li>Adresse de l&apos;&eacute;tablissement (sans doublons CP/ville)</li>
+          <li>Code NAF et libell&eacute; d&apos;activit&eacute;</li>
+          <li>Forme juridique</li>
+          <li>Bouton <em>Copier</em> pour r&eacute;cup&eacute;rer le SIRET format&eacute;</li>
         </ul>
-        <div class="help-alert ha-info">&#128204; Entrez les 14 chiffres sans espaces ou avec espaces, les deux formats sont accept&eacute;s.</div>
+        <div class="help-alert ha-info">&#128204; Entrez les 14 chiffres avec ou sans espaces, les deux formats sont accept&eacute;s.</div>
       </div>
 
       <!-- AUDIT -->
       <div class="help-section" id="help-audit">
         <div class="help-h3">&#128202; Audit base fournisseurs</div>
         <p class="help-p">Compare <strong>en masse</strong> les SIRET d&eacute;j&agrave; enregistr&eacute;s dans Sage avec la base SIRENE officielle. D&eacute;tecte les &eacute;tablissements ferm&eacute;s, les raisons sociales chang&eacute;es et les SIRET invalides.</p>
-        <div class="help-h4">Formats de fichier accept&eacute;s</div>
+        <div class="help-h4">Formats accept&eacute;s</div>
         <ul class="help-ul">
-          <li><strong>Excel</strong> (.xlsx, .xls) — Export direct depuis Sage FRP&nbsp;1000 ou toute extraction Excel</li>
-          <li><strong>CSV / TXT</strong> — S&eacute;parateur <code>;</code> ou <code>,</code>, encodage ISO-8859-1 ou UTF-8</li>
+          <li><strong>Excel</strong> (.xlsx, .xls) &mdash; Export direct depuis Sage FRP&nbsp;1000 ou toute extraction Excel</li>
+          <li><strong>CSV / TXT</strong> &mdash; S&eacute;parateur <code>;</code> ou <code>,</code>, encodage ISO-8859-1 ou UTF-8</li>
         </ul>
         <div class="help-h4">Export recommand&eacute; depuis Sage FRP&nbsp;1000</div>
-        <p class="help-p">Menu <em>Fichier &rarr; Liste &rarr; Tiers</em>, exporter avec au minimum les colonnes&nbsp;: <code>CT_Num</code>, <code>CT_Intitule</code>, <code>CT_Siret</code>. Le code postal (<code>CT_CodePostal</code>) am&eacute;liore la comparaison.</p>
+        <p class="help-p">Menu <em>Fichier &rarr; Liste &rarr; Tiers</em>, exporter avec au minimum&nbsp;: <code>CT_Num</code>, <code>CT_Intitule</code>, <code>CT_Siret</code>. Le code postal (<code>CT_CodePostal</code>) am&eacute;liore la comparaison des noms.</p>
         <div class="help-h4">Statuts de l&apos;audit</div>
         <table class="help-table">
-          <thead><tr><th>Statut</th><th>Signification</th><th>Action recommand&eacute;e dans Sage</th></tr></thead>
+          <thead><tr><th>Statut</th><th>Signification</th><th>Priorit&eacute;</th><th>Action Sage</th></tr></thead>
           <tbody>
-            <tr><td>&#9989; OK</td><td>SIRET actif, raison sociale concordante</td><td>Aucune action</td></tr>
-            <tr><td>&#128308; Ferm&eacute;</td><td>L&apos;&eacute;tablissement est radié dans SIRENE</td><td>Bloquer le tiers (CT_Sommeil = 1)</td></tr>
-            <tr><td>&#128203; Nom diff&eacute;rent</td><td>Raison sociale chang&eacute;e (fusion, changement)</td><td>Mettre &agrave; jour CT_Intitule</td></tr>
-            <tr><td>&#128308; Ferm&eacute; + Nom &ne;</td><td>Clos et raison sociale diff&eacute;rente</td><td>Bloquer + rechercher successeur</td></tr>
-            <tr><td>&#10067; Introuvable</td><td>SIRET absent de SIRENE (erreur de saisie ?)</td><td>V&eacute;rification manuelle</td></tr>
-            <tr><td>&#9888;&#65039; Format invalide</td><td>SIRET != 14 chiffres dans Sage</td><td>Corriger CT_Siret dans Sage</td></tr>
-            <tr><td>&mdash; Sans SIRET</td><td>Champ CT_Siret vide dans Sage</td><td>SIRET &agrave; saisir</td></tr>
+            <tr><td>&#9989; OK</td><td>SIRET actif, raison sociale concordante</td><td>&mdash;</td><td>Aucune</td></tr>
+            <tr><td>&#128308; Ferm&eacute;</td><td>Radié dans SIRENE</td><td><strong style="color:var(--danger)">URGENT</strong></td><td>Bloquer le tiers</td></tr>
+            <tr><td>&#128308; Ferm&eacute; + Nom&nbsp;&ne;</td><td>Clos et raison sociale diff&eacute;rente</td><td><strong style="color:var(--danger)">URGENT</strong></td><td>Bloquer + chercher successeur</td></tr>
+            <tr><td>&#9888;&#65039; Format invalide</td><td>SIRET &ne; 14 chiffres dans Sage</td><td><strong style="color:#fb923c">CRITIQUE</strong></td><td>Corriger CT_Siret</td></tr>
+            <tr><td>&#128203; Nom diff&eacute;rent</td><td>Raison sociale modifi&eacute;e</td><td><strong style="color:var(--warn)">NORMAL</strong></td><td>Mettre &agrave; jour CT_Intitule</td></tr>
+            <tr><td>&#10067; Introuvable</td><td>SIRET absent de SIRENE</td><td><strong style="color:var(--muted)">&Agrave; V&Eacute;RIFIER</strong></td><td>V&eacute;rification manuelle</td></tr>
+            <tr><td>&mdash; Sans SIRET</td><td>Champ CT_Siret vide dans Sage</td><td><strong style="color:var(--muted)">&Agrave; V&Eacute;RIFIER</strong></td><td>SIRET &agrave; saisir</td></tr>
           </tbody>
         </table>
         <div class="help-h4">3 exports disponibles apr&egrave;s audit</div>
         <ul class="help-ul">
-          <li><strong>Rapport complet</strong> — Tous les fournisseurs avec leur statut et les donn&eacute;es SIRENE</li>
-          <li><strong>Mises &agrave; jour Sage</strong> — Uniquement les lignes avec action, format colonnes CT_* pour import direct</li>
-          <li><strong>Actions uniquement</strong> — Tri&eacute; par priorit&eacute; (1-URGENT ferm&eacute;s &rarr; 4-&Agrave; V&eacute;rifier)</li>
+          <li><strong>Rapport complet</strong> &mdash; Tous les fournisseurs avec leur statut et les donn&eacute;es SIRENE compl&egrave;tes</li>
+          <li><strong>Mises &agrave; jour Sage</strong> &mdash; Uniquement les lignes avec action requise, colonnes <code>CT_*</code> pr&ecirc;tes &agrave; importer</li>
+          <li><strong>Actions par priorit&eacute;</strong> &mdash; Tri&eacute; de 1-URGENT &agrave; 4-&Agrave;_V&Eacute;RIFIER</li>
         </ul>
-        <div class="help-alert ha-ok">&#128274; <strong>IBAN et RIB en s&eacute;curit&eacute;</strong> — Les coordonn&eacute;es bancaires sont stock&eacute;es dans la table F_REGLEMENTT de Sage, distincte de la fiche tiers F_COMPTET. Elles ne sont jamais modifi&eacute;es par cet import.</div>
+        <div class="help-alert ha-ok">&#128274; <strong>IBAN et RIB en s&eacute;curit&eacute;</strong> &mdash; Les coordonn&eacute;es bancaires sont stock&eacute;es dans la table <code>F_REGLEMENTT</code> de Sage, distincte de la fiche tiers <code>F_COMPTET</code>. Elles ne sont jamais modifi&eacute;es par cet import.</div>
       </div>
 
       <!-- SAGE -->
@@ -407,21 +426,21 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="help-h4">Proc&eacute;dure d&apos;import</div>
         <div class="step-guide">
           <div class="sg-item"><div class="sg-num">1</div><div class="sg-text">Dans Sage FRP&nbsp;1000 : <strong>Fichier &rarr; Import &rarr; Tiers</strong></div></div>
-          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text">S&eacute;lectionner le fichier CSV export&eacute; par l&apos;outil (encodage <strong>ISO-8859-1</strong>, s&eacute;parateur <strong>;</strong>)</div></div>
-          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text">V&eacute;rifier la correspondance des colonnes — les ent&ecirc;tes <code>CT_*</code> sont reconnus automatiquement</div></div>
-          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text">Sage identifie chaque tiers par <strong>CT_Num</strong> : si le code existe &rarr; mise &agrave; jour&nbsp;; si nouveau &rarr; cr&eacute;ation</div></div>
-          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text">Faire un <strong>test sur un &eacute;chantillon de 5&ndash;10 tiers</strong> avant l&apos;import complet</div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text">S&eacute;lectionner le fichier CSV (encodage <strong>ISO-8859-1</strong>, s&eacute;parateur <strong>;</strong>) ou Excel export&eacute; par l&apos;outil</div></div>
+          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text">V&eacute;rifier la correspondance des colonnes &mdash; les ent&ecirc;tes <code>CT_*</code> sont reconnus automatiquement</div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text">Sage identifie chaque tiers par <strong>CT_Num</strong> : code existant &rarr; mise &agrave; jour&nbsp;; code absent &rarr; cr&eacute;ation</div></div>
+          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>Tester sur 5&ndash;10 tiers</strong> avant l&apos;import complet</div></div>
         </div>
         <div class="help-h4">Comportement de Sage selon la situation</div>
         <table class="help-table">
           <thead><tr><th>Situation</th><th>Comportement Sage</th></tr></thead>
           <tbody>
-            <tr><td>CT_Num existe + champ renseign&eacute;</td><td>Mise &agrave; jour du champ</td></tr>
+            <tr><td>CT_Num existe + champ renseign&eacute;</td><td>&#9989; Mise &agrave; jour du champ</td></tr>
             <tr><td>CT_Num existe + champ <strong>vide</strong></td><td>&#9888;&#65039; Champ &eacute;cras&eacute; &agrave; blanc</td></tr>
-            <tr><td>CT_Num n&apos;existe pas</td><td>Cr&eacute;ation d&apos;un nouveau tiers</td></tr>
+            <tr><td>CT_Num n&apos;existe pas</td><td>&#9989; Cr&eacute;ation d&apos;un nouveau tiers</td></tr>
           </tbody>
         </table>
-        <div class="help-h4">Champs non touch&eacute;s par l&apos;import</div>
+        <div class="help-h4">Tables Sage non affect&eacute;es par l&apos;import</div>
         <table class="help-table">
           <thead><tr><th>Donn&eacute;e</th><th>Table Sage</th><th>Impact</th></tr></thead>
           <tbody>
@@ -431,37 +450,41 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
             <tr><td>Historique &eacute;critures</td><td>F_ECRITUREC</td><td><span class="help-tag ht-ok">Aucun</span></td></tr>
           </tbody>
         </table>
-        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Pr&eacute;caution pour les champs optionnels</strong> — T&eacute;l&eacute;phone, email et site web ne sont renseign&eacute;s que pour une minorit&eacute; d&apos;entreprises dans SIRENE. Si vous avez d&eacute;j&agrave; saisi ces valeurs manuellement dans Sage, pr&eacute;f&eacute;rez n&apos;importer que les colonnes CT_Siret, CT_Intitule, CT_Adresse, CT_CodePostal, CT_Ville lors du premier passage.</div>
+        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Pr&eacute;caution premier import</strong> &mdash; T&eacute;l&eacute;phone, email et site web ne sont renseign&eacute;s que pour une minorit&eacute; d&apos;entreprises dans SIRENE. Si ces valeurs sont d&eacute;j&agrave; saisies manuellement dans Sage, pr&eacute;f&eacute;rez n&apos;importer que les colonnes <code>CT_Siret</code>, <code>CT_Intitule</code>, <code>CT_Adresse</code>, <code>CT_CodePostal</code>, <code>CT_Ville</code> lors du premier passage.</div>
       </div>
 
       <!-- FAQ -->
       <div class="help-section" id="help-faq">
         <div class="help-h3">&#10067; Questions fr&eacute;quentes</div>
 
-        <div class="help-h4">Pourquoi certains fournisseurs sont introuvables ?</div>
-        <p class="help-p">Plusieurs raisons possibles&nbsp;: nom trop abr&eacute;g&eacute; ou trop diff&eacute;rent de la raison sociale officielle, entreprise &eacute;trang&egrave;re (hors registre fran&ccedil;ais), micro-entreprise non inscrite au RCS, ou SIRET effectivement radié. Essayez la recherche unitaire avec diff&eacute;rentes formulations.</p>
+        <div class="help-h4">Peut-on renommer le fichier HTML ?</div>
+        <p class="help-p">Oui, sans aucune restriction. Le fichier ne contient aucune r&eacute;f&eacute;rence &agrave; son propre nom. Vous pouvez le renommer, le d&eacute;placer ou le copier librement.</p>
 
-        <div class="help-h4">Le nom trouv&eacute; est diff&eacute;rent du nom dans Sage — est-ce normal ?</div>
-        <p class="help-p">Oui. SIRENE utilise la raison sociale <strong>officielle</strong> (ex&nbsp;: <em>PHARMAT SAS</em>) alors que Sage peut contenir un nom commercial ou abr&eacute;g&eacute; (ex&nbsp;: <em>PHARMAT</em>). L&apos;outil signale les &eacute;carts significatifs avec le statut <em>Nom diff&eacute;rent</em> en ignorant les formes juridiques (SAS, SARL&hellip;).</p>
+        <div class="help-h4">Pourquoi certains fournisseurs sont introuvables ?</div>
+        <p class="help-p">Plusieurs raisons possibles&nbsp;: nom trop abr&eacute;g&eacute; ou diff&eacute;rent de la raison sociale officielle, entreprise &eacute;trang&egrave;re (hors registre fran&ccedil;ais), micro-entreprise non inscrite au RCS, ou SIRET effectivement radi&eacute;. Essayez la recherche unitaire avec diff&eacute;rentes formulations du nom.</p>
+
+        <div class="help-h4">Le nom trouv&eacute; est diff&eacute;rent du nom dans Sage &mdash; est-ce normal ?</div>
+        <p class="help-p">Oui. SIRENE utilise la raison sociale <strong>officielle</strong> (ex&nbsp;: <em>PHARMAT SAS</em>) alors que Sage peut contenir un nom commercial abr&eacute;g&eacute; (ex&nbsp;: <em>PHARMAT</em>). L&apos;outil signale les &eacute;carts significatifs avec le statut <em>Nom diff&eacute;rent</em> en ignorant les formes juridiques (SAS, SARL&hellip;).</p>
 
         <div class="help-h4">La recherche est-elle limit&eacute;e en volume ?</div>
-        <p class="help-p">L&apos;API SIRENE est gratuite et sans cl&eacute; API. Elle applique un rate limit&nbsp;: l&apos;outil attend automatiquement 380ms entre chaque requ&ecirc;te (environ 150 fournisseurs / minute). En cas de d&eacute;passement, une pause de 2s est ins&eacute;r&eacute;e automatiquement.</p>
+        <p class="help-p">L&apos;API SIRENE est gratuite et sans cl&eacute; API. Elle applique un rate limit&nbsp;: l&apos;outil attend automatiquement 380&nbsp;ms entre chaque requ&ecirc;te (~&nbsp;150 fournisseurs/minute). En cas de d&eacute;passement (HTTP 429), une pause de 2&nbsp;s est ins&eacute;r&eacute;e automatiquement.</p>
 
         <div class="help-h4">La session est-elle sauvegard&eacute;e si je ferme l&apos;onglet ?</div>
-        <p class="help-p">Oui pour l&apos;onglet <em>Traitement par lot</em>&nbsp;: la progression est sauvegard&eacute;e dans le sessionStorage du navigateur. En rouvrant la m&ecirc;me session (m&ecirc;me onglet ou m&ecirc;me navigateur), un bandeau de restauration propose de reprendre. En revanche, fermer compl&egrave;tement le navigateur efface la session.</p>
+        <p class="help-p">Oui pour les onglets <em>Traitement par lot</em> et <em>Audit</em>&nbsp;: la progression est sauvegard&eacute;e dans le sessionStorage du navigateur. Un bandeau de restauration appara&icirc;t au rechargement. Fermer compl&egrave;tement le navigateur efface la session.</p>
 
-        <div class="help-h4">Peut-on utiliser ce fichier HTML hors connexion ?</div>
-        <p class="help-p">Non. Les 4 modules interrogent l&apos;API SIRENE en temps r&eacute;el. Une connexion internet est indispensable. Le fichier HTML lui-m&ecirc;me fonctionne sans serveur (ouverture directe dans le navigateur).</p>
+        <div class="help-h4">Peut-on utiliser cet outil hors connexion ?</div>
+        <p class="help-p">Non. Les 4 modules interrogent l&apos;API SIRENE en temps r&eacute;el. Une connexion internet est indispensable. En revanche, le fichier HTML s&apos;ouvre directement dans le navigateur sans installation ni serveur.</p>
 
-        <div class="help-h4">Diff&eacute;rence entre le script Python et le fichier HTML ?</div>
+        <div class="help-h4">Diff&eacute;rence entre le fichier HTML et le script Python ?</div>
         <table class="help-table">
           <thead><tr><th></th><th>HTML (navigateur)</th><th>Python (ligne de commande)</th></tr></thead>
           <tbody>
-            <tr><td>Usage</td><td>Interface graphique, accessible &agrave; tous</td><td>Automatisation, int&eacute;gration dans un workflow</td></tr>
-            <tr><td>Format entr&eacute;e</td><td>CSV, Excel</td><td>Excel uniquement (.xlsx)</td></tr>
-            <tr><td>Format sortie</td><td>CSV</td><td>Excel color&eacute; + CSV</td></tr>
+            <tr><td>Usage</td><td>Interface graphique, accessible &agrave; tous</td><td>Automatisation, workflow batch</td></tr>
+            <tr><td>Format entr&eacute;e</td><td>CSV, Excel (.xlsx / .xls)</td><td>Excel uniquement (.xlsx)</td></tr>
+            <tr><td>Format sortie</td><td>CSV + Excel (.xlsx)</td><td>Excel color&eacute; + CSV</td></tr>
+            <tr><td>Export recherche unitaire</td><td>&#9989; Excel Sage FRP&nbsp;1000</td><td>&mdash;</td></tr>
             <tr><td>Mode audit</td><td>Onglet d&eacute;di&eacute;</td><td><code>--mode verify</code></td></tr>
-            <tr><td>Mise en forme</td><td>&mdash;</td><td>Cellules color&eacute;es par statut</td></tr>
+            <tr><td>Mise en forme Excel</td><td>Couleurs par statut actif/ferm&eacute;</td><td>Couleurs par statut d&eacute;taill&eacute;</td></tr>
           </tbody>
         </table>
       </div>
@@ -487,6 +510,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="field"><label>Code postal (optionnel)</label><input type="text" id="q-cp" placeholder="67000" maxlength="5" onkeydown="if(event.key==='Enter')search()"></div>
         <div class="field"><label>Statut</label><select id="q-status"><option value="">Tous</option><option value="A">Actif</option><option value="F">Ferm&eacute;</option></select></div>
         <button class="btn btn-p" id="search-btn" onclick="search()">&#128269; Rechercher</button>
+        <button class="btn btn-sec" id="reset-btn" onclick="resetSearch()" style="display:none">&#10006; Nouvelle recherche</button>
       </div>
     </div>
     <div id="result-area"><div class="empty-state"><div class="es-icon">&#127981;</div><p>Entrez un nom de fournisseur</p></div></div>
@@ -649,7 +673,8 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
       <h2>&#9989; V&eacute;rifier un num&eacute;ro SIRET</h2>
       <div class="form-row fr2">
         <div class="field"><label>Num&eacute;ro SIRET (14 chiffres)</label><input type="text" id="q-siret" placeholder="35240913400060" maxlength="14" onkeydown="if(event.key==='Enter')searchSiret()"></div>
-        <button class="btn btn-p" onclick="searchSiret()">&#9989; V&eacute;rifier</button>
+        <button class="btn btn-p" id="verify-btn" onclick="searchSiret()">&#9989; V&eacute;rifier</button>
+        <button class="btn btn-sec" id="verify-reset-btn" onclick="resetSiret()" style="display:none">&#10006; Nouvelle v&eacute;rification</button>
       </div>
     </div>
     <div id="direct-result"><div class="empty-state"><div class="es-icon">&#128270;</div><p>Entrez un SIRET &agrave; valider</p></div></div>
@@ -883,16 +908,134 @@ function extractBest(data){
 // =================== RENDER SINGLE/DIRECT ===================
 function renderResults(data,container){
   const res=data.results||[];
-  if(!res.length){container.innerHTML='<div class="alert a-err">&#10060; Aucun r&eacute;sultat.</div>';return;}
-  let html='<div style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--accent)">'+res.length+'</strong> r&eacute;sultat(s)</div>';
+  if(!res.length){container.innerHTML='<div class="alert a-err">&#10060; Aucun r&eacute;sultat.</div>';lastSingleResults=[];return;}
+  // Stocker pour export
+  lastSingleResults=res.slice(0,8).map(r=>{
+    const etab=(r.matching_etablissements||[r.siege||{}])[0]||{};
+    const siege=r.siege||{};
+    const siret=(etab.siret||'').replace(/\D/g,'');
+    const naf=(r.activite_principale||'')+(r.libelle_activite_principale?' \u2014 '+r.libelle_activite_principale:'');
+    return{siret,siren:siret.slice(0,9),nom:r.nom_complet||r.nom_raison_sociale||'',
+      actif:etab.etat_administratif==='A',
+      adresse:etab.adresse||siege.adresse||'',
+      cp:etab.code_postal||siege.code_postal||'',
+      commune:etab.libelle_commune||siege.libelle_commune||'',
+      formeJuridique:r.nature_juridique_label||'',
+      naf,tva:r.numero_tva_intra||'',
+      telephone:siege.telephone||'',email:siege.email||'',siteWeb:siege.site_internet||''};
+  });
+  let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
+    +'<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--accent)">'+res.length+'</strong> r&eacute;sultat(s)</span>'
+    +'<button class="btn btn-p" onclick="exportSingleXlsx()" style="font-size:12px;padding:7px 16px">&#128229; Export Excel Sage FRP&nbsp;1000</button>'
+    +'</div>';
   res.slice(0,8).forEach(r=>{
     const etab=(r.matching_etablissements||[r.siege||{}])[0]||{};
-    const siret=(etab.siret||'').replace(/\D/g,''), actif=etab.etat_administratif==='A';
-    const adr=[etab.adresse,etab.code_postal,etab.libelle_commune].filter(Boolean).join(', ');
-    html+='<div class="result-card"><div class="result-header"><div><div class="result-name">'+(r.nom_complet||r.nom_raison_sociale||'—')+'</div><div class="result-sub">SIREN: '+(r.siren||'—')+' &bull; '+(r.nature_juridique_label||'')+'</div></div><span class="sb '+(actif?'s-act':'s-cls')+'">'+(actif?'✅ Actif':'🔴 Fermé')+'</span></div><div class="result-body"><div class="rf"><label>SIRET</label><span class="siret-val">'+fmtSiret(siret)+'<button class="copy-btn" onclick="copyText(\''+siret+'\',this)">Copier</button></span></div><div class="rf"><label>Adresse</label><span>'+(adr||'—')+'</span></div><div class="rf"><label>NAF</label><span>'+(r.activite_principale||'')+' '+(r.libelle_activite_principale||'')+'</span></div><div class="rf"><label>Forme</label><span>'+(r.nature_juridique_label||'—')+'</span></div></div></div>';
+    const siege=r.siege||{};
+    const siret=(etab.siret||'').replace(/\D/g,''), siren=siret.slice(0,9);
+    const actif=etab.etat_administratif==='A';
+    const _adr=etab.adresse||siege.adresse||'';
+    const _cp=etab.code_postal||siege.code_postal||'';
+    const _ville=etab.libelle_commune||siege.libelle_commune||'';
+    const _adrUp=_adr.toUpperCase();
+    const cpIn=_cp&&_adrUp.includes(_cp), villeIn=_ville&&_adrUp.includes(_ville.toUpperCase());
+    const adr=[_adr,cpIn?'':_cp,villeIn?'':_ville].filter(Boolean).join(', ');
+    const nom=r.nom_complet||r.nom_raison_sociale||'';
+    const forme=r.nature_juridique_label||'';
+    const naf=(r.activite_principale||'')+(r.libelle_activite_principale?' — '+r.libelle_activite_principale:'');
+    const tva=r.numero_tva_intra||'';
+    const tel=siege.telephone||'', email=siege.email||'', site=siege.site_internet||'';
+
+    function cfv(val,raw){
+      if(!raw&&!val) return '<span style="color:var(--muted);font-style:italic">—</span>';
+      const v=raw||val;
+      return '<span style="color:var(--text)">'+val+'</span><button class="copy-btn copy-field" onclick="copyText(\''+v.replace(/'/g,"\\'")+'\'+ \'\',this)" title="Copier">📋</button>';
+    }
+
+    html+='<div class="result-card">'
+      // En-tête carte
+      +'<div class="result-header">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div class="result-name" style="display:flex;align-items:center;gap:8px">'+nom
+            +'<button class="copy-btn copy-field" onclick="copyText(\''+nom.replace(/'/g,"\\'")+'\'+ \'\',this)" title="Copier la raison sociale">📋</button>'
+          +'</div>'
+          +'<div class="result-sub">SIREN: '+siren+' &bull; '+forme+'</div>'
+        +'</div>'
+        +'<span class="sb '+(actif?'s-act':'s-cls')+'">'+(actif?'✅ Actif':'🔴 Fermé')+'</span>'
+      +'</div>'
+      // Grille champs Sage
+      +'<div class="result-fields-grid">'
+        // Colonne gauche
+        +'<div class="rf-group">'
+          +'<div class="rf-title">📋 Identification</div>'
+          +'<div class="rf"><label>CT_Intitule</label><div class="rf-val">'+cfv(nom)+'</div></div>'
+          +'<div class="rf"><label>CT_Siret</label><div class="rf-val"><span class="siret-val">'+fmtSiret(siret)+'</span><button class="copy-btn" onclick="copyText(\''+siret+'\',this)">Copier</button></div></div>'
+          +'<div class="rf"><label>CT_Siren</label><div class="rf-val">'+cfv(siren)+'</div></div>'
+          +'<div class="rf"><label>CT_NatureJuridique</label><div class="rf-val">'+cfv(forme)+'</div></div>'
+          +'<div class="rf"><label>CT_NumTVAIntracomm</label><div class="rf-val">'+cfv(tva)+'</div></div>'
+        +'</div>'
+        // Colonne droite
+        +'<div class="rf-group">'
+          +'<div class="rf-title">📍 Adresse &amp; contact</div>'
+          +'<div class="rf"><label>CT_Adresse</label><div class="rf-val">'+cfv(_adr)+'</div></div>'
+          +'<div class="rf"><label>CT_CodePostal</label><div class="rf-val">'+cfv(_cp)+'</div></div>'
+          +'<div class="rf"><label>CT_Ville</label><div class="rf-val">'+cfv(_ville)+'</div></div>'
+          +(tel?'<div class="rf"><label>CT_Telephone</label><div class="rf-val">'+cfv(tel)+'</div></div>':'')
+          +(email?'<div class="rf"><label>CT_Email</label><div class="rf-val">'+cfv(email)+'</div></div>':'')
+          +(site?'<div class="rf"><label>CT_Site</label><div class="rf-val">'+cfv(site)+'</div></div>':'')
+          +'<div class="rf"><label>Code NAF</label><div class="rf-val" style="font-size:12px">'+cfv(naf)+'</div></div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
   });
   container.innerHTML=html;
 }
+
+// =================== EXPORT XLSX RECHERCHE UNITAIRE ===================
+let lastSingleResults=[];
+function exportSingleXlsx(){
+  if(!lastSingleResults.length){alert('Aucun r\u00e9sultat \u00e0 exporter.');return;}
+  const headers=['CT_Num','CT_Intitule','CT_Siret','CT_Siren','CT_Adresse','CT_CodePostal','CT_Ville','CT_NatureJuridique','CT_NumTVAIntracomm','CT_Telephone','CT_Email','CT_Site','CODE_NAF','ACTIF_SIRENE'];
+  const rows=lastSingleResults.map(r=>(['',r.nom,r.siret,r.siren,r.adresse,r.cp,r.commune,r.formeJuridique,r.tva,r.telephone,r.email,r.siteWeb,r.naf,r.actif?'OUI':'NON']));
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
+  ws['!cols']=[{wch:10},{wch:35},{wch:16},{wch:12},{wch:30},{wch:10},{wch:20},{wch:18},{wch:18},{wch:14},{wch:28},{wch:28},{wch:30},{wch:10}];
+  // Style en-tête
+  for(let C=0;C<headers.length;C++){
+    const ref=XLSX.utils.encode_cell({r:0,c:C});
+    if(!ws[ref])continue;
+    ws[ref].s={fill:{fgColor:{rgb:'1E293B'}},font:{bold:true,color:{rgb:'F97316'},sz:10},alignment:{horizontal:'center',vertical:'center'}};
+  }
+  // Couleur lignes selon statut
+  rows.forEach((row,R)=>{
+    const actif=row[13]==='OUI';
+    for(let C=0;C<headers.length;C++){
+      const ref=XLSX.utils.encode_cell({r:R+1,c:C});
+      if(!ws[ref])ws[ref]={t:'s',v:''};
+      ws[ref].s={fill:{fgColor:{rgb:actif?'1A3020':'3A1515'}},font:{color:{rgb:C===2?'FB923C':actif?'22C55E':'EF4444'}},alignment:{vertical:'center',wrapText:false}};
+    }
+  });
+  // Onglet notice
+  const notice=XLSX.utils.aoa_to_sheet([
+    ['Information importante'],
+    ['La colonne CT_Num (code tiers Sage) est volontairement vide.'],
+    ['Renseignez-la avant import selon votre plan de nommage Sage FRP 1000.'],
+    [''],
+    ['Procedure import dans Sage FRP 1000 :'],
+    ['1. Fichier > Import > Tiers'],
+    ['2. Selectionner ce fichier'],
+    ['3. Verifier la correspondance des colonnes CT_*'],
+    ['4. CT_Num existant = mise a jour | CT_Num absent = creation tiers'],
+    ['5. Champ vide dans le CSV = champ existant ecrase a blanc dans Sage'],
+    [''],
+    ['Note : Les IBAN/RIB (table F_REGLEMENTT) ne sont pas affectes par cet import.'],
+  ]);
+  notice['!cols']=[{wch:75}];
+  XLSX.utils.book_append_sheet(wb,ws,'Tiers SIRENE');
+  XLSX.utils.book_append_sheet(wb,notice,'Notice import Sage');
+  const nom=(document.getElementById('q-name').value||'recherche').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
+  XLSX.writeFile(wb,'sage_frp1000_'+nom+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
 
 // =================== SINGLE SEARCH ===================
 async function search(){
@@ -903,7 +1046,7 @@ async function search(){
   btn.disabled=true; area.innerHTML='<div class="loader"><div class="spinner"></div>Recherche en cours...</div>';
   try{const data=await apiSearch(nom,cp);renderResults(data,area);}
   catch(e){area.innerHTML='<div class="alert a-err">Erreur: '+e.message+'</div>';}
-  finally{btn.disabled=false;}
+  finally{document.getElementById('reset-btn').style.display='';btn.disabled=false;}
 }
 async function searchSiret(){
   const siret=document.getElementById('q-siret').value.replace(/\D/g,'');
@@ -912,6 +1055,24 @@ async function searchSiret(){
   area.innerHTML='<div class="loader"><div class="spinner"></div>V&eacute;rification...</div>';
   try{const r=await fetch(API+'?q='+siret+'&per_page=3');renderResults(await r.json(),area);}
   catch(e){area.innerHTML='<div class="alert a-err">Erreur: '+e.message+'</div>';}
+  finally{document.getElementById('verify-reset-btn').style.display='';}
+}
+
+function resetSiret(){
+  document.getElementById('q-siret').value='';
+  document.getElementById('direct-result').innerHTML='<div class="empty-state"><div class="es-icon">&#128270;</div><p>Entrez un SIRET &agrave; valider</p></div>';
+  document.getElementById('verify-reset-btn').style.display='none';
+  document.getElementById('q-siret').focus();
+}
+
+function resetSearch(){
+  document.getElementById('q-name').value='';
+  document.getElementById('q-cp').value='';
+  document.getElementById('q-status').value='';
+  document.getElementById('result-area').innerHTML='<div class="empty-state"><div class="es-icon">&#127981;</div><p>Entrez un nom de fournisseur</p></div>';
+  document.getElementById('reset-btn').style.display='none';
+  lastSingleResults=[];
+  document.getElementById('q-name').focus();
 }
 
 // =================== CSV PARSING ===================
