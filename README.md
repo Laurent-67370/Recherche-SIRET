@@ -71,7 +71,7 @@ Les 20 derniers termes sont affichés en badges. Clic → relance la recherche. 
 | 14 chiffres (SIRET) | Vérifie l'établissement exact | Contrôle avant saisie dans Sage |
 | 9 chiffres (SIREN) | Liste tous les établissements de l'entreprise | Fournisseur multi-sites, trouver le bon établissement |
 
-M�me fiche détaillée et mêmes actions que la Recherche unitaire (copie champ par champ, Tout copier, Export Excel, réinitialisation).
+Même fiche détaillée et mêmes actions que la Recherche unitaire (copie champ par champ, Tout copier, Export Excel, réinitialisation).
 
 ---
 
