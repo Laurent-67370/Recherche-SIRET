@@ -1,60 +1,53 @@
 # 🏢 SIRET Fournisseurs ABRAPA
 
-> Outil d'enrichissement et d'audit des SIRET fournisseurs via l'API SIRENE officielle (INSEE / data.gouv.fr)
+> Outil de recherche, vérification et audit SIRET/SIREN pour la comptabilité ABRAPA.  
+> Basé sur l'API SIRENE officielle INSEE et l'API recherche-entreprises (data.gouv.fr).
 
-![Version](https://img.shields.io/badge/version-4.2-orange)
+![Version](https://img.shields.io/badge/version-5.0-orange)
 ![Licence](https://img.shields.io/badge/licence-MIT-blue)
 ![API](https://img.shields.io/badge/API-SIRENE%20officielle-green)
 ![Sage](https://img.shields.io/badge/Sage-FRP%201000-purple)
 
 ---
 
-## 📋 Présentation
+## 📁 Fichiers
 
-Ce projet fournit deux outils complémentaires pour la gestion des SIRET fournisseurs dans **Sage FRP 1000** :
+```
+📁 dossier-installation/
+├── RECHERCHE_SIRET_FOURNISSEURS.html     ← Application principale
+├── GUIDE_EMPLOI_RECHERCHE_SIRET.html     ← Guide d'emploi interactif
+├── xlsx.full.min.js                      ← Librairie exports Excel (fallback local)
+└── README.md                             ← Ce fichier
+```
 
-| Outil | Fichier | Usage |
-|---|---|---|
-| Interface web | `*.html` (renommable librement) | Utilisation graphique dans le navigateur |
-| Script Python | `completer_siret.py` | Automatisation en ligne de commande |
+> ⚠️ Les quatre fichiers doivent être placés dans le **même dossier**.  
+> 📂 Chemin réseau : `L:\COMPTE\FOURNISSEURS\HUB OUTILS COMPTA\`
 
-> 💡 Le fichier HTML peut être renommé à volonté sans impact sur son fonctionnement.  
-> 📂 Chemin réseau : `L:\COMPTE\FOURNISSEURS\HUB OUTILS COMPTA\RECHERCHE SIRET FOURNISSEURS.html`
+---
+
+## 🚀 Utilisation
+
+Ouvrir `RECHERCHE_SIRET_FOURNISSEURS.html` directement dans le navigateur (Chrome, Edge, Firefox).  
+**Aucune installation, aucun serveur, aucun Python requis.**
 
 ---
 
 ## ✨ Fonctionnalités
 
-### Interface HTML (navigateur)
+### Onglet 1 — Recherche & Vérification
 
-| Onglet | Description | Nouveautés v4.2 |
-|---|---|---|
-| 🔍 **Recherche unitaire** | Trouver le SIRET d'un fournisseur par son nom | Historique 20 recherches, copie par champ, Tout copier, réinitialisation |
-| 📋 **Traitement par lot** | Compléter les SIRET manquants depuis un fichier CSV/Excel | — |
-| ✅ **Vérifier un SIRET / SIREN** | Valider un SIRET (14) ou lister les établissements via SIREN (9) | Recherche SIREN, grille CT_*, copie par champ, export Excel, réinitialisation |
-| 📊 **Audit base fournisseurs** | Comparer en masse la base Sage avec SIRENE | — |
+Champ unique intelligent qui détecte automatiquement le type de saisie :
 
-**Fonctionnalités transverses :**
-- Guide d'utilisation intégré (bouton ❓ dans le header)
-- Pause / reprise sur traitement par lot et audit
-- Sauvegarde automatique de session (sessionStorage)
-- Export CSV ISO-8859-1 et Excel `.xlsx` compatibles Sage FRP 1000
-- Lecture Excel `.xlsx` / `.xls` + CSV avec détection automatique du séparateur
+| Saisie | Mode | Action |
+|--------|------|--------|
+| Texte libre | 🔤 Nom | Recherche par nom + code postal optionnel |
+| 9 chiffres | 🏢 SIREN | Fiche entreprise complète + bouton liste établissements |
+| 14 chiffres | 🔢 SIRET | Vérification directe de l'établissement |
 
----
-
-## 🔍 Recherche unitaire — Détail
-
-La fiche de chaque résultat affiche tous les champs Sage en **grille 2 colonnes** :
-
-| Identification | Adresse & contact |
-|---|---|
-| CT_Intitule, CT_Siret, CT_Siren | CT_Adresse, CT_CodePostal, CT_Ville |
-| CT_NatureJuridique, CT_NumTVAIntracomm | CT_Telephone, CT_Email, CT_Site (si disponibles) |
-| Code NAF + libellé | — |
+**Bouton "Tous les établissements du SIREN"** → Modale avec liste complète via API INSEE, filtres actifs/fermés, recherche, export Excel.
 
 **Actions disponibles sur chaque résultat :**
-- 📋 Bouton sur chaque champ CT_* pour copier individuellement
+- 📋 Bouton sur chaque champ `CT_*` pour copier individuellement
 - **Tout copier** — copie tous les champs en tableau `champ[TAB]valeur` (collable dans Excel)
 - **📥 Export Excel Sage FRP 1000** — fichier `.xlsx` prêt à importer
 - **✖ Nouvelle recherche** — réinitialise le formulaire et les résultats
@@ -64,14 +57,45 @@ Les 20 derniers termes sont affichés en badges. Clic → relance la recherche. 
 
 ---
 
-## ✅ Vérifier un SIRET / SIREN — Détail
+### Onglet 2 — Traitement par lot
 
-| Saisie | Comportement | Cas d'usage |
-|---|---|---|
-| 14 chiffres (SIRET) | Vérifie l'établissement exact | Contrôle avant saisie dans Sage |
-| 9 chiffres (SIREN) | Liste tous les établissements de l'entreprise | Fournisseur multi-sites, trouver le bon établissement |
+1. Exporter la liste tiers depuis Sage (Fichier → Export)
+2. Glisser-déposer le fichier CSV ou Excel
+3. Associer les colonnes (détection automatique `CT_*`)
+4. Lancer — pause/reprise possible
+5. Exporter CSV compatible Sage + export Excel coloré
 
-Même fiche détaillée et mêmes actions que la Recherche unitaire (copie champ par champ, Tout copier, Export Excel, réinitialisation).
+---
+
+### Onglet 3 — Audit base fournisseurs
+
+1. Exporter depuis Sage : `CT_Num`, `CT_Intitule`, `CT_Siret` (+ `CT_CodePostal` recommandé)
+2. Vérification dual mode : par **SIRET** (confirmation directe) ou par **nom** (fallback si SIRET absent)
+3. Filtrer par statut, consulter les KPI
+4. Exporter rapport / mises à jour / actions par priorité
+
+**Statuts de l'audit :**
+
+| Statut | Signification | Priorité | Action Sage FRP 1000 |
+|--------|---------------|----------|----------------------|
+| ✅ OK | SIRET actif, nom concordant | — | Aucune action |
+| 🔴 Fermé | Établissement radié | URGENT | Bloquer le tiers (`CT_Sommeil = 1`) |
+| 🔴 Fermé + Nom ≠ | Clos et raison sociale différente | URGENT | Bloquer + rechercher successeur |
+| ⚠️ Format invalide | SIRET ≠ 14 chiffres dans Sage | CRITIQUE | Corriger `CT_Siret` |
+| 📝 Nom différent | Raison sociale modifiée | NORMAL | Mettre à jour `CT_Intitule` |
+| 🔍 Trouvé par nom | Identifié par recherche nom (pas SIRET) | À VÉRIFIER | Confirmer et saisir le SIRET |
+| ❓ Introuvable | SIRET absent de SIRENE | À VÉRIFIER | Vérification manuelle |
+| — Sans SIRET | Champ `CT_Siret` vide | À VÉRIFIER | SIRET à saisir |
+
+---
+
+## 📖 Guide d'emploi
+
+Un guide interactif `GUIDE_EMPLOI_RECHERCHE_SIRET.html` est fourni avec l'application.
+
+- Accessible depuis l'application via le bouton **📚 Guide complet** dans l'en-tête
+- Bouton **← Retour à l'application** pour naviguer facilement entre les deux
+- Couvre les 3 onglets, la liste établissements, les exports et les conseils pratiques
 
 ---
 
@@ -95,96 +119,6 @@ Même fiche détaillée et mêmes actions que la Recherche unitaire (copie champ
 
 ---
 
-## 🚀 Utilisation
-
-### Interface HTML
-
-Ouvrir le fichier directement dans Chrome, Firefox ou Edge. Connexion internet requise.
-
-#### 🔍 Recherche unitaire
-
-1. Saisir le nom (partiel suffit) + code postal optionnel
-2. Entrée ou clic **Rechercher**
-3. Copier un champ 📋 ou cliquer **Tout copier** pour coller dans Sage
-4. **📥 Export Excel** pour importer plusieurs résultats dans Sage
-5. **✖ Nouvelle recherche** pour remettre à zéro
-
-#### ✅ Vérifier un SIRET / SIREN
-
-1. Saisir 14 chiffres (SIRET) ou 9 chiffres (SIREN)
-2. Cliquer **Vérifier**
-3. Avec un SIREN : tous les établissements de l'entreprise s'affichent
-4. Mêmes boutons copie/export que la Recherche unitaire
-
-#### 📋 Traitement par lot
-
-1. Exporter la liste tiers depuis Sage (Fichier → Export)
-2. Glisser-déposer le fichier CSV ou Excel
-3. Associer les colonnes (détection automatique CT_*)
-4. Lancer — pause/reprise possible
-5. Exporter CSV complet ou **Export Sage FRP 1000**
-
-#### 📊 Audit base fournisseurs
-
-1. Exporter depuis Sage : CT_Num, CT_Intitule, CT_Siret (+ CT_CodePostal recommandé)
-2. Importer, mapper, lancer
-3. Filtrer par statut, consulter les KPI
-4. Exporter rapport / mises à jour / actions par priorité
-
----
-
-### Script Python
-
-#### Prérequis
-
-```bash
-pip install pandas requests openpyxl
-```
-
-#### Mode `complete` — Compléter les SIRET manquants
-
-```bash
-python completer_siret.py base_fournisseurs.xlsx
-python completer_siret.py base.xlsx --col-nom CT_Intitule --col-siret CT_Siret --col-cp CT_CodePostal
-python completer_siret.py base.xlsx --dry-run
-```
-
-#### Mode `verify` — Auditer les SIRET existants
-
-```bash
-python completer_siret.py export_sage.xlsx --mode verify
-python completer_siret.py export_sage.xlsx --mode verify --col-siret CT_Siret --col-id CT_Num
-python completer_siret.py export_sage.xlsx --mode verify --dry-run
-```
-
-#### Paramètres disponibles
-
-| Paramètre | Description | Défaut |
-|---|---|---|
-| `--mode` | `complete` ou `verify` | `complete` |
-| `--col-nom` | Colonne nom fournisseur | Auto-détection |
-| `--col-siret` | Colonne SIRET | Auto-détection |
-| `--col-cp` | Colonne code postal | Auto-détection |
-| `--col-id` | Colonne référence Sage (`CT_Num`) | Auto-détection |
-| `--delay` | Délai entre requêtes (secondes) | `0.4` |
-| `--dry-run` | Analyse sans modification | — |
-
----
-
-## 📊 Statuts de l'audit
-
-| Statut | Signification | Priorité | Action Sage FRP 1000 |
-|---|---|---|---|
-| ✅ OK | SIRET actif, nom concordant | — | Aucune action |
-| 🔴 Fermé | Établissement radié | URGENT | Bloquer le tiers (`CT_Sommeil = 1`) |
-| 🔴 Fermé + Nom ≠ | Clos et raison sociale différente | URGENT | Bloquer + rechercher successeur |
-| ⚠️ Format invalide | SIRET ≠ 14 chiffres dans Sage | CRITIQUE | Corriger `CT_Siret` |
-| 📝 Nom différent | Raison sociale modifiée | NORMAL | Mettre à jour `CT_Intitule` |
-| ❓ Introuvable | SIRET absent de SIRENE | À VÉRIFIER | Vérification manuelle |
-| — Sans SIRET | Champ `CT_Siret` vide | À VÉRIFIER | SIRET à saisir |
-
----
-
 ## ⚙️ Import dans Sage FRP 1000
 
 1. **Fichier → Import → Tiers**
@@ -202,28 +136,75 @@ python completer_siret.py export_sage.xlsx --mode verify --dry-run
 
 ---
 
-## 🔌 API utilisée
+## 🌐 APIs utilisées
 
-**[recherche-entreprises.api.gouv.fr](https://recherche-entreprises.api.gouv.fr)** — Gratuite, sans clé API, données INSEE en temps réel.  
-Rate limit ~150 req/min — délai 380 ms géré automatiquement. Pause 2 s sur HTTP 429.
+| API | Usage | Auth |
+|-----|-------|------|
+| `recherche-entreprises.api.gouv.fr` | Recherche par nom, traitement par lot, audit | Aucune (publique) — ~150 req/min |
+| `api.insee.fr/api-sirene/3.11` | Liste complète des établissements d'un SIREN | Clé API intégrée |
+
+---
+
+## 🔑 Clé API INSEE
+
+- Clé intégrée dans le code (header `X-INSEE-Api-Key-Integration`)
+- Valable **indéfiniment** — 30 requêtes/minute maximum
+- En cas d'expiration : obtenir une nouvelle clé sur **[portail-api.insee.fr](https://portail-api.insee.fr/)** et mettre à jour la constante `INSEE_KEY` dans le fichier HTML (rechercher `ecad76f8`)
+
+---
+
+## 📦 Librairie xlsx.js
+
+L'outil charge `xlsx.full.min.js` selon la priorité suivante :
+1. **CDN Cloudflare** (si internet accessible) — chargement automatique
+2. **Fichier local** `xlsx.full.min.js` — fallback automatique si CDN bloqué (réseau proxy ABRAPA)
 
 ---
 
 ## 🔒 Sécurité
 
-- Aucune donnée transmise hormis l'API SIRENE officielle
+- Aucune donnée transmise hormis les APIs SIRENE officielles
 - Fonctionne entièrement côté navigateur, sans serveur
 - Session stockée uniquement dans le `sessionStorage` local
-- Fichier HTML renommable librement
+
+---
+
+## 🔄 Mise à jour
+
+Pour remplacer la version installée :
+
+1. Télécharger les nouveaux fichiers depuis ce dépôt
+2. Remplacer `RECHERCHE_SIRET_FOURNISSEURS.html` et `GUIDE_EMPLOI_RECHERCHE_SIRET.html`
+3. **Ne pas remplacer** `xlsx.full.min.js` sauf si une nouvelle version est explicitement fournie
+
+---
+
+## 📋 Compatibilité
+
+- Chrome / Edge / Firefox — versions récentes
+- Réseau ABRAPA (proxy corporate) — testé et fonctionnel
+- Aucune dépendance serveur — fichiers HTML autonomes
+
+---
+
+## 📝 Historique des versions
+
+| Version | Date | Nouveautés |
+|---------|------|------------|
+| v5.0 | 06/03/2026 | Fusion onglets Recherche + Vérification · Liste établissements API INSEE · Audit dual mode SIRET + nom · CDN + fallback local xlsx · Guide d'emploi interactif connecté |
+| v4.2 | 03/2026 | Historique 20 recherches · Copie par champ · Recherche SIREN · Grille CT_* · Export Excel · Réinitialisation |
+| v4.0 | 03/2026 | Audit base fournisseurs · Export 3 formats · Traitement par lot amélioré |
+| v3.0 | 02/2026 | Recherche unitaire · Traitement par lot · Vérification SIRET/SIREN |
 
 ---
 
 ## 🏗️ Structure du projet
 
 ```
-siret-fournisseurs-abrapa/
-├── RECHERCHE SIRET FOURNISSEURS.html   # Interface web (renommable)
-├── completer_siret.py                  # Script Python CLI
+Recherche-SIRET/
+├── RECHERCHE_SIRET_FOURNISSEURS.html    # Application principale
+├── GUIDE_EMPLOI_RECHERCHE_SIRET.html   # Guide d'emploi interactif
+├── xlsx.full.min.js                     # Librairie Excel (fallback local)
 └── README.md
 ```
 
@@ -235,4 +216,4 @@ MIT — Libre d'utilisation, de modification et de distribution.
 
 ---
 
-*Développé pour le département Comptabilité & Finance — ABRAPA — v4.2*
+*Développé pour le département Comptabilité & Finance — ABRAPA — v5.0*
