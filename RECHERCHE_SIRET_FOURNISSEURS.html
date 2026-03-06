@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recherche SIRET — ABRAPA v4</title>
+<script>
+(function(){
+  var cdn='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  var local='xlsx.full.min.js';
+  var s=document.createElement('script');
+  s.src=cdn;
+  s.onerror=function(){
+    var s2=document.createElement('script');
+    s2.src=local;
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f172a;--card:#1e293b;--border:#334155;
+  --accent:#f97316;--accent2:#fb923c;
+  --text:#cbd5e1;--title:#fff;--muted:#64748b;
+  --success:#22c55e;--danger:#ef4444;--info:#38bdf8;
+  --warn:#facc15;--pause:#a855f7
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;min-height:100vh}
+header{background:linear-gradient(135deg,#0f172a,#1a0a2e);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;gap:16px}
+header .logo{font-size:28px}
+header h1{font-size:20px;font-weight:700;color:var(--title)}
+header p{font-size:13px;color:var(--muted);margin-top:2px}
+.badge{background:transparent;border:1px solid var(--accent);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;margin-left:12px}
+.main{max-width:1020px;margin:0 auto;padding:28px 20px}
+.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--card);padding:6px;border-radius:12px;border:1px solid var(--border);width:fit-content}
+.tab{padding:9px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--muted);border:none;background:none}
+.tab.active{background:var(--accent);color:#fff}
+.tab:not(.active):hover{color:var(--text);background:rgba(255,255,255,.05)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:20px}
+.card h2{font-size:17px;font-weight:700;color:var(--title);margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--title);padding:10px 14px;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.form-row{display:grid;gap:12px;align-items:end}
+.fr4{grid-template-columns:1fr 160px 140px auto}
+.fr2{grid-template-columns:1fr auto}
+@media(max-width:700px){.fr4,.fr2{grid-template-columns:1fr}}
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn-p{background:var(--accent);color:#fff}
+.btn-p:hover:not(:disabled){background:#ea6600;transform:translateY(-1px)}
+.btn-sec{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
+.btn-sec:hover{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.07)}
+.result-fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin-top:12px}
+.hist-panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:14px}
+.hist-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.hist-list{display:flex;flex-wrap:wrap;gap:6px}
+.hist-item{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--accent);cursor:pointer;transition:all .2s}
+.hist-item:hover{background:rgba(249,115,22,.18);border-color:var(--accent)}
+.copy-all-btn{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600;transition:all .2s;margin-left:auto}
+.copy-all-btn:hover{background:rgba(249,115,22,.2)}
+.rf-group{display:flex;flex-direction:column;gap:4px}
+.rf-title{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.rf{display:flex;align-items:baseline;gap:6px;padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)}
+.rf label{font-size:11px;color:var(--muted);font-weight:600;min-width:120px;flex-shrink:0;font-family:monospace}
+.rf-val{display:flex;align-items:center;gap:5px;flex:1;font-size:13px;word-break:break-word}
+.copy-field{background:none;border:none;cursor:pointer;font-size:13px;padding:1px 3px;opacity:.45;transition:opacity .2s}
+.copy-field:hover{opacity:1}
+@media(max-width:640px){.result-fields-grid{grid-template-columns:1fr}}
+.btn-s{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.btn-s:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-g{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--success)}
+.btn-g:hover:not(:disabled){background:rgba(34,197,94,.25)}
+.btn-pause{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:var(--pause)}
+.btn-pause:hover:not(:disabled){background:rgba(168,85,247,.25)}
+.btn-resume{background:rgba(34,197,94,.15);border:2px solid var(--success);color:var(--success);animation:pulse-btn 1.4s ease-in-out infinite}
+@keyframes pulse-btn{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.35)}60%{box-shadow:0 0 0 7px rgba(34,197,94,0)}}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* PAUSED BANNER */
+.paused-banner{display:none;background:rgba(168,85,247,.09);border:1px solid rgba(168,85,247,.4);border-radius:12px;padding:16px 20px;margin-bottom:14px;align-items:center;gap:14px;flex-wrap:wrap}
+.paused-banner.show{display:flex}
+.pause-pulse{font-size:24px;animation:blink-p 1.1s step-end infinite;flex-shrink:0}
+@keyframes blink-p{0%,100%{opacity:1}50%{opacity:.25}}
+.paused-banner p{font-size:14px;color:#d8b4fe;line-height:1.6;flex:1}
+
+/* AUTOSAVE BAR */
+.autosave-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:10px;margin-bottom:14px;font-size:13px}
+.autosave-bar.hidden{display:none}
+.save-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;transition:all .3s}
+.save-dot.saving{background:var(--warn);animation:pdot .5s ease-in-out infinite}
+@keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+#save-label{color:var(--text)}
+#save-label strong{color:var(--success)}
+#save-time{margin-left:auto;font-size:11px;color:var(--muted)}
+
+/* RESTORE BANNER */
+.restore-banner{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.3);border-radius:14px;padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.restore-banner p{font-size:14px;color:var(--info);line-height:1.6}
+.rb-btns{display:flex;gap:10px;flex-shrink:0}
+.btn-restore{background:var(--info);color:#0f172a;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-restore:hover{background:#7dd3fc}
+.btn-discard{background:transparent;border:1px solid rgba(56,189,248,.3);color:var(--muted);padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-discard:hover{border-color:var(--danger);color:var(--danger)}
+
+/* PROGRESS */
+.progress-wrap{margin:10px 0;display:none}
+.progress-bar{height:8px;background:var(--border);border-radius:100px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width .35s ease}
+.progress-fill.paused{background:linear-gradient(90deg,var(--pause),#c084fc)}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:5px}
+
+/* RESULT CARDS */
+.result-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;transition:border-color .2s;animation:fi .25s ease}
+.result-card:hover{border-color:var(--accent)}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.result-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:12px}
+.result-name{font-size:15px;font-weight:700;color:var(--title)}
+.result-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.result-body{padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.rf label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:3px}
+.rf span{font-size:13px;color:var(--text)}
+.siret-val{font-size:15px!important;font-weight:700!important;color:var(--accent)!important;font-family:'Courier New',monospace;letter-spacing:1px}
+.sb{font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;flex-shrink:0}
+.s-act{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}
+.s-cls{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+.copy-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 9px;border-radius:5px;font-size:11px;cursor:pointer;margin-left:8px;transition:all .15s}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn.copied{border-color:var(--success);color:var(--success)}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:14px;line-height:1.5}
+.a-info{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:var(--info)}
+.a-warn{background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.3);color:var(--warn)}
+.a-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--danger)}
+.a-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--success)}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:14px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(249,115,22,.04)}
+.upload-zone .up-icon{font-size:36px;margin-bottom:10px}
+.upload-zone p{color:var(--muted);font-size:14px}
+#file-input{display:none}
+
+/* MAPPING */
+.mapping-box{background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.3);border-radius:14px;padding:22px 24px;margin-bottom:18px}
+.mapping-box h3{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:6px}
+.mapping-box p{font-size:13px;color:var(--muted);margin-bottom:18px}
+.mapping-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
+.preview-wrap{overflow-x:auto;max-height:150px;overflow-y:auto}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px}
+.preview-table th{background:var(--bg);color:var(--accent);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;white-space:nowrap}
+.preview-table td{padding:6px 10px;border-bottom:1px solid rgba(51,65,85,.4);color:var(--muted);white-space:nowrap}
+
+/* BATCH TABLE */
+.stats-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.batch-wrap{overflow-x:auto}
+.batch-table{width:100%;border-collapse:collapse;font-size:13px}
+.batch-table th{background:var(--card);color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.8px;padding:11px 12px;text-align:left;border-bottom:2px solid var(--accent);white-space:nowrap}
+.batch-table td{padding:10px 12px;border-bottom:1px solid rgba(51,65,85,.4)}
+.batch-table tr:hover td{background:rgba(249,115,22,.03)}
+.td-mono{font-family:'Courier New',monospace;font-weight:700}
+.td-ok{color:var(--success)}.td-err{color:var(--danger)}.td-wait{color:var(--muted)}
+.pill{font-size:11px;padding:3px 8px;border-radius:100px;font-weight:700;white-space:nowrap}
+.p-ok{background:rgba(34,197,94,.15);color:var(--success)}
+.p-info{background:rgba(56,189,248,.15);color:var(--info)}
+.p-err{background:rgba(239,68,68,.15);color:var(--danger)}
+.p-wait{background:rgba(100,116,139,.15);color:var(--muted)}
+.p-cur{background:rgba(250,204,21,.15);color:var(--warn);animation:blink-r .9s step-end infinite}
+@keyframes blink-r{0%,100%{opacity:1}50%{opacity:.4}}
+.cp-warn-badge{color:var(--warn);font-size:11px;cursor:help}
+.action-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0}
+/* SAGE STYLES */
+.btn-sage{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:#a5b4fc}
+.btn-sage:hover:not(:disabled){background:rgba(99,102,241,.25)}
+.btn-sage-dl{background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.5);color:#a5b4fc;padding:11px 22px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-sage-dl:hover{background:rgba(99,102,241,.35);transform:translateY(-1px)}
+.sage-box{background:rgba(99,102,241,.05);border:1px solid rgba(99,102,241,.3);border-radius:16px;padding:24px 28px;margin-bottom:20px;animation:fi .25s ease}
+.sage-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(99,102,241,.2)}
+.sage-warn{background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.25);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--warn);line-height:1.6;margin:16px 0}
+.sage-steps{display:flex;flex-direction:column;gap:10px}
+.sage-step{display:flex;gap:14px;align-items:flex-start;font-size:14px;color:var(--text);line-height:1.5}
+.sage-step-num{width:26px;height:26px;border-radius:50%;background:rgba(99,102,241,.25);border:1px solid rgba(99,102,241,.5);color:#a5b4fc;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sage-step strong{color:var(--title)}
+.sage-step code{background:rgba(99,102,241,.2);color:#a5b4fc;padding:1px 6px;border-radius:4px;font-size:12px;font-family:'Courier New',monospace}
+.sage-cols-preview{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:4px}
+.sage-cols-preview .col-title{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.sage-cols-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.sage-col-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.sage-col-item .col-name{font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:#a5b4fc}
+.sage-col-item .col-desc{font-size:12px;color:var(--muted);margin-top:3px}
+.sage-col-item .col-ex{font-size:11px;color:var(--muted);margin-top:2px;font-style:italic}
+.loader{display:flex;align-items:center;gap:10px;padding:18px;color:var(--muted);font-size:14px}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state .es-icon{font-size:38px;margin-bottom:10px}
+/* AUDIT TAB */
+.audit-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.audit-kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:border-color .2s}
+.audit-kpi:hover{border-color:var(--accent)}
+.audit-kpi .kpi-num{font-size:28px;font-weight:800;line-height:1}
+.audit-kpi .kpi-label{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.7px}
+.audit-kpi.kpi-ok .kpi-num{color:var(--success)}
+.audit-kpi.kpi-ferme .kpi-num{color:var(--danger)}
+.audit-kpi.kpi-diff .kpi-num{color:var(--warn)}
+.audit-kpi.kpi-intro .kpi-num{color:var(--muted)}
+.audit-kpi.kpi-invalid .kpi-num{color:#fb923c}
+.nom-diff-cell{display:flex;flex-direction:column;gap:2px}
+.nom-diff-cell .nom-original{font-size:12px;color:var(--muted);text-decoration:line-through}
+.nom-diff-cell .nom-sirene{font-size:12px;color:var(--warn);font-weight:600}
+.action-cell{font-size:12px;font-weight:700}
+.ac-none{color:var(--muted)}
+.ac-update{color:var(--warn)}
+.ac-block{color:var(--danger)}
+.ac-check{color:var(--info)}
+.ac-fix{color:#fb923c}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filter-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--accent);color:var(--text)}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.08)}
+.filter-label{font-size:12px;color:var(--muted);margin-right:2px}
+.btn-audit{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#d8b4fe}
+.btn-audit:hover:not(:disabled){background:rgba(168,85,247,.25)}
+.info-banner{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--info);margin-bottom:16px;line-height:1.6}
+.upload-formats{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.fmt-badge{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px}
+.steps{display:flex;gap:4px;margin-bottom:22px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;color:var(--muted)}
+.step.done{color:var(--success)}.step.active{color:var(--accent);background:rgba(249,115,22,.08)}
+.step-num{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.step-sep{color:var(--border);font-size:18px;padding:0 2px;line-height:40px}
+
+/* ── AIDE MODALE ─────────────────────────────────────────── */
+.help-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px;margin-left:auto}
+.help-btn:hover{border-color:var(--info);color:var(--info)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;backdrop-filter:blur(3px);overflow-y:auto;padding:30px 20px}
+.modal-overlay.open{display:flex;justify-content:center;align-items:flex-start}
+.modal{background:#0f172a;border:1px solid var(--border);border-radius:20px;max-width:860px;width:100%;padding:0;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.6)}
+.modal-header{background:linear-gradient(135deg,#1e293b,#0f1e3a);padding:22px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.modal-header h2{font-size:18px;font-weight:800;color:var(--title);display:flex;align-items:center;gap:10px}
+.modal-close{background:transparent;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.modal-close:hover{border-color:var(--danger);color:var(--danger)}
+.modal-body{padding:28px;overflow-y:auto;max-height:80vh}
+.help-toc{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.help-toc-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.help-toc-btn:hover,.help-toc-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.08)}
+.help-section{display:none}.help-section.active{display:block}
+.help-h3{font-size:15px;font-weight:700;color:var(--accent);margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.help-h4{font-size:13px;font-weight:700;color:var(--title);margin:16px 0 6px}
+.help-p{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:10px}
+.help-ul{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:6px}
+.help-ul li{font-size:13px;color:var(--text);line-height:1.6;padding-left:18px;position:relative}
+.help-ul li::before{content:"›";position:absolute;left:0;color:var(--accent);font-weight:700}
+.help-table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:12px}
+.help-table th{background:var(--card);color:var(--accent);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+.help-table td{padding:8px 12px;border-bottom:1px solid rgba(51,65,85,.4);color:var(--text);vertical-align:top}
+.help-table tr:last-child td{border-bottom:none}
+.help-table td:first-child{font-family:'Courier New',monospace;color:#a5b4fc;font-size:11px}
+.help-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:4px}
+.ht-ok{background:rgba(34,197,94,.15);color:var(--success)}
+.ht-warn{background:rgba(250,204,21,.15);color:var(--warn)}
+.ht-err{background:rgba(239,68,68,.15);color:var(--danger)}
+.ht-info{background:rgba(56,189,248,.15);color:var(--info)}
+.help-alert{border-radius:10px;padding:12px 16px;font-size:13px;line-height:1.6;margin:10px 0}
+.ha-warn{background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.25);color:var(--warn)}
+.ha-ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:var(--success)}
+.ha-info{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);color:var(--info)}
+.step-guide{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.sg-item{display:flex;gap:14px;align-items:flex-start}
+.sg-num{width:28px;height:28px;border-radius:50%;background:rgba(249,115,22,.2);border:1px solid var(--accent);color:var(--accent);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sg-text{font-size:13px;color:var(--text);line-height:1.6}
+.sg-text strong{color:var(--title)}
+
+        /* ── Modale établissements ── */
+        .etab-filter-btn{background:transparent;border:1px solid #334155;color:#94a3b8;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-family:inherit;transition:.2s}
+        .etab-filter-btn:hover{border-color:#818cf8;color:#818cf8}
+        .etab-f-active{background:rgba(99,102,241,.15)!important;border-color:#818cf8!important;color:#818cf8!important}
+        #etab-tbody tr{border-bottom:1px solid #1e2d45;transition:background .15s}
+        #etab-tbody tr:hover{background:rgba(99,102,241,.07)}
+        #etab-tbody td{padding:9px 14px;color:#cbd5e1;vertical-align:top}
+        .etab-siret{font-family:monospace;font-size:12px;color:#818cf8;cursor:pointer;user-select:all}
+        .etab-siret:hover{text-decoration:underline}
+        .etab-siege{background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:5px;white-space:nowrap}
+        .etab-actif{color:#4ade80}
+        .etab-ferme{color:#f87171}
+    </style>
+</head>
+<body>
+
+<header style="display:flex;align-items:center;gap:16px">
+  <div class="logo">&#127970;</div>
+  <div style="flex:1">
+    <h1>Recherche SIRET Fournisseurs <span class="badge">ABRAPA</span></h1>
+    <p>API SIRENE officielle &mdash; INSEE / data.gouv.fr &mdash; v4.0 &mdash; Audit base fournisseurs</p>
+  </div>
+  <button class="help-btn" onclick="openHelp()">&#10067; Guide d&apos;utilisation</button>
+  <a href="GUIDE_EMPLOI_RECHERCHE_SIRET.html" target="_blank" title="Ouvrir le guide complet" style="
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);
+    color:#818cf8;text-decoration:none;font-size:13px;font-weight:600;
+    padding:7px 14px;border-radius:8px;transition:all .2s;font-family:inherit
+    " onmouseover="this.style.background='rgba(99,102,241,.3)'" onmouseout="this.style.background='rgba(99,102,241,.15)'">
+    &#128218; Guide complet
+  </a>
+</header>
+
+<!-- ══════════════════ MODAL AIDE ══════════════════ -->
+<div class="modal-overlay" id="help-modal" onclick="if(event.target===this)closeHelp()">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>&#128218; Guide d&apos;utilisation &mdash; SIRET Fournisseurs ABRAPA</h2>
+      <button class="modal-close" onclick="closeHelp()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- TOC -->
+      <div class="help-toc">
+        <button class="help-toc-btn active" onclick="showHelp('intro',this)">&#127968; Introduction</button>
+        <button class="help-toc-btn" onclick="showHelp('single',this)">&#128269; Recherche unitaire</button>
+        <button class="help-toc-btn" onclick="showHelp('batch',this)">&#128203; Traitement par lot</button>
+        <button class="help-toc-btn" onclick="showHelp('direct',this)">&#9989; V&eacute;rifier un SIRET</button>
+        <button class="help-toc-btn" onclick="showHelp('audit',this)">&#128202; Audit base</button>
+        <button class="help-toc-btn" onclick="showHelp('sage',this)">&#127381; Import Sage FRP</button>
+        <button class="help-toc-btn" onclick="showHelp('faq',this)">&#10067; FAQ</button>
+      </div>
+
+      <!-- INTRO -->
+      <div class="help-section active" id="help-intro">
+        <div class="help-h3">&#127968; Pr&eacute;sentation g&eacute;n&eacute;rale</div>
+        <p class="help-p">Cet outil interroge l&apos;<strong>API SIRENE officielle</strong> (recherche-entreprises.api.gouv.fr, INSEE / data.gouv.fr) pour enrichir et auditer la base fournisseurs ABRAPA dans Sage FRP&nbsp;1000. Il peut &ecirc;tre renomm&eacute; librement sans impact sur son fonctionnement.</p>
+        <div class="help-h4">4 modules disponibles</div>
+        <table class="help-table">
+          <thead><tr><th>Onglet</th><th>Usage</th><th>Export</th></tr></thead>
+          <tbody>
+            <tr><td>&#128269; Recherche unitaire</td><td>Trouver le SIRET d&apos;un fournisseur par son nom</td><td>&#128229; Excel Sage FRP&nbsp;1000</td></tr>
+            <tr><td>&#128203; Traitement par lot</td><td>Compl&eacute;ter les SIRET manquants d&apos;un fichier CSV / Excel</td><td>&#128229; CSV complet + CSV Sage</td></tr>
+            <tr><td>&#9989; V&eacute;rifier un SIRET</td><td>Valider un SIRET 14 chiffres existant</td><td>&mdash;</td></tr>
+            <tr><td>&#128202; Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse</td><td>&#128229; 3 formats</td></tr>
+          </tbody>
+        </table>
+        <div class="help-alert ha-info">&#128204; <strong>Donn&eacute;es en temps r&eacute;el</strong> &mdash; Chaque requ&ecirc;te interroge directement l&apos;API SIRENE. Une connexion internet est indispensable. Le fichier HTML fonctionne sans installation ni serveur.</div>
+        <div class="help-h4">Champs remont&eacute;s par l&apos;API</div>
+        <table class="help-table">
+          <thead><tr><th>Champ API</th><th>Colonne Sage FRP&nbsp;1000</th><th>Disponibilit&eacute;</th></tr></thead>
+          <tbody>
+            <tr><td>siret</td><td>CT_Siret</td><td><span class="help-tag ht-ok">Toujours</span></td></tr>
+            <tr><td>siren</td><td>CT_Siren</td><td><span class="help-tag ht-ok">Toujours</span></td></tr>
+            <tr><td>nom_complet</td><td>CT_Intitule</td><td><span class="help-tag ht-ok">Toujours</span></td></tr>
+            <tr><td>adresse</td><td>CT_Adresse</td><td><span class="help-tag ht-ok">Tr&egrave;s souvent</span></td></tr>
+            <tr><td>code_postal</td><td>CT_CodePostal</td><td><span class="help-tag ht-ok">Tr&egrave;s souvent</span></td></tr>
+            <tr><td>libelle_commune</td><td>CT_Ville</td><td><span class="help-tag ht-ok">Tr&egrave;s souvent</span></td></tr>
+            <tr><td>nature_juridique_label</td><td>CT_NatureJuridique</td><td><span class="help-tag ht-ok">Tr&egrave;s souvent</span></td></tr>
+            <tr><td>numero_tva_intra</td><td>CT_NumTVAIntracomm</td><td><span class="help-tag ht-warn">Souvent</span></td></tr>
+            <tr><td>telephone</td><td>CT_Telephone</td><td><span class="help-tag ht-warn">Minorit&eacute;</span></td></tr>
+            <tr><td>email</td><td>CT_Email</td><td><span class="help-tag ht-warn">Minorit&eacute;</span></td></tr>
+            <tr><td>site_internet</td><td>CT_Site</td><td><span class="help-tag ht-warn">Minorit&eacute;</span></td></tr>
+          </tbody>
+        </table>
+        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Champs vides dans l&apos;export</strong> &mdash; Si l&apos;API ne retourne pas un champ (t&eacute;l&eacute;phone, email, site), la cellule est vide. Sage FRP&nbsp;1000 peut &eacute;craser les valeurs existantes lors de l&apos;import. <strong>Les IBAN et RIB ne sont jamais concern&eacute;s</strong> (table F_REGLEMENTT distincte).</div>
+      </div>
+
+      <!-- SINGLE -->
+      <div class="help-section" id="help-single">
+        <div class="help-h3">&#128269; Recherche unitaire</div>
+        <p class="help-p">Recherche un fournisseur par son nom dans SIRENE et affiche jusqu&apos;&agrave; 8 r&eacute;sultats sous forme de fiches d&eacute;taill&eacute;es avec tous les champs Sage FRP&nbsp;1000.</p>
+        <div class="help-h4">D&eacute;roulement</div>
+        <div class="step-guide">
+          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Nom du fournisseur</strong> &mdash; Une partie du nom suffit. Ex&nbsp;: <em>PHARMAT</em>, <em>Boehringer</em>, <em>SUPER U 67</em></div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Code postal (optionnel)</strong> &mdash; Affine les r&eacute;sultats pour les enseignes nationales</div></div>
+          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Entr&eacute;e</strong> ou clic <em>Rechercher</em> &mdash; R&eacute;sultats class&eacute;s par pertinence SIRENE</div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>&#128203; Copier un champ</strong> &mdash; Bouton <code>&#128203;</code> sur chaque ligne CT_* pour coller directement dans Sage</div></div>
+          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>&#128203; Tout copier</strong> &mdash; Copie tous les champs CT_* en une seule fois, pr&ecirc;ts &agrave; coller dans Excel ou Sage</div></div>
+          <div class="sg-item"><div class="sg-num">6</div><div class="sg-text"><strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong> &mdash; Fichier <code>.xlsx</code> avec tous les r&eacute;sultats + onglet <em>Notice import</em></div></div>
+          <div class="sg-item"><div class="sg-num">7</div><div class="sg-text"><strong>&#10006; Nouvelle recherche</strong> &mdash; Remet les champs et les r&eacute;sultats &agrave; z&eacute;ro</div></div>
+        </div>
+        <div class="help-h4">Grille de champs affich&eacute;s par r&eacute;sultat</div>
+        <table class="help-table">
+          <thead><tr><th>Colonne Identification</th><th>Colonne Adresse &amp; contact</th></tr></thead>
+          <tbody>
+            <tr><td>CT_Intitule, CT_Siret, CT_Siren</td><td>CT_Adresse, CT_CodePostal, CT_Ville</td></tr>
+            <tr><td>CT_NatureJuridique, CT_NumTVAIntracomm</td><td>CT_Telephone, CT_Email, CT_Site (si disponibles)</td></tr>
+            <tr><td colspan="2">Code NAF + libell&eacute; activit&eacute;</td></tr>
+          </tbody>
+        </table>
+        <div class="help-h4">Historique des recherches</div>
+        <p class="help-p">Les 20 derniers termes recherch&eacute;s sont affich&eacute;s en badges sous le formulaire. Cliquer sur un badge relance la recherche instantan&eacute;ment. L&apos;historique est conserv&eacute; durant toute la session navigateur et effac&eacute; &agrave; sa fermeture.</p>
+        <div class="help-alert ha-info">&#128161; <strong>Astuce saisie Sage</strong> &mdash; Utilisez <em>Tout copier</em> pour coller un tableau champ/valeur directement dans Excel, puis saisissez la fiche tiers 1/3 depuis ce r&eacute;capitulatif sans jongler entre l&apos;outil et Sage.</div>
+      </div>
+
+      <!-- BATCH -->
+      <div class="help-section" id="help-batch">
+        <div class="help-h3">&#128203; Traitement par lot</div>
+        <p class="help-p">Lit un fichier CSV ou Excel, d&eacute;tecte les lignes sans SIRET (ou avec SIRET nul/z&eacute;ro) et interroge SIRENE pour chacune. Les SIRET d&eacute;j&agrave; renseign&eacute;s sont conserv&eacute;s sans appel API.</p>
+        <div class="help-h4">Formats accept&eacute;s</div>
+        <ul class="help-ul">
+          <li><strong>Excel</strong> (.xlsx, .xls) &mdash; Export direct depuis Sage FRP&nbsp;1000</li>
+          <li><strong>CSV / TXT</strong> &mdash; S&eacute;parateur <code>;</code> ou <code>,</code> auto-d&eacute;tect&eacute;, encodage ISO-8859-1 ou UTF-8</li>
+          <li>Colonnes minimales&nbsp;: <strong>Nom fournisseur</strong> + optionnel SIRET + optionnel Code postal</li>
+        </ul>
+        <div class="help-h4">D&eacute;roulement</div>
+        <div class="step-guide">
+          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text"><strong>Import</strong> &mdash; Glisser-d&eacute;poser ou cliquer la zone de d&eacute;p&ocirc;t</div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text"><strong>Mapping</strong> &mdash; Associer chaque colonne (d&eacute;tection automatique des colonnes Sage <code>CT_*</code>). Si le champ CP contient des r&eacute;f&eacute;rences Sage (F1000&hellip;)&nbsp;: laisser sur <em>(aucune)</em></div></div>
+          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Recherche</strong> &mdash; Cliquer <em>Lancer</em>. Pause/reprise possible &agrave; tout moment. Session sauvegard&eacute;e automatiquement toutes les 10 lignes</div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>Export</strong> &mdash; CSV complet ou <strong>Export Sage FRP&nbsp;1000</strong> (colonnes <code>CT_*</code> enrichies pr&ecirc;tes &agrave; importer)</div></div>
+        </div>
+        <div class="help-h4">Statuts possibles</div>
+        <table class="help-table">
+          <thead><tr><th>Statut</th><th>Signification</th></tr></thead>
+          <tbody>
+            <tr><td>&#9989; Trouv&eacute;</td><td>SIRET localis&eacute; via SIRENE &mdash; tous les champs CT_* enrichis</td></tr>
+            <tr><td>&#128309; Conserv&eacute;</td><td>SIRET d&eacute;j&agrave; pr&eacute;sent dans le fichier source &mdash; aucune requ&ecirc;te API</td></tr>
+            <tr><td>&#10060; Introuvable</td><td>Aucun r&eacute;sultat &mdash; v&eacute;rifier le nom ou saisir manuellement</td></tr>
+          </tbody>
+        </table>
+        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Session</strong> &mdash; En cas de fermeture accidentelle de l&apos;onglet, un bandeau de restauration appara&icirc;t au rechargement pour reprendre l&apos;o&ugrave; vous en &eacute;tiez. Fermer compl&egrave;tement le navigateur efface la session.</div>
+      </div>
+
+      <!-- DIRECT -->
+      <div class="help-section" id="help-direct">
+        <div class="help-h3">&#9989; V&eacute;rifier un SIRET ou un SIREN</div>
+        <p class="help-p">Valide un num&eacute;ro SIRET (14 chiffres) ou interroge tous les &eacute;tablissements d&apos;une entreprise via son SIREN (9 chiffres). Affiche la m&ecirc;me fiche d&eacute;taill&eacute;e que la recherche unitaire avec copie champ par champ et export Excel.</p>
+        <div class="help-h4">Deux modes selon la saisie</div>
+        <table class="help-table">
+          <thead><tr><th>Saisie</th><th>Comportement</th><th>Cas d&apos;usage</th></tr></thead>
+          <tbody>
+            <tr><td><strong>14 chiffres</strong> (SIRET)</td><td>V&eacute;rifie l&apos;&eacute;tablissement exact</td><td>Contr&ocirc;le avant saisie dans Sage</td></tr>
+            <tr><td><strong>9 chiffres</strong> (SIREN)</td><td>Liste tous les &eacute;tablissements de l&apos;entreprise</td><td>Trouver le bon &eacute;tablissement parmi plusieurs sites</td></tr>
+          </tbody>
+        </table>
+        <div class="help-h4">Fonctionnalit&eacute;s disponibles sur chaque r&eacute;sultat</div>
+        <ul class="help-ul">
+          <li>Fiche 2 colonnes : <strong>Identification</strong> (CT_Intitule, CT_Siret, CT_Siren, CT_NatureJuridique, CT_NumTVAIntracomm) + <strong>Adresse &amp; contact</strong></li>
+          <li>Bouton <code>&#128203;</code> sur chaque champ CT_* pour copier individuellement</li>
+          <li>Bouton <strong>Tout copier</strong> pour copier tous les champs en un tableau</li>
+          <li>Bouton <strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong></li>
+          <li>Bouton <strong>&#10006; Nouvelle v&eacute;rification</strong> pour r&eacute;initialiser</li>
+        </ul>
+        <div class="help-alert ha-info">&#128204; Saisir le SIREN ou SIRET avec ou sans espaces &mdash; les chiffres seuls sont extraits automatiquement.</div>
+      </div>
+
+      <!-- AUDIT -->
+      <div class="help-section" id="help-audit">
+        <div class="help-h3">&#128202; Audit base fournisseurs</div>
+        <p class="help-p">Compare <strong>en masse</strong> les SIRET d&eacute;j&agrave; enregistr&eacute;s dans Sage avec la base SIRENE officielle. D&eacute;tecte les &eacute;tablissements ferm&eacute;s, les raisons sociales chang&eacute;es et les SIRET invalides.</p>
+        <div class="help-h4">Formats accept&eacute;s</div>
+        <ul class="help-ul">
+          <li><strong>Excel</strong> (.xlsx, .xls) &mdash; Export direct depuis Sage FRP&nbsp;1000 ou toute extraction Excel</li>
+          <li><strong>CSV / TXT</strong> &mdash; S&eacute;parateur <code>;</code> ou <code>,</code>, encodage ISO-8859-1 ou UTF-8</li>
+        </ul>
+        <div class="help-h4">Export recommand&eacute; depuis Sage FRP&nbsp;1000</div>
+        <p class="help-p">Menu <em>Fichier &rarr; Liste &rarr; Tiers</em>, exporter avec au minimum&nbsp;: <code>CT_Num</code>, <code>CT_Intitule</code>, <code>CT_Siret</code>. Le code postal (<code>CT_CodePostal</code>) am&eacute;liore la comparaison des noms.</p>
+        <div class="help-h4">Statuts de l&apos;audit</div>
+        <table class="help-table">
+          <thead><tr><th>Statut</th><th>Signification</th><th>Priorit&eacute;</th><th>Action Sage</th></tr></thead>
+          <tbody>
+            <tr><td>&#9989; OK</td><td>SIRET actif, raison sociale concordante</td><td>&mdash;</td><td>Aucune</td></tr>
+            <tr><td>&#128308; Ferm&eacute;</td><td>Radié dans SIRENE</td><td><strong style="color:var(--danger)">URGENT</strong></td><td>Bloquer le tiers</td></tr>
+            <tr><td>&#128308; Ferm&eacute; + Nom&nbsp;&ne;</td><td>Clos et raison sociale diff&eacute;rente</td><td><strong style="color:var(--danger)">URGENT</strong></td><td>Bloquer + chercher successeur</td></tr>
+            <tr><td>&#9888;&#65039; Format invalide</td><td>SIRET &ne; 14 chiffres dans Sage</td><td><strong style="color:#fb923c">CRITIQUE</strong></td><td>Corriger CT_Siret</td></tr>
+            <tr><td>&#128203; Nom diff&eacute;rent</td><td>Raison sociale modifi&eacute;e</td><td><strong style="color:var(--warn)">NORMAL</strong></td><td>Mettre &agrave; jour CT_Intitule</td></tr>
+            <tr><td>&#10067; Introuvable</td><td>SIRET absent de SIRENE</td><td><strong style="color:var(--muted)">&Agrave; V&Eacute;RIFIER</strong></td><td>V&eacute;rification manuelle</td></tr>
+            <tr><td>&mdash; Sans SIRET</td><td>Champ CT_Siret vide dans Sage</td><td><strong style="color:var(--muted)">&Agrave; V&Eacute;RIFIER</strong></td><td>SIRET &agrave; saisir</td></tr>
+          </tbody>
+        </table>
+        <div class="help-h4">3 exports disponibles apr&egrave;s audit</div>
+        <ul class="help-ul">
+          <li><strong>Rapport complet</strong> &mdash; Tous les fournisseurs avec leur statut et les donn&eacute;es SIRENE compl&egrave;tes</li>
+          <li><strong>Mises &agrave; jour Sage</strong> &mdash; Uniquement les lignes avec action requise, colonnes <code>CT_*</code> pr&ecirc;tes &agrave; importer</li>
+          <li><strong>Actions par priorit&eacute;</strong> &mdash; Tri&eacute; de 1-URGENT &agrave; 4-&Agrave;_V&Eacute;RIFIER</li>
+        </ul>
+        <div class="help-alert ha-ok">&#128274; <strong>IBAN et RIB en s&eacute;curit&eacute;</strong> &mdash; Les coordonn&eacute;es bancaires sont stock&eacute;es dans la table <code>F_REGLEMENTT</code> de Sage, distincte de la fiche tiers <code>F_COMPTET</code>. Elles ne sont jamais modifi&eacute;es par cet import.</div>
+      </div>
+
+      <!-- SAGE -->
+      <div class="help-section" id="help-sage">
+        <div class="help-h3">&#127381; Import dans Sage FRP&nbsp;1000</div>
+        <div class="help-h4">Proc&eacute;dure d&apos;import</div>
+        <div class="step-guide">
+          <div class="sg-item"><div class="sg-num">1</div><div class="sg-text">Dans Sage FRP&nbsp;1000 : <strong>Fichier &rarr; Import &rarr; Tiers</strong></div></div>
+          <div class="sg-item"><div class="sg-num">2</div><div class="sg-text">S&eacute;lectionner le fichier CSV (encodage <strong>ISO-8859-1</strong>, s&eacute;parateur <strong>;</strong>) ou Excel export&eacute; par l&apos;outil</div></div>
+          <div class="sg-item"><div class="sg-num">3</div><div class="sg-text">V&eacute;rifier la correspondance des colonnes &mdash; les ent&ecirc;tes <code>CT_*</code> sont reconnus automatiquement</div></div>
+          <div class="sg-item"><div class="sg-num">4</div><div class="sg-text">Sage identifie chaque tiers par <strong>CT_Num</strong> : code existant &rarr; mise &agrave; jour&nbsp;; code absent &rarr; cr&eacute;ation</div></div>
+          <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>Tester sur 5&ndash;10 tiers</strong> avant l&apos;import complet</div></div>
+        </div>
+        <div class="help-h4">Comportement de Sage selon la situation</div>
+        <table class="help-table">
+          <thead><tr><th>Situation</th><th>Comportement Sage</th></tr></thead>
+          <tbody>
+            <tr><td>CT_Num existe + champ renseign&eacute;</td><td>&#9989; Mise &agrave; jour du champ</td></tr>
+            <tr><td>CT_Num existe + champ <strong>vide</strong></td><td>&#9888;&#65039; Champ &eacute;cras&eacute; &agrave; blanc</td></tr>
+            <tr><td>CT_Num n&apos;existe pas</td><td>&#9989; Cr&eacute;ation d&apos;un nouveau tiers</td></tr>
+          </tbody>
+        </table>
+        <div class="help-h4">Tables Sage non affect&eacute;es par l&apos;import</div>
+        <table class="help-table">
+          <thead><tr><th>Donn&eacute;e</th><th>Table Sage</th><th>Impact</th></tr></thead>
+          <tbody>
+            <tr><td>IBAN / RIB / BIC</td><td>F_REGLEMENTT</td><td><span class="help-tag ht-ok">Aucun</span></td></tr>
+            <tr><td>Contacts associ&eacute;s</td><td>F_CONTACTT</td><td><span class="help-tag ht-ok">Aucun</span></td></tr>
+            <tr><td>Conditions de r&egrave;glement</td><td>F_REGLEMENTT</td><td><span class="help-tag ht-ok">Aucun</span></td></tr>
+            <tr><td>Historique &eacute;critures</td><td>F_ECRITUREC</td><td><span class="help-tag ht-ok">Aucun</span></td></tr>
+          </tbody>
+        </table>
+        <div class="help-alert ha-warn">&#9888;&#65039; <strong>Pr&eacute;caution premier import</strong> &mdash; T&eacute;l&eacute;phone, email et site web ne sont renseign&eacute;s que pour une minorit&eacute; d&apos;entreprises dans SIRENE. Si ces valeurs sont d&eacute;j&agrave; saisies manuellement dans Sage, pr&eacute;f&eacute;rez n&apos;importer que les colonnes <code>CT_Siret</code>, <code>CT_Intitule</code>, <code>CT_Adresse</code>, <code>CT_CodePostal</code>, <code>CT_Ville</code> lors du premier passage.</div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="help-section" id="help-faq">
+        <div class="help-h3">&#10067; Questions fr&eacute;quentes</div>
+
+        <div class="help-h4">Peut-on renommer le fichier HTML ?</div>
+        <p class="help-p">Oui, sans aucune restriction. Le fichier ne contient aucune r&eacute;f&eacute;rence &agrave; son propre nom. Vous pouvez le renommer, le d&eacute;placer ou le copier librement.</p>
+
+        <div class="help-h4">Pourquoi certains fournisseurs sont introuvables ?</div>
+        <p class="help-p">Plusieurs raisons possibles&nbsp;: nom trop abr&eacute;g&eacute; ou diff&eacute;rent de la raison sociale officielle, entreprise &eacute;trang&egrave;re (hors registre fran&ccedil;ais), micro-entreprise non inscrite au RCS, ou SIRET effectivement radi&eacute;. Essayez la recherche unitaire avec diff&eacute;rentes formulations du nom.</p>
+
+        <div class="help-h4">Le nom trouv&eacute; est diff&eacute;rent du nom dans Sage &mdash; est-ce normal ?</div>
+        <p class="help-p">Oui. SIRENE utilise la raison sociale <strong>officielle</strong> (ex&nbsp;: <em>PHARMAT SAS</em>) alors que Sage peut contenir un nom commercial abr&eacute;g&eacute; (ex&nbsp;: <em>PHARMAT</em>). L&apos;outil signale les &eacute;carts significatifs avec le statut <em>Nom diff&eacute;rent</em> en ignorant les formes juridiques (SAS, SARL&hellip;).</p>
+
+        <div class="help-h4">La recherche est-elle limit&eacute;e en volume ?</div>
+        <p class="help-p">L&apos;API SIRENE est gratuite et sans cl&eacute; API. Elle applique un rate limit&nbsp;: l&apos;outil attend automatiquement 380&nbsp;ms entre chaque requ&ecirc;te (~&nbsp;150 fournisseurs/minute). En cas de d&eacute;passement (HTTP 429), une pause de 2&nbsp;s est ins&eacute;r&eacute;e automatiquement.</p>
+
+        <div class="help-h4">La session est-elle sauvegard&eacute;e si je ferme l&apos;onglet ?</div>
+        <p class="help-p">Oui pour les onglets <em>Traitement par lot</em> et <em>Audit</em>&nbsp;: la progression est sauvegard&eacute;e dans le sessionStorage du navigateur. Un bandeau de restauration appara&icirc;t au rechargement. Fermer compl&egrave;tement le navigateur efface la session.</p>
+
+        <div class="help-h4">Peut-on utiliser cet outil hors connexion ?</div>
+        <p class="help-p">Non. Les 4 modules interrogent l&apos;API SIRENE en temps r&eacute;el. Une connexion internet est indispensable. En revanche, le fichier HTML s&apos;ouvre directement dans le navigateur sans installation ni serveur.</p>
+
+        <div class="help-h4">&Agrave; quoi sert le bouton &laquo;&nbsp;Tout copier&nbsp;&raquo; ?</div>
+        <p class="help-p">Il copie tous les champs CT_* du r&eacute;sultat s&eacute;lectionn&eacute; sous forme d&apos;un tableau champ/valeur (s&eacute;parateur tabulation). Vous pouvez le coller directement dans Excel ou dans un email pour saisir la fiche 1/3 dans Sage sans revenir &agrave; l&apos;outil. Les champs vides sont inclus avec une valeur vide.</p>
+
+        <div class="help-h4">&Agrave; quoi sert la recherche par SIREN&nbsp;?</div>
+        <p class="help-p">Le SIREN (9 chiffres) identifie une entreprise, le SIRET (14 chiffres) identifie un &eacute;tablissement pr&eacute;cis. En saisissant un SIREN dans l&apos;onglet <em>V&eacute;rifier</em>, l&apos;outil liste tous les &eacute;tablissements de l&apos;entreprise (si&egrave;ge + annexes), utile pour les fournisseurs ayant plusieurs sites.</p>
+
+        <div class="help-h4">L&apos;historique des recherches est-il permanent ?</div>
+        <p class="help-p">Non. L&apos;historique est stock&eacute; dans le <em>sessionStorage</em> du navigateur&nbsp;: il persiste tant que l&apos;onglet reste ouvert mais est effac&eacute; lorsque vous fermez le navigateur. Il n&apos;est pas partag&eacute; entre deux onglets diff&eacute;rents.</p>
+
+        <div class="help-h4">Diff&eacute;rence entre le fichier HTML et le script Python ?</div>
+        <table class="help-table">
+          <thead><tr><th></th><th>HTML (navigateur)</th><th>Python (ligne de commande)</th></tr></thead>
+          <tbody>
+            <tr><td>Usage</td><td>Interface graphique, accessible &agrave; tous</td><td>Automatisation, workflow batch</td></tr>
+            <tr><td>Format entr&eacute;e</td><td>CSV, Excel (.xlsx / .xls)</td><td>Excel uniquement (.xlsx)</td></tr>
+            <tr><td>Format sortie</td><td>CSV + Excel (.xlsx)</td><td>Excel color&eacute; + CSV</td></tr>
+            <tr><td>Copie champ par champ</td><td>&#9989; Bouton &#128203; sur chaque CT_*</td><td>&mdash;</td></tr>
+            <tr><td>Recherche SIREN</td><td>&#9989; Onglet V&eacute;rifier</td><td>&mdash;</td></tr>
+            <tr><td>Historique recherches</td><td>&#9989; Session navigateur</td><td>&mdash;</td></tr>
+            <tr><td>Mode audit</td><td>Onglet d&eacute;di&eacute;</td><td><code>--mode verify</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /modal-body -->
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+<div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('single',this)">&#128269; Recherche &amp; V&eacute;rification</button>
+    <button class="tab" onclick="showTab('batch',this)">&#128203; Traitement par lot</button>
+    <button class="tab" onclick="showTab('audit',this)">&#128202; Audit base fournisseurs</button>
+  </div>
+
+  <!-- TAB 1 — Recherche & Vérification fusionnées -->
+  <div id="tab-single" class="panel active">
+    <div class="card">
+      <h2 id="search-title">&#128270; Rechercher un fournisseur ou v&eacute;rifier un SIRET</h2>
+
+      <!-- Champ principal unique -->
+      <div class="form-row fr4" style="align-items:flex-end">
+        <div class="field" style="flex:2;min-width:220px">
+          <label id="search-main-label">Nom, SIRET (14 chiffres) ou SIREN (9 chiffres)</label>
+          <div style="position:relative">
+            <input type="text" id="q-main"
+              placeholder="Ex: PHARMAT, 35240913400060 ou 352409134"
+              oninput="onMainInput()"
+              onkeydown="if(event.key==='Enter')smartSearch()">
+            <span id="search-mode-badge" style="
+              position:absolute;right:10px;top:50%;transform:translateY(-50%);
+              font-size:11px;padding:2px 8px;border-radius:10px;pointer-events:none;
+              background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3);
+              display:none"></span>
+          </div>
+        </div>
+        <!-- Champs optionnels — visibles seulement en mode nom -->
+        <div class="field" id="field-cp" style="min-width:90px">
+          <label>Code postal <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+          <input type="text" id="q-cp" placeholder="67000" maxlength="5" onkeydown="if(event.key==='Enter')smartSearch()">
+        </div>
+        <div class="field" id="field-status">
+          <label>Statut</label>
+          <select id="q-status"><option value="">Tous</option><option value="A">Actif</option><option value="F">Ferm&eacute;</option></select>
+        </div>
+        <button class="btn btn-p" id="search-btn" onclick="smartSearch()">&#128269; Rechercher</button>
+        <button class="btn btn-sec" id="reset-btn" onclick="resetAll()" style="display:none">&#10006; Nouvelle recherche</button>
+      </div>
+      <div id="search-hint" style="font-size:12px;color:var(--muted);margin-top:6px">
+        &#128161; Saisir un <strong>nom</strong> pour rechercher &bull; un <strong>SIRET (14 chiffres)</strong> pour v&eacute;rifier &bull; un <strong>SIREN (9 chiffres)</strong> pour lister tous les &eacute;tablissements
+      </div>
+    </div>
+    <div id="hist-area" style="display:none" class="hist-panel">
+      <div class="hist-title">&#128336; Historique des recherches <button class="btn-sec" onclick="clearHistory()" style="font-size:11px;padding:2px 8px;border-radius:5px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer">Effacer</button></div>
+      <div class="hist-list" id="hist-list"></div>
+    </div>
+    <div id="result-area"><div class="empty-state"><div class="es-icon">&#127981;</div><p>Entrez un nom, un SIRET ou un SIREN</p></div></div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div id="tab-batch" class="panel">
+    <div class="steps">
+      <div class="step active" id="step1"><div class="step-num">1</div> Import CSV</div>
+      <div class="step-sep">&#8250;</div>
+      <div class="step" id="step2"><div class="step-num">2</div> Mapping</div>
+      <div class="step-sep">&#8250;</div>
+      <div class="step" id="step3"><div class="step-num">3</div> Recherche</div>
+      <div class="step-sep">&#8250;</div>
+      <div class="step" id="step4"><div class="step-num">4</div> Export</div>
+    </div>
+
+    <!-- RESTORE BANNER -->
+    <div id="restore-banner" class="restore-banner" style="display:none">
+      <p id="restore-msg">Session sauvegard&eacute;e d&eacute;tect&eacute;e.</p>
+      <div class="rb-btns">
+        <button class="btn-restore" onclick="restoreSession()">&#9654;&#65039; Reprendre la session</button>
+        <button class="btn-discard" onclick="discardSession()">&#128465; Ignorer</button>
+      </div>
+    </div>
+
+    <!-- ETAPE 1 -->
+    <div id="step-upload" class="card">
+      <h2>&#128228; &Eacute;tape 1 &mdash; Importer votre fichier CSV</h2>
+      <div class="alert a-info" style="margin-bottom:16px">
+        &#128204; S&eacute;parateur <strong>;</strong> ou <strong>,</strong> &mdash; encodage <strong>ISO-8859-1</strong> (Excel FR) ou UTF-8.<br>
+        &#128073; Les colonnes seront s&eacute;lectionn&eacute;es manuellement &agrave; l'&eacute;tape suivante.
+      </div>
+      <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+        <div class="up-icon">&#128193;</div>
+        <p><strong>Cliquez ici</strong> ou glissez votre fichier CSV</p>
+        <p style="margin-top:5px;font-size:12px">Formats : .csv / .txt</p>
+      </div>
+      <input type="file" id="file-input" accept=".csv,.txt" onchange="handleFile(this.files[0])">
+    </div>
+
+    <!-- ETAPE 2 -->
+    <div id="step-mapping" style="display:none">
+      <div class="mapping-box">
+        <h3>&#128194; &Eacute;tape 2 &mdash; S&eacute;lectionnez les colonnes</h3>
+        <p>Associez chaque champ. Si la colonne CP contient des r&eacute;f&eacute;rences (F1000...), laissez sur (aucune).</p>
+        <div class="mapping-grid">
+          <div class="field"><label>&#127991; NOM fournisseur <span style="color:var(--danger)">*</span></label><select id="map-nom"></select></div>
+          <div class="field"><label>&#128290; SIRET existants</label><select id="map-siret"></select></div>
+          <div class="field"><label>&#128205; CODE POSTAL</label><select id="map-cp"></select></div>
+          <div class="field"><label>&#128290; ID / R&eacute;f&eacute;rence</label><select id="map-id"></select></div>
+        </div>
+        <div class="alert a-warn" id="cp-warning" style="display:none;margin-bottom:14px"></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-p" onclick="confirmMapping()">&#9989; Confirmer</button>
+          <button class="btn btn-s" onclick="resetAll()">&#8592; Recommencer</button>
+        </div>
+      </div>
+      <div class="card" style="padding:16px 20px">
+        <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">&#128065; Aper&ccedil;u</div>
+        <div class="preview-wrap"><table class="preview-table" id="preview-table"></table></div>
+      </div>
+    </div>
+
+    <!-- ETAPE 3 -->
+    <div id="step-process" style="display:none">
+      <div class="card">
+        <h2>&#9889; &Eacute;tape 3 &mdash; Recherche SIRET</h2>
+        <div id="mapping-recap" class="alert a-ok" style="margin-bottom:14px"></div>
+
+        <!-- AUTOSAVE -->
+        <div class="autosave-bar hidden" id="autosave-bar">
+          <div class="save-dot" id="save-dot"></div>
+          <span id="save-label">Sauvegarde automatique active</span>
+          <span id="save-time"></span>
+        </div>
+
+        <!-- PAUSED BANNER -->
+        <div class="paused-banner" id="paused-banner">
+          <span class="pause-pulse">&#9208;&#65039;</span>
+          <p><strong style="color:#fff">Recherche en pause.</strong> Les r&eacute;sultats d&eacute;j&agrave; trouv&eacute;s sont sauvegard&eacute;s.<br>
+          Cliquez <strong>Reprendre</strong> pour continuer ou <strong>Exporter CSV</strong> pour t&eacute;l&eacute;charger les r&eacute;sultats partiels.</p>
+        </div>
+
+        <!-- ACTION BAR -->
+        <div class="action-bar">
+          <button class="btn btn-p" id="run-btn" onclick="runBatch()">&#9889; Lancer la recherche</button>
+          <button class="btn btn-pause" id="pause-btn" onclick="togglePause()" style="display:none">&#9208;&#65039; Pause</button>
+          <button class="btn btn-s" onclick="resetAll()">&#128465; R&eacute;initialiser</button>
+          <button class="btn btn-g" id="export-btn" onclick="exportCSV()">
+            &#8681; Exporter CSV <span id="export-count" style="background:rgba(34,197,94,.3);padding:1px 8px;border-radius:100px;font-size:11px;margin-left:2px"></span>
+          </button>
+          <button class="btn btn-sage" id="export-sage-btn" onclick="showSageExport()">
+            &#127381; Export Sage FRP 1000
+          </button>
+        </div>
+
+        <!-- SAGE EXPORT PANEL -->
+        <div id="sage-panel" style="display:none">
+          <div class="sage-box">
+            <div class="sage-header">
+              <span style="font-size:22px">&#127381;</span>
+              <div>
+                <div style="font-size:16px;font-weight:700;color:var(--title)">Export Sage FRP 1000</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:2px">Format import tiers fournisseurs &mdash; encodage ISO-8859-1</div>
+              </div>
+              <button class="btn btn-s" style="margin-left:auto;padding:6px 14px;font-size:13px" onclick="document.getElementById('sage-panel').style.display='none'">&#10005; Fermer</button>
+            </div>
+
+            <div class="sage-cols-preview" id="sage-cols-preview"></div>
+
+            <div class="sage-warn">
+              <strong>&#9888;&#65039; Important avant d'importer :</strong> Les noms de colonnes ci-dessous correspondent aux champs standards de Sage FRP 1000.
+              V&eacute;rifiez avec votre administrateur Sage ou votre int&eacute;grateur que ces noms correspondent
+              bien &agrave; votre configuration (certaines personnalisations peuvent varier).
+              <strong>Ne jamais importer directement en production sans test sur un dossier de test.</strong>
+            </div>
+
+            <div style="font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px">
+              &#128196; Proc&eacute;dure d'import dans Sage FRP 1000
+            </div>
+            <div class="sage-steps">
+              <div class="sage-step"><div class="sage-step-num">1</div><div><strong>T&eacute;l&eacute;chargez</strong> le fichier CSV Sage ci-dessous et ouvrez-le dans Excel pour v&eacute;rifier les donn&eacute;es</div></div>
+              <div class="sage-step"><div class="sage-step-num">2</div><div>Dans Sage FRP 1000, allez dans <strong>Param&egrave;tres &rarr; Tiers &rarr; Import / Export de tiers</strong> (ou via le menu Administration)</div></div>
+              <div class="sage-step"><div class="sage-step-num">3</div><div>S&eacute;lectionnez le mode <strong>"Mise &agrave; jour"</strong> (et non "Cr&eacute;ation") pour ne modifier que le champ SIRET sans &eacute;craser les autres donn&eacute;es</div></div>
+              <div class="sage-step"><div class="sage-step-num">4</div><div>Mappez les colonnes : <code>CT_Num</code> = cl&eacute; de correspondance, <code>CT_Siret</code> = champ &agrave; mettre &agrave; jour</div></div>
+              <div class="sage-step"><div class="sage-step-num">5</div><div>Lancez un <strong>test &agrave; blanc</strong> (simulation sans &eacute;criture) pour v&eacute;rifier les correspondances avant validation d&eacute;finitive</div></div>
+              <div class="sage-step"><div class="sage-step-num">6</div><div>Validez l'import et contr&ocirc;lez quelques fiches tiers dans Sage pour confirmer la mise &agrave; jour</div></div>
+            </div>
+
+            <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-sage-dl" onclick="exportSage()">
+                &#8681; T&eacute;l&eacute;charger le fichier Sage FRP 1000
+                <span id="sage-count" style="background:rgba(34,197,94,.3);padding:1px 8px;border-radius:100px;font-size:11px;margin-left:4px"></span>
+              </button>
+              <button class="btn btn-sage-dl" style="background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.4);color:var(--info)" onclick="exportSageIntrouvables()">
+                &#128203; Liste des introuvables (&agrave; traiter manuellement)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+          <div class="progress-meta">
+            <span id="progress-text">En attente...</span>
+            <span id="progress-eta"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="batch-result"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3 -->
+  <!-- TAB 3 — AUDIT BASE FOURNISSEURS -->
+  <div id="tab-audit" class="panel">
+
+    <!-- Steps -->
+    <div class="steps" id="audit-steps-bar">
+      <div class="step active" id="astep1"><div class="step-num">1</div> Import</div>
+      <div class="step-sep">&#8250;</div>
+      <div class="step" id="astep2"><div class="step-num">2</div> Mapping</div>
+      <div class="step-sep">&#8250;</div>
+      <div class="step" id="astep3"><div class="step-num">3</div> V&eacute;rification</div>
+      <div class="step-sep">&#8250;</div>
+      <div class="step" id="astep4"><div class="step-num">4</div> Rapport</div>
+    </div>
+
+    <!-- A1 : UPLOAD -->
+    <div id="astep-upload" class="card">
+      <h2>&#128228; &Eacute;tape 1 &mdash; Importer la base fournisseurs</h2>
+      <div class="info-banner">
+        &#128204; Ce module compare les <strong>SIRET d&eacute;j&agrave; enregistr&eacute;s dans Sage FRP&nbsp;1000</strong> avec la base officielle SIRENE afin de d&eacute;tecter&nbsp;: &eacute;tablissements ferm&eacute;s, raisons sociales modifi&eacute;es, SIRET invalides.<br>
+        &#128073; Exportez votre liste tiers depuis Sage (colonnes&nbsp;: CT_Num, CT_Intitule, CT_Siret) et importez-la ici.
+      </div>
+      <div class="upload-zone" id="audit-drop-zone"
+           onclick="document.getElementById('audit-file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleAuditDrop(event)">
+        <div class="up-icon">&#128196;</div>
+        <p><strong>Cliquez ici</strong> ou glissez votre fichier</p>
+        <div class="upload-formats">
+          <span class="fmt-badge">&#128202; Excel .xlsx</span>
+          <span class="fmt-badge">&#128202; Excel .xls</span>
+          <span class="fmt-badge">&#128196; CSV .csv</span>
+          <span class="fmt-badge">&#128196; TXT .txt</span>
+        </div>
+      </div>
+      <input type="file" id="audit-file-input" accept=".xlsx,.xls,.csv,.txt" onchange="handleAuditFile(this.files[0])">
+    </div>
+
+    <!-- A2 : MAPPING -->
+    <div id="astep-mapping" style="display:none">
+      <div class="mapping-box">
+        <h3>&#128194; &Eacute;tape 2 &mdash; Associez les colonnes</h3>
+        <p>La colonne <strong>SIRET</strong> est obligatoire. Les autres colonnes sont recommand&eacute;es pour les comparaisons.</p>
+        <div class="mapping-grid">
+          <div class="field"><label>&#127991; NOM fournisseur</label><select id="amap-nom"></select></div>
+          <div class="field"><label>&#128290; SIRET existant <span style="color:var(--danger)">*</span></label><select id="amap-siret"></select></div>
+          <div class="field"><label>&#128205; CODE POSTAL</label><select id="amap-cp"></select></div>
+          <div class="field"><label>&#128290; R&eacute;f&eacute;rence / ID Sage</label><select id="amap-id"></select></div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-p" onclick="confirmAuditMapping()">&#9989; Lancer l'analyse</button>
+          <button class="btn btn-s" onclick="resetAudit()">&#8592; Recommencer</button>
+        </div>
+      </div>
+      <div class="card" style="padding:16px 20px">
+        <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">&#128065; Aper&ccedil;u fichier</div>
+        <div class="preview-wrap"><table class="preview-table" id="audit-preview-table"></table></div>
+      </div>
+    </div>
+
+    <!-- A3 : PROCESS -->
+    <div id="astep-process" style="display:none">
+      <div class="card">
+        <h2>&#128269; &Eacute;tape 3 &mdash; V&eacute;rification SIRENE</h2>
+        <div id="audit-recap" class="alert a-ok" style="margin-bottom:14px"></div>
+
+        <!-- KPI summary -->
+        <div id="audit-kpi-bar" class="audit-summary" style="display:none"></div>
+
+        <!-- Progress -->
+        <div class="progress-wrap" id="audit-progress-wrap" style="display:none">
+          <div class="progress-bar"><div class="progress-fill" id="audit-progress-fill" style="width:0%"></div></div>
+          <div class="progress-meta"><span id="audit-progress-text">En attente&hellip;</span><span id="audit-progress-eta"></span></div>
+        </div>
+
+        <!-- Paused banner -->
+        <div class="paused-banner" id="audit-paused-banner">
+          <span class="pause-pulse">&#9208;&#65039;</span>
+          <p><strong style="color:#fff">V&eacute;rification en pause.</strong> Les r&eacute;sultats d&eacute;j&agrave; obtenus sont conserv&eacute;s.</p>
+        </div>
+
+        <!-- Action bar -->
+        <div class="action-bar">
+          <button class="btn btn-p" id="audit-run-btn" onclick="runAudit()">&#128269; Lancer la v&eacute;rification</button>
+          <button class="btn btn-pause" id="audit-pause-btn" onclick="toggleAuditPause()" style="display:none">&#9208;&#65039; Pause</button>
+          <button class="btn btn-s" onclick="resetAudit()">&#128465; R&eacute;initialiser</button>
+          <button class="btn btn-g" id="audit-export-btn" onclick="exportAuditCSV()" disabled>&#8681; Rapport complet</button>
+          <button class="btn btn-sage" id="audit-sage-btn" onclick="exportAuditSage()" disabled>&#127381; Mises &agrave; jour Sage</button>
+          <button class="btn btn-audit" id="audit-actions-btn" onclick="exportAuditActions()" disabled>&#128203; Actions uniquement</button>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar" id="audit-filter-bar" style="display:none">
+          <span class="filter-label">Filtrer&nbsp;:</span>
+          <button class="filter-btn active" onclick="filterAudit('all',this)">Tous</button>
+          <button class="filter-btn" onclick="filterAudit('ok',this)" style="color:var(--success)">&#9989; OK</button>
+          <button class="filter-btn" onclick="filterAudit('found-by-name',this)" style="color:#818cf8">&#128269; Trouv&eacute;s/nom</button>
+          <button class="filter-btn" onclick="filterAudit('ferme',this)" style="color:var(--danger)">&#128308; Ferm&eacute;s</button>
+          <button class="filter-btn" onclick="filterAudit('nom-diff',this)" style="color:var(--warn)">&#128203; Nom &#8800;</button>
+          <button class="filter-btn" onclick="filterAudit('not-found',this)" style="color:var(--muted)">&#10067; Introuvables</button>
+          <button class="filter-btn" onclick="filterAudit('actions',this)" style="color:#fb923c">&#9888; Actions requises</button>
+        </div>
+
+        <div id="audit-result"></div>
+      </div>
+    </div>
+
+  </div><!-- /tab-audit -->
+</div><!-- /main -->
+
+<script>
+// =================== CONSTANTS ===================
+const API = 'https://recherche-entreprises.api.gouv.fr/search';
+const SKEY = 'abrapa_siret_v3';
+
+// =================== STATE ===================
+let csvHeaders=[], csvRawRows=[], batchRows=[], batchResults=[];
+let isRunning=false, isPaused=false, pauseResolve=null;
+let currentIdx=0, countDone=0, startTime=null;
+
+// =================== UI HELPERS ===================
+function showTab(n,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active'); el.classList.add('active');
+}
+function setStep(n){
+  for(let i=1;i<=4;i++){const e=document.getElementById('step'+i);e.classList.remove('active','done');if(i<n)e.classList.add('done');else if(i===n)e.classList.add('active');}
+}
+function fmtSiret(s){
+  if(!s)return'—'; s=String(s).replace(/\D/g,'');
+  if(s.length===14)return s.slice(0,3)+' '+s.slice(3,6)+' '+s.slice(6,9)+' '+s.slice(9);
+  if(s.length===9) return s.slice(0,3)+' '+s.slice(3,6)+' '+s.slice(6);
+  return s;
+}
+function copyText(t,btn){
+  navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copié';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('copied');},1500);});
+}
+function isValidCP(v){return v&&/^\d{4,5}$/.test(String(v).trim().replace(/\D/g,''));}
+function isSiretEmpty(v){
+  if(!v)return true; const s=String(v).trim();
+  if(!s||s==='nan'||s==='null')return true;
+  const d=s.replace(/\D/g,''); return!d||/^0+$/.test(d)||d.length<9;
+}
+function fmtDur(ms){const s=Math.floor(ms/1000);return s<60?s+'s':Math.floor(s/60)+'min '+(s%60)+'s';}
+function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function fmtDT(ts){const d=new Date(ts);return d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+
+// =================== SESSION STORAGE ===================
+function saveSession(){
+  const dot=document.getElementById('save-dot'), lbl=document.getElementById('save-label');
+  dot.classList.add('saving');
+  try{
+    sessionStorage.setItem(SKEY, JSON.stringify({
+      ts:Date.now(), batchResults, currentIdx, csvHeaders, csvRawRows
+    }));
+    setTimeout(()=>{
+      dot.classList.remove('saving');
+      const n=batchResults.filter(r=>r.statut==='found').length;
+      lbl.innerHTML='Sauvegard&eacute; &mdash; <strong>'+n+' SIRET trouv&eacute;s</strong> conserv&eacute;s';
+      document.getElementById('save-time').textContent='&#128336; '+nowTime();
+    },350);
+  }catch(e){dot.classList.remove('saving');}
+}
+function clearSession(){try{sessionStorage.removeItem(SKEY);}catch(e){}}
+function loadSession(){try{const r=sessionStorage.getItem(SKEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+
+function checkRestoreBanner(){
+  const s=loadSession(); if(!s)return;
+  const found=s.batchResults.filter(r=>r.statut==='found').length;
+  const pending=s.batchResults.filter(r=>r.statut==='pending').length;
+  const b=document.getElementById('restore-banner');
+  b.style.display='flex';
+  document.getElementById('restore-msg').innerHTML=
+    '&#128190; <strong>Session sauvegard&eacute;e d&eacute;tect&eacute;e</strong> ('+fmtDT(s.ts)+') &mdash; '+
+    '<strong style="color:var(--success)">'+found+' SIRET trouv&eacute;s</strong>, '+
+    '<strong style="color:var(--muted)">'+pending+' restants</strong>.<br>Reprenez l&agrave; o&ugrave; vous en &eacute;tiez.';
+}
+function restoreSession(){
+  const s=loadSession(); if(!s)return;
+  csvHeaders=s.csvHeaders; csvRawRows=s.csvRawRows;
+  batchResults=s.batchResults; batchRows=[...batchResults];
+  currentIdx=s.currentIdx||0;
+  document.getElementById('restore-banner').style.display='none';
+  document.getElementById('step-upload').style.display='none';
+  document.getElementById('step-mapping').style.display='none';
+  document.getElementById('step-process').style.display='block';
+  document.getElementById('autosave-bar').classList.remove('hidden');
+  const found=batchResults.filter(r=>r.statut==='found').length;
+  const pending=batchResults.filter(r=>r.statut==='pending').length;
+  document.getElementById('mapping-recap').innerHTML=
+    '&#128190; Session restaur&eacute;e &mdash; <strong>'+found+'</strong> SIRET d&eacute;j&agrave; trouv&eacute;s &mdash; <strong>'+pending+'</strong> restants &agrave; rechercher';
+  document.getElementById('run-btn').innerHTML='&#9654;&#65039; Reprendre la recherche';
+  document.getElementById('progress-wrap').style.display='block';
+  document.getElementById('progress-fill').style.width=Math.round((1-pending/batchResults.length)*100)+'%';
+  setStep(3); updateExportCount(); renderBatchTable(batchResults);
+}
+function discardSession(){clearSession();document.getElementById('restore-banner').style.display='none';}
+
+// =================== API ===================
+async function apiSearch(nom,cp){
+  const p=new URLSearchParams({q:nom,per_page:'8'});
+  if(isValidCP(cp))p.set('code_postal',String(cp).replace(/\D/g,'').slice(0,5));
+  const statEl=document.getElementById('q-status');
+  if(statEl&&statEl.value)p.set('etat_administratif',statEl.value);
+  const r=await fetch(API+'?'+p); if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.json();
+}
+function extractBest(data){
+  const res=data.results||[]; if(!res.length)return null;
+  const best=res[0], etab=(best.matching_etablissements||[best.siege||{}])[0]||{};
+  const siege=best.siege||{};
+  const naf=best.activite_principale||'', nafLib=best.libelle_activite_principale||'';
+  return{
+    siret:(etab.siret||'').replace(/\D/g,''),
+    actif:etab.etat_administratif==='A',
+    nomApi:best.nom_complet||best.nom_raison_sociale||'',
+    adresse:etab.adresse||siege.adresse||'',
+    cp:etab.code_postal||siege.code_postal||'',
+    commune:etab.libelle_commune||siege.libelle_commune||'',
+    formeJuridique:best.nature_juridique_label||'',
+    naf:naf+(nafLib?' — '+nafLib:''),
+    tva:best.numero_tva_intra||'',
+    telephone:siege.telephone||'',
+    email:siege.email||'',
+    siteWeb:siege.site_internet||''
+  };
+}
+
+// =================== RENDER SINGLE/DIRECT ===================
+function renderResults(data,container){
+  const res=data.results||[];
+  if(!res.length){container.innerHTML='<div class="alert a-err">&#10060; Aucun r&eacute;sultat.</div>';lastSingleResults=[];return;}
+  // Stocker pour export
+  lastSingleResults=res.slice(0,8).map(r=>{
+    const siege=r.siege||{};
+    const etab=((r.matching_etablissements&&r.matching_etablissements.length)?r.matching_etablissements:[siege])[0]||siege;
+    const siret=(etab.siret||siege.siret||'').replace(/\D/g,'');
+    const siren=r.siren||(siret.length>=9?siret.slice(0,9):'');
+    const naf=(r.activite_principale||'')+(r.libelle_activite_principale?' \u2014 '+r.libelle_activite_principale:'');
+    return{siret,siren,nom:r.nom_complet||r.nom_raison_sociale||'',
+      actif:etab.etat_administratif==='A'||siege.etat_administratif==='A',
+      adresse:etab.adresse||siege.adresse||'',
+      cp:etab.code_postal||siege.code_postal||'',
+      commune:etab.libelle_commune||siege.libelle_commune||'',
+      formeJuridique:r.nature_juridique_label||'',
+      naf,tva:r.numero_tva_intra||'',
+      telephone:siege.telephone||'',email:siege.email||'',siteWeb:siege.site_internet||''};
+  });
+  const isVerify = container.id==='direct-result';
+  let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
+    +'<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--accent)">'+res.length+'</strong> r&eacute;sultat(s)</span>'
+    +'<button class="btn btn-p" onclick="exportSingleXlsx()" style="font-size:12px;padding:7px 16px">&#128229; Export Excel Sage FRP&nbsp;1000</button>'
+    +'</div>';
+  res.slice(0,8).forEach((r,idx)=>{
+    const siege=r.siege||{};
+    const etab=((r.matching_etablissements&&r.matching_etablissements.length)?r.matching_etablissements:[siege])[0]||siege;
+    const siret=(etab.siret||siege.siret||'').replace(/\D/g,'');
+    const siren=r.siren||(siret.length>=9?siret.slice(0,9):'');
+    const actif=etab.etat_administratif==='A'||siege.etat_administratif==='A';
+    const _adr=etab.adresse||siege.adresse||'';
+    const _cp=etab.code_postal||siege.code_postal||'';
+    const _ville=etab.libelle_commune||siege.libelle_commune||'';
+    const _adrUp=_adr.toUpperCase();
+    const cpIn=_cp&&_adrUp.includes(_cp), villeIn=_ville&&_adrUp.includes(_ville.toUpperCase());
+    const adr=[_adr,cpIn?'':_cp,villeIn?'':_ville].filter(Boolean).join(', ');
+    const nom=r.nom_complet||r.nom_raison_sociale||'';
+    const forme=r.nature_juridique_label||'';
+    const naf=(r.activite_principale||'')+(r.libelle_activite_principale?' — '+r.libelle_activite_principale:'');
+    const tva=r.numero_tva_intra||'';
+    const tel=siege.telephone||'', email=siege.email||'', site=siege.site_internet||'';
+
+    function cfv(val,raw){
+      if(!raw&&!val) return '<span style="color:var(--muted);font-style:italic">—</span>';
+      const v=raw||val;
+      return '<span style="color:var(--text)">'+val+'</span><button class="copy-btn copy-field" onclick="copyText(\''+v.replace(/'/g,"\\'")+'\'+ \'\',this)" title="Copier">📋</button>';
+    }
+
+    html+='<div class="result-card">'
+      // En-tête carte
+      +'<div class="result-header">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div class="result-name" style="display:flex;align-items:center;gap:8px">'+nom
+            +'<button class="copy-btn copy-field" onclick="copyText(\''+nom.replace(/'/g,"\\'")+'\'+ \'\',this)" title="Copier la raison sociale">📋</button>'
+          +'</div>'
+          +'<div class="result-sub">SIREN: '+siren+' &bull; '+forme+'</div>'
+        +'</div>'
+        +'<span class="sb '+(actif?'s-act':'s-cls')+'">'+(actif?'✅ Actif':'🔴 Fermé')+'</span>'
+      +'</div>'
+      // Grille champs Sage
+      +'<div class="result-fields-grid">'
+        // Colonne gauche
+        +'<div class="rf-group">'
+          +'<div class="rf-title">📋 Identification</div>'
+          +'<div class="rf"><label>CT_Intitule</label><div class="rf-val">'+cfv(nom)+'</div></div>'
+          +'<div class="rf"><label>CT_Siret</label><div class="rf-val"><span class="siret-val">'+fmtSiret(siret)+'</span><button class="copy-btn" onclick="copyText(\''+siret+'\',this)">Copier</button></div></div>'
+          +'<div class="rf"><label>CT_Siren</label><div class="rf-val">'+cfv(siren)+'</div></div>'
+          +'<div class="rf"><label>CT_NatureJuridique</label><div class="rf-val">'+cfv(forme)+'</div></div>'
+          +'<div class="rf"><label>CT_NumTVAIntracomm</label><div class="rf-val">'+cfv(tva)+'</div></div>'
+        +'</div>'
+        // Colonne droite
+        +'<div class="rf-group">'
+          +'<div class="rf-title">📍 Adresse &amp; contact</div>'
+          +'<div class="rf"><label>CT_Adresse</label><div class="rf-val">'+cfv(_adr)+'</div></div>'
+          +'<div class="rf"><label>CT_CodePostal</label><div class="rf-val">'+cfv(_cp)+'</div></div>'
+          +'<div class="rf"><label>CT_Ville</label><div class="rf-val">'+cfv(_ville)+'</div></div>'
+          +(tel?'<div class="rf"><label>CT_Telephone</label><div class="rf-val">'+cfv(tel)+'</div></div>':'')
+          +(email?'<div class="rf"><label>CT_Email</label><div class="rf-val">'+cfv(email)+'</div></div>':'')
+          +(site?'<div class="rf"><label>CT_Site</label><div class="rf-val">'+cfv(site)+'</div></div>':'')
+          +'<div class="rf"><label>Code NAF</label><div class="rf-val" style="font-size:12px">'+cfv(naf)+'</div></div>'
+        +'</div>'
+      +'</div>'
+    +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'
+      +'<button onclick="listEtablissements(\''+siren+'\',\''+nom.replace(/'/g,"\\'")+'\')" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);padding:6px 14px;font-size:12px;border-radius:6px;cursor:pointer;font-family:inherit">&#127970; Tous les &eacute;tablissements du SIREN</button>'
+      +'<button class="copy-all-btn" onclick="copyAllFields('+idx+',this)">&#128203; Tout copier (tableau)</button>'
+    +'</div>'
+    +'</div>';
+  });
+  container.innerHTML=html;
+}
+
+// =================== EXPORT XLSX RECHERCHE UNITAIRE ===================
+let lastSingleResults=[];
+// Init historique au chargement
+document.addEventListener('DOMContentLoaded',()=>renderHistory());
+function exportSingleXlsx(){
+  if(!lastSingleResults.length){alert('Aucun r\u00e9sultat \u00e0 exporter.');return;}
+  const headers=['CT_Num','CT_Intitule','CT_Siret','CT_Siren','CT_Adresse','CT_CodePostal','CT_Ville','CT_NatureJuridique','CT_NumTVAIntracomm','CT_Telephone','CT_Email','CT_Site','CODE_NAF','ACTIF_SIRENE'];
+  const rows=lastSingleResults.map(r=>(['',r.nom,r.siret,r.siren,r.adresse,r.cp,r.commune,r.formeJuridique,r.tva,r.telephone,r.email,r.siteWeb,r.naf,r.actif?'OUI':'NON']));
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
+  ws['!cols']=[{wch:10},{wch:35},{wch:16},{wch:12},{wch:30},{wch:10},{wch:20},{wch:18},{wch:18},{wch:14},{wch:28},{wch:28},{wch:30},{wch:10}];
+  // Style en-tête
+  for(let C=0;C<headers.length;C++){
+    const ref=XLSX.utils.encode_cell({r:0,c:C});
+    if(!ws[ref])continue;
+    ws[ref].s={fill:{fgColor:{rgb:'1E293B'}},font:{bold:true,color:{rgb:'F97316'},sz:10},alignment:{horizontal:'center',vertical:'center'}};
+  }
+  // Couleur lignes selon statut
+  rows.forEach((row,R)=>{
+    const actif=row[13]==='OUI';
+    for(let C=0;C<headers.length;C++){
+      const ref=XLSX.utils.encode_cell({r:R+1,c:C});
+      if(!ws[ref])ws[ref]={t:'s',v:''};
+      ws[ref].s={fill:{fgColor:{rgb:actif?'1A3020':'3A1515'}},font:{color:{rgb:C===2?'FB923C':actif?'22C55E':'EF4444'}},alignment:{vertical:'center',wrapText:false}};
+    }
+  });
+  // Onglet notice
+  const notice=XLSX.utils.aoa_to_sheet([
+    ['Information importante'],
+    ['La colonne CT_Num (code tiers Sage) est volontairement vide.'],
+    ['Renseignez-la avant import selon votre plan de nommage Sage FRP 1000.'],
+    [''],
+    ['Procedure import dans Sage FRP 1000 :'],
+    ['1. Fichier > Import > Tiers'],
+    ['2. Selectionner ce fichier'],
+    ['3. Verifier la correspondance des colonnes CT_*'],
+    ['4. CT_Num existant = mise a jour | CT_Num absent = creation tiers'],
+    ['5. Champ vide dans le CSV = champ existant ecrase a blanc dans Sage'],
+    [''],
+    ['Note : Les IBAN/RIB (table F_REGLEMENTT) ne sont pas affectes par cet import.'],
+  ]);
+  notice['!cols']=[{wch:75}];
+  XLSX.utils.book_append_sheet(wb,ws,'Tiers SIRENE');
+  XLSX.utils.book_append_sheet(wb,notice,'Notice import Sage');
+  const nom=(document.getElementById('q-name').value||'recherche').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
+  XLSX.writeFile(wb,'sage_frp1000_'+nom+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+
+// =================== RECHERCHE UNIFIÉE (nom / SIRET / SIREN) ===================
+
+// Détecte le mode selon la saisie
+function detectSearchMode(val) {
+  const digits = val.replace(/\D/g, '');
+  if (digits.length === 14) return 'siret';
+  if (digits.length === 9)  return 'siren';
+  if (digits.length >= 9 && digits.length < 14) return 'partial';
+  return 'name';
+}
+
+function onMainInput() {
+  const val = document.getElementById('q-main').value.trim();
+  const mode = detectSearchMode(val);
+  const badge = document.getElementById('search-mode-badge');
+  const fieldCp = document.getElementById('field-cp');
+  const fieldSt = document.getElementById('field-status');
+  const hint = document.getElementById('search-hint');
+
+  if (!val) {
+    badge.style.display = 'none';
+    fieldCp.style.display = '';
+    fieldSt.style.display = '';
+    hint.style.display = '';
+    return;
+  }
+
+  if (mode === 'siret') {
+    badge.textContent = '🔢 SIRET'; badge.style.display = '';
+    badge.style.background = 'rgba(34,197,94,.15)'; badge.style.color = '#4ade80';
+    badge.style.borderColor = 'rgba(34,197,94,.3)';
+    fieldCp.style.display = 'none'; fieldSt.style.display = 'none';
+    hint.style.display = 'none';
+  } else if (mode === 'siren') {
+    badge.textContent = '🏢 SIREN'; badge.style.display = '';
+    badge.style.background = 'rgba(99,102,241,.15)'; badge.style.color = '#818cf8';
+    badge.style.borderColor = 'rgba(99,102,241,.3)';
+    fieldCp.style.display = 'none'; fieldSt.style.display = 'none';
+    hint.style.display = 'none';
+  } else if (mode === 'partial') {
+    badge.textContent = '⌨️ …'; badge.style.display = '';
+    badge.style.background = 'rgba(250,204,21,.15)'; badge.style.color = '#fbbf24';
+    badge.style.borderColor = 'rgba(250,204,21,.3)';
+    fieldCp.style.display = 'none'; fieldSt.style.display = 'none';
+    hint.style.display = 'none';
+  } else {
+    badge.textContent = '🔤 Nom'; badge.style.display = '';
+    badge.style.background = 'rgba(249,115,22,.15)'; badge.style.color = '#fb923c';
+    badge.style.borderColor = 'rgba(249,115,22,.3)';
+    fieldCp.style.display = ''; fieldSt.style.display = '';
+    hint.style.display = 'none';
+  }
+}
+
+async function smartSearch() {
+  const raw = document.getElementById('q-main').value.trim();
+  if (!raw) { alert('Entrez un nom, un SIRET ou un SIREN.'); return; }
+
+  const mode = detectSearchMode(raw);
+  const digits = raw.replace(/\D/g, '');
+  const area = document.getElementById('result-area');
+  const btn  = document.getElementById('search-btn');
+  btn.disabled = true;
+  area.innerHTML = '<div class="loader"><div class="spinner"></div>Recherche en cours…</div>';
+
+  try {
+    if (mode === 'siret') {
+      // ── SIRET exact ────────────────────────────────────────────────────
+      const r = await fetch(API + '?q=' + digits + '&per_page=5');
+      const data = await r.json();
+      if (data.results && data.results.length > 1) {
+        const exact = data.results.find(x => {
+          const etab = ((x.matching_etablissements && x.matching_etablissements.length)
+            ? x.matching_etablissements : [x.siege || {}])[0] || {};
+          return (etab.siret || '').replace(/\D/g, '') === digits;
+        });
+        if (exact) data.results = [exact];
+      }
+      renderResults(data, area);
+
+    } else if (mode === 'siren') {
+      // ── SIREN : résultat + bouton établissements déjà dans la carte ───
+      const r = await fetch(API + '?q=' + digits + '&per_page=25');
+      const data = await r.json();
+      if (data.results) data.results = data.results.filter(x => x.siren === digits);
+      renderResults(data, area);
+
+    } else {
+      // ── Nom (+ CP optionnel) ───────────────────────────────────────────
+      const cp  = document.getElementById('q-cp').value.trim();
+      const data = await apiSearch(raw, cp);
+      renderResults(data, area);
+      saveHistory(raw);
+    }
+  } catch(e) {
+    area.innerHTML = '<div class="alert a-err">Erreur : ' + e.message + '</div>';
+  } finally {
+    document.getElementById('reset-btn').style.display = '';
+    btn.disabled = false;
+  }
+}
+
+// Alias pour compatibilité avec les appels existants (historique, etc.)
+function search() { smartSearch(); }
+function searchSiret() { smartSearch(); }
+
+function resetAll() {
+  document.getElementById('q-main').value = '';
+  document.getElementById('q-cp').value = '';
+  document.getElementById('q-status').value = '';
+  document.getElementById('search-mode-badge').style.display = 'none';
+  document.getElementById('field-cp').style.display = '';
+  document.getElementById('field-status').style.display = '';
+  document.getElementById('search-hint').style.display = '';
+  document.getElementById('result-area').innerHTML =
+    '<div class="empty-state"><div class="es-icon">🏭</div><p>Entrez un nom, un SIRET ou un SIREN</p></div>';
+  document.getElementById('reset-btn').style.display = 'none';
+  lastSingleResults = [];
+  document.getElementById('q-main').focus();
+}
+
+// Alias legacy
+function resetSearch() { resetAll(); }
+function resetSiret()  { resetAll(); }
+
+
+// =================== HISTORIQUE RECHERCHES ===================
+const HIST_KEY='siret_search_history';
+function loadHistory(){
+  try{return JSON.parse(sessionStorage.getItem(HIST_KEY)||'[]');}catch{return[];}
+}
+function saveHistory(term){
+  if(!term||term.length<2)return;
+  let h=loadHistory().filter(x=>x.toLowerCase()!==term.toLowerCase());
+  h.unshift(term);
+  if(h.length>20)h=h.slice(0,20);
+  sessionStorage.setItem(HIST_KEY,JSON.stringify(h));
+  renderHistory();
+}
+function renderHistory(){
+  const h=loadHistory();
+  const area=document.getElementById('hist-area');
+  const list=document.getElementById('hist-list');
+  if(!h.length){area.style.display='none';return;}
+  area.style.display='';
+  list.innerHTML=h.map((t,i)=>'<span class="hist-item" data-idx="'+i+'" onclick="replaySearch(this.dataset.idx)">'+t+'</span>').join('');
+}
+function replaySearch(idx){
+  const h=loadHistory();
+  const term=h[parseInt(idx)];
+  if(!term)return;
+  document.getElementById('q-name').value=term;
+  search();
+}
+function clearHistory(){
+  sessionStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+// =================== COPIER TOUT EN TABLEAU ===================
+function copyAllFields(idx,btn){
+  const r=lastSingleResults[idx];
+  if(!r)return;
+  const rows=[
+    ['CT_Num',''],
+    ['CT_Intitule',r.nom],
+    ['CT_Siret',r.siret],
+    ['CT_Siren',r.siren],
+    ['CT_Adresse',r.adresse],
+    ['CT_CodePostal',r.cp],
+    ['CT_Ville',r.commune],
+    ['CT_NatureJuridique',r.formeJuridique],
+    ['CT_NumTVAIntracomm',r.tva],
+    ['CT_Telephone',r.telephone],
+    ['CT_Email',r.email],
+    ['CT_Site',r.siteWeb],
+  ];
+  const text=rows.map(([k,v])=>k+'\t'+(v||'')).join('\n');
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✅ Copié !';btn.style.background='rgba(34,197,94,.2)';btn.style.color='#22c55e';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';},1800);
+  });
+}
+
+// =================== CSV PARSING ===================
+function detectSep(t){return((t.slice(0,2000).match(/;/g)||[]).length>=(t.slice(0,2000).match(/,/g)||[]).length)?';':',';}
+function parseLine(line,sep){
+  const r=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;continue;}if(c===sep&&!inQ){r.push(cur.trim());cur='';continue;}cur+=c;}
+  r.push(cur.trim());return r;
+}
+function handleDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)handleFile(f);}
+function handleFile(file){if(!file)return;const rd=new FileReader();rd.onload=e=>processCSV(e.target.result);rd.readAsText(file,'ISO-8859-1');}
+function processCSV(text){
+  const sep=detectSep(text), lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2){alert('Fichier vide.');return;}
+  csvHeaders=parseLine(lines[0],sep);
+  csvRawRows=lines.slice(1).map(l=>parseLine(l,sep)).filter(r=>r.some(c=>c.trim()));
+  document.getElementById('step-upload').style.display='none';
+  document.getElementById('step-mapping').style.display='block';
+  setStep(2); populateSelects(); renderPreview();
+}
+function populateSelects(){
+  const none='<option value="">— (aucune) —</option>';
+  const opts=csvHeaders.map((h,i)=>'<option value="'+i+'">'+h+'</option>').join('');
+  ['map-nom','map-siret','map-cp','map-id'].forEach(id=>{document.getElementById(id).innerHTML=none+opts;});
+  csvHeaders.forEach((h,i)=>{
+    const hl=h.toLowerCase();
+    if(/nom|name|raison|fournisseur|libelle/.test(hl))trySet('map-nom',i);
+    if(/siret|siren/.test(hl))trySet('map-siret',i);
+    if(/postal|^cp$|code.?post|zip/.test(hl))trySet('map-cp',i);
+    if(/\bid\b|ref|^code|numero/.test(hl))trySet('map-id',i);
+  });
+  ['map-cp'].forEach(id=>{document.getElementById(id).addEventListener('change',checkCPPreview);});
+  checkCPPreview();
+}
+function checkCPPreview(){
+  const iCP=parseInt(document.getElementById('map-cp').value), w=document.getElementById('cp-warning');
+  if(isNaN(iCP)){w.style.display='none';return;}
+  const samples=csvRawRows.slice(0,5).map(r=>(r[iCP]||'').trim()).filter(Boolean);
+  const invalid=samples.filter(s=>!isValidCP(s));
+  if(invalid.length){w.style.display='block';w.innerHTML='&#9888;&#65039; Valeurs non num&eacute;riques d&eacute;tect&eacute;es : <strong>'+invalid.slice(0,3).join(', ')+'</strong>… Si c\'est un code fournisseur, laissez CP sur (aucune).';}
+  else{w.style.display='none';}
+}
+function trySet(sid,val){const s=document.getElementById(sid);if(!s.value)s.value=String(val);}
+function renderPreview(){
+  const tbl=document.getElementById('preview-table');
+  let html='<thead><tr>'+csvHeaders.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>';
+  csvRawRows.slice(0,5).forEach(row=>{html+='<tr>'+csvHeaders.map((_,i)=>'<td>'+(row[i]||'')+'</td>').join('')+'</tr>';});
+  tbl.innerHTML=html+'</tbody>';
+}
+function confirmMapping(){
+  const iNom=parseInt(document.getElementById('map-nom').value);
+  if(isNaN(iNom)){alert('Choisissez la colonne NOM.');return;}
+  const iSiret=parseInt(document.getElementById('map-siret').value);
+  const iCP=parseInt(document.getElementById('map-cp').value);
+  const iID=parseInt(document.getElementById('map-id').value);
+  batchRows=csvRawRows.map((row,idx)=>{
+    const nom=(row[iNom]||'').trim();
+    const siret=isNaN(iSiret)?'':(row[iSiret]||'').replace(/\D/g,'');
+    const cpRaw=isNaN(iCP)?'':(row[iCP]||'').trim();
+    const cpValide=isValidCP(cpRaw)?cpRaw.replace(/\D/g,''):'';
+    const cpWarn=!!(cpRaw&&!cpValide);
+    const id=isNaN(iID)?'':(row[iID]||'').trim();
+    return{idx:idx+1,id,nom,cpRaw,cpValide,cpWarn,siretOriginal:siret,siretTrouve:'',statut:isSiretEmpty(siret)?'pending':'kept',info:isSiretEmpty(siret)?'':'Existant conservé',actif:null,nomApi:'',adresse:'',cpApi:'',communeApi:'',formeJuridique:'',naf:'',tva:'',telephone:'',email:'',siteWeb:''};
+  }).filter(r=>r.nom);
+  batchResults=batchRows.map(r=>({...r})); currentIdx=0;
+  const pending=batchResults.filter(r=>r.statut==='pending').length;
+  const kept=batchResults.filter(r=>r.statut==='kept').length;
+  const cpWarn=batchResults.filter(r=>r.cpWarn).length;
+  let recap='&#9989; <strong>'+batchRows.length+'</strong> fournisseurs &nbsp;&middot;&nbsp; <strong>'+pending+'</strong> SIRET &agrave; rechercher &nbsp;&middot;&nbsp; <strong>'+kept+'</strong> existants conserv&eacute;s';
+  if(cpWarn)recap+='<br>&#9888;&#65039; <strong>'+cpWarn+'</strong> valeurs CP ignor&eacute;es (non num&eacute;riques)';
+  document.getElementById('mapping-recap').innerHTML=recap;
+  document.getElementById('step-mapping').style.display='none';
+  document.getElementById('step-process').style.display='block';
+  document.getElementById('autosave-bar').classList.remove('hidden');
+  document.getElementById('progress-wrap').style.display='block';
+  setStep(3); updateExportCount(); renderBatchTable(batchResults);
+}
+
+// =================== PAUSE / RESUME ===================
+function togglePause(){
+  if(isPaused){
+    // RESUME
+    isPaused=false;
+    document.getElementById('pause-btn').className='btn btn-pause';
+    document.getElementById('pause-btn').innerHTML='&#9208;&#65039; Pause';
+    document.getElementById('paused-banner').classList.remove('show');
+    document.getElementById('progress-fill').classList.remove('paused');
+    if(pauseResolve){pauseResolve();pauseResolve=null;}
+  }else{
+    // PAUSE
+    isPaused=true;
+    document.getElementById('pause-btn').className='btn btn-resume';
+    document.getElementById('pause-btn').innerHTML='&#9654;&#65039; Reprendre';
+    document.getElementById('paused-banner').classList.add('show');
+    document.getElementById('progress-fill').classList.add('paused');
+    saveSession();
+  }
+}
+function waitIfPaused(){
+  if(!isPaused)return Promise.resolve();
+  return new Promise(res=>{pauseResolve=res;});
+}
+
+// =================== BATCH RUN ===================
+async function runBatch(){
+  const toSearch=batchResults.filter(r=>r.statut==='pending');
+  if(!toSearch.length){alert('Aucun SIRET manquant.');return;}
+  isRunning=true; isPaused=false; startTime=Date.now(); countDone=0;
+  document.getElementById('run-btn').style.display='none';
+  document.getElementById('pause-btn').style.display='inline-flex';
+  document.getElementById('progress-wrap').style.display='block';
+  const fill=document.getElementById('progress-fill');
+  const prog=document.getElementById('progress-text');
+  const eta=document.getElementById('progress-eta');
+
+  for(let i=0;i<toSearch.length;i++){
+    // PAUSE CHECK
+    await waitIfPaused();
+
+    const row=toSearch[i]; currentIdx=i;
+    const pct=Math.round(i/toSearch.length*100);
+    fill.style.width=pct+'%';
+    prog.innerHTML='<strong>'+pct+'%</strong> &mdash; '+(i+1)+'/'+toSearch.length+' : '+row.nom.slice(0,42)+'&#8230;';
+    if(countDone>2){
+      const avg=(Date.now()-startTime)/countDone;
+      eta.textContent='Fin estimée dans '+fmtDur(avg*(toSearch.length-i));
+    }
+
+    // Mark current row
+    row.statut='current'; renderBatchTable(batchResults);
+
+    try{
+      const data=await apiSearch(row.nom,row.cpValide);
+      const res=extractBest(data);
+      if(res&&res.siret&&res.siret.length>=9){
+        row.siretTrouve=res.siret; row.statut='found'; row.actif=res.actif;
+        row.nomApi=res.nomApi||''; row.adresse=res.adresse||''; row.cpApi=res.cp||'';
+        row.communeApi=res.commune||''; row.formeJuridique=res.formeJuridique||'';
+        row.naf=res.naf||''; row.tva=res.tva||'';
+        row.telephone=res.telephone||''; row.email=res.email||''; row.siteWeb=res.siteWeb||'';
+        row.info=(res.actif?'✅ Actif':'🔴 Fermé')+(res.commune?' · '+res.commune:'');
+      }else{row.statut='notfound';row.info='Aucun résultat';}
+    }catch(e){row.statut='notfound';row.info='Erreur API';}
+
+    countDone++; updateExportCount(); renderBatchTable(batchResults);
+
+    // Auto-save every 10 results or on each found
+    if(countDone%10===0||row.statut==='found') saveSession();
+
+    await new Promise(r=>setTimeout(r,380));
+  }
+
+  // FINISHED
+  isRunning=false;
+  fill.style.width='100%'; fill.classList.remove('paused');
+  const found=batchResults.filter(r=>r.statut==='found').length;
+  const notfound=batchResults.filter(r=>r.statut==='notfound').length;
+  prog.innerHTML='&#9989; <strong>Termin&eacute; !</strong> &mdash; <strong style="color:var(--success)">'+found+' trouv&eacute;s</strong> &middot; <strong style="color:var(--danger)">'+notfound+' introuvables</strong>';
+  eta.textContent='Dur&eacute;e totale : '+fmtDur(Date.now()-startTime);
+  document.getElementById('pause-btn').style.display='none';
+  document.getElementById('run-btn').style.display='inline-flex';
+  document.getElementById('run-btn').innerHTML='&#9989; Termin&eacute;';
+  document.getElementById('run-btn').disabled=true;
+  document.getElementById('paused-banner').classList.remove('show');
+  setStep(4); clearSession(); updateExportCount();
+}
+
+// =================== RENDER TABLE ===================
+function renderBatchTable(rows){
+  const found=rows.filter(r=>r.statut==='found').length;
+  const kept=rows.filter(r=>r.statut==='kept').length;
+  const notfound=rows.filter(r=>r.statut==='notfound').length;
+  const pending=rows.filter(r=>r.statut==='pending').length;
+  const cur=rows.filter(r=>r.statut==='current').length;
+  let html='<div class="stats-bar"><span class="pill p-ok">&#9989; '+found+' trouv&eacute;s</span><span class="pill p-info">&#128309; '+kept+' conserv&eacute;s</span><span class="pill p-err">&#10060; '+notfound+' introuvables</span><span class="pill p-wait">&#9203; '+pending+' en attente</span>'+(cur?'<span class="pill p-cur">&#128269; En cours</span>':'')+'</div>';
+  html+='<div class="batch-wrap"><table class="batch-table"><thead><tr><th>#</th><th>ID</th><th>NOM FOURNISSEUR</th><th>CP</th><th>SIRET ORIGINAL</th><th>SIRET TROUV&Eacute;</th><th>STATUT</th><th>INFO</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const saff=r.siretTrouve||r.siretOriginal||'';
+    const cls=r.statut==='found'||r.statut==='kept'?'td-ok':r.statut==='notfound'?'td-err':'td-wait';
+    const pill=r.statut==='found'?'<span class="pill p-ok">&#9989; Trouv&eacute;</span>':r.statut==='kept'?'<span class="pill p-info">&#128309; Conserv&eacute;</span>':r.statut==='notfound'?'<span class="pill p-err">&#10060; Introuvable</span>':r.statut==='current'?'<span class="pill p-cur">&#128269; En cours</span>':'<span class="pill p-wait">&#9203; En attente</span>';
+    const cpCell=r.cpValide||(r.cpWarn?'<span class="cp-warn-badge" title="CP ignored">— &#9888;</span>':'—');
+    html+='<tr><td style="color:var(--muted)">'+r.idx+'</td><td style="color:var(--muted);font-size:12px">'+r.id+'</td><td style="font-weight:600;color:var(--title)">'+r.nom+'</td><td style="font-size:12px">'+cpCell+'</td><td class="td-mono" style="color:var(--muted);font-size:11px">'+fmtSiret(r.siretOriginal)+'</td><td class="td-mono '+cls+'">'+( saff?fmtSiret(saff):'—')+'</td><td>'+pill+'</td><td style="font-size:12px;color:var(--muted)">'+r.info+'</td></tr>';
+  });
+  document.getElementById('batch-result').innerHTML=html+'</tbody></table></div>';
+}
+
+// =================== EXPORT ===================
+function updateExportCount(){
+  const n=batchResults.filter(r=>r.statut==='found'||r.statut==='kept').length;
+  document.getElementById('export-count').textContent=n?n+' SIRET':'';
+}
+function exportCSV(){
+  if(!batchResults.length){alert('Aucune donn&eacute;e.');return;}
+  const lines=['ID;Nom;CP_Brut;SIRET_Original;SIRET_Final;Statut;Actif;Raison_Sociale_SIRENE;Adresse;CP;Ville;Forme_Juridique;Code_NAF;TVA_Intra;Telephone;Email;Site_Web'];
+  batchResults.forEach(r=>{
+    const esc=v=>(v||'').replace(/;/g,' ');
+    lines.push([r.id,esc(r.nom),r.cpRaw,r.siretOriginal,r.siretTrouve||r.siretOriginal||'',r.statut,r.actif===null?'':r.actif?'OUI':'NON',esc(r.nomApi),esc(r.adresse),r.cpApi,r.communeApi,esc(r.formeJuridique),esc(r.naf),r.tva,r.telephone,r.email,r.siteWeb].join(';'));
+  });
+  const blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='fournisseurs_siret_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+// =================== SAGE FRP 1000 EXPORT ===================
+const SAGE_COLS = [
+  { name:'CT_Num',              desc:'Code tiers (référence fournisseur)',       ex:'F1000' },
+  { name:'CT_Intitule',         desc:'Raison sociale SIRENE',                   ex:'PHARMAT SAS' },
+  { name:'CT_Siret',            desc:'SIRET 14 chiffres, sans espaces',          ex:'35240913400060' },
+  { name:'CT_Siren',            desc:'SIREN (9 premiers chiffres du SIRET)',     ex:'352409134' },
+  { name:'CT_Adresse',          desc:'Adresse de l\'etablissement',              ex:'12 RUE DES BOUCHERS' },
+  { name:'CT_CodePostal',       desc:'Code postal 5 chiffres',                  ex:'67000' },
+  { name:'CT_Ville',            desc:'Commune',                                  ex:'STRASBOURG' },
+  { name:'CT_NatureJuridique',  desc:'Forme juridique',                          ex:'SAS' },
+  { name:'CT_NumTVAIntracomm',  desc:'N° TVA intracommunautaire',               ex:'FR12352409134' },
+  { name:'CT_Telephone',        desc:'Téléphone (si disponible)',               ex:'0388001234' },
+  { name:'CT_Email',            desc:'Email (si disponible)',                   ex:'contact@pharmat.fr' },
+  { name:'CT_Site',             desc:'Site internet (si disponible)',            ex:'www.pharmat.fr' },
+];
+
+function showSageExport(){
+  if(!batchResults.length){alert('Aucune donnée. Lancez d\'abord la recherche.');return;}
+  // Build columns preview
+  const grid = SAGE_COLS.map(c=>
+    '<div class="sage-col-item"><div class="col-name">'+c.name+'</div><div class="col-desc">'+c.desc+'</div><div class="col-ex">Ex : '+c.ex+'</div></div>'
+  ).join('');
+  document.getElementById('sage-cols-preview').innerHTML=
+    '<div class="col-title">&#128196; Colonnes du fichier g&eacute;n&eacute;r&eacute;</div><div class="sage-cols-grid">'+grid+'</div>';
+  // Count
+  const n = batchResults.filter(r=>(r.statut==='found'||r.statut==='kept')&&(r.siretTrouve||r.siretOriginal)).length;
+  document.getElementById('sage-count').textContent = n+' tiers';
+  document.getElementById('sage-panel').style.display='block';
+  document.getElementById('sage-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function dlCSV(lines, filename, encoding){
+  let content = lines.join('\r\n');
+  let blob;
+  if(encoding === 'iso'){
+    // Encode as ISO-8859-1
+    const bytes = [];
+    for(let i=0;i<content.length;i++){
+      const code = content.charCodeAt(i);
+      bytes.push(code < 256 ? code : 63); // replace non-latin with '?'
+    }
+    blob = new Blob([new Uint8Array(bytes)], {type:'text/csv;charset=iso-8859-1'});
+  }else{
+    blob = new Blob(['\uFEFF'+content], {type:'text/csv;charset=utf-8'});
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+}
+
+function exportSage(){
+  const rows = batchResults.filter(r=>(r.statut==='found'||r.statut==='kept'));
+  if(!rows.length){alert('Aucun SIRET trouvé ou conservé à exporter.');return;}
+  const lines = ['CT_Num;CT_Intitule;CT_Siret;CT_Siren;CT_Adresse;CT_CodePostal;CT_Ville;CT_NatureJuridique;CT_NumTVAIntracomm;CT_Telephone;CT_Email;CT_Site'];
+  rows.forEach(r=>{
+    const esc=v=>(v||'').replace(/;/g,' ').replace(/"/g,"''");
+    const siretFinal = (r.siretTrouve||r.siretOriginal||'').replace(/\D/g,'');
+    const siren = siretFinal.slice(0,9);
+    const nomFinal = esc(r.nomApi||r.nom);
+    lines.push([r.id, nomFinal, siretFinal, siren,
+      esc(r.adresse), r.cpApi||'', r.communeApi||'',
+      esc(r.formeJuridique), r.tva||'',
+      r.telephone||'', r.email||'', r.siteWeb||''
+    ].join(';'));
+  });
+  dlCSV(lines, 'sage_frp1000_enrichi_'+new Date().toISOString().slice(0,10)+'.csv', 'iso');
+}
+
+function exportSageIntrouvables(){
+  const rows = batchResults.filter(r=>r.statut==='notfound'||r.statut==='pending');
+  if(!rows.length){alert('Aucun fournisseur introuvable !');return;}
+  const lines = ['CT_Num;CT_Intitule;Remarque'];
+  rows.forEach(r=>{
+    const nomEsc = r.nom.replace(/;/g,' ');
+    lines.push([r.id, nomEsc, 'SIRET à saisir manuellement dans Sage'].join(';'));
+  });
+  dlCSV(lines, 'sage_frp1000_a_traiter_manuellement_'+new Date().toISOString().slice(0,10)+'.csv', 'iso');
+}
+
+// =================== RESET ===================
+function resetAll(){
+  if(isRunning&&!isPaused&&!confirm('Recherche en cours. Vraiment r&eacute;initialiser ?'))return;
+  isRunning=false;isPaused=false;pauseResolve=null;
+  batchRows=[];batchResults=[];csvHeaders=[];csvRawRows=[];currentIdx=0;
+  document.getElementById('step-upload').style.display='block';
+  document.getElementById('step-mapping').style.display='none';
+  document.getElementById('step-process').style.display='none';
+  document.getElementById('batch-result').innerHTML='';
+  document.getElementById('file-input').value='';
+  document.getElementById('progress-fill').style.width='0%';
+  document.getElementById('progress-fill').classList.remove('paused');
+  document.getElementById('progress-text').textContent='En attente...';
+  document.getElementById('progress-eta').textContent='';
+  document.getElementById('pause-btn').style.display='none';
+  document.getElementById('run-btn').style.display='inline-flex';
+  document.getElementById('run-btn').disabled=false;
+  document.getElementById('run-btn').innerHTML='&#9889; Lancer la recherche';
+  document.getElementById('paused-banner').classList.remove('show');
+  document.getElementById('autosave-bar').classList.add('hidden');
+  document.getElementById('export-count').textContent='';
+  setStep(1); clearSession();
+}
+
+// =================== INIT ===================
+window.addEventListener('DOMContentLoaded', checkRestoreBanner);
+
+// ==========================================
+// AUDIT BASE FOURNISSEURS — Onglet 4
+// ==========================================
+
+// --- State ---
+let auditHeaders=[], auditRawRows=[];
+let auditItems=[], auditResults=[];
+let auditRunning=false, auditPaused=false, auditPauseResolve=null;
+let auditFilter='all';
+
+// --- File handling ---
+function handleAuditDrop(e){
+  e.preventDefault();
+  document.getElementById('audit-drop-zone').classList.remove('drag');
+  const f=e.dataTransfer.files[0]; if(f)handleAuditFile(f);
+}
+function handleAuditFile(file){
+  if(!file)return;
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='xlsx'||ext==='xls'){
+    const rd=new FileReader();
+    rd.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'binary'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        if(!data.length){alert('Fichier vide.');return;}
+        auditHeaders=data[0].map(h=>String(h).trim());
+        auditRawRows=data.slice(1)
+          .map(r=>auditHeaders.map((_,i)=>String(r[i]||'').trim()))
+          .filter(r=>r.some(c=>c));
+        showAuditMapping();
+      }catch(err){alert('Erreur lecture Excel : '+err.message);}
+    };
+    rd.readAsBinaryString(file);
+  }else{
+    const rd=new FileReader();
+    rd.onload=e=>{
+      const text=e.target.result;
+      const sep=detectSep(text);
+      const lines=text.split(/\r?\n/).filter(l=>l.trim());
+      if(lines.length<2){alert('Fichier vide.');return;}
+      auditHeaders=parseLine(lines[0],sep);
+      auditRawRows=lines.slice(1).map(l=>parseLine(l,sep)).filter(r=>r.some(c=>c.trim()));
+      showAuditMapping();
+    };
+    rd.readAsText(file,'ISO-8859-1');
+  }
+}
+
+// --- Show mapping step ---
+function showAuditMapping(){
+  document.getElementById('astep-upload').style.display='none';
+  document.getElementById('astep-mapping').style.display='block';
+  setAuditStep(2);
+  const none='<option value="">— (aucune) —</option>';
+  const opts=auditHeaders.map((h,i)=>'<option value="'+i+'">'+h+'</option>').join('');
+  ['amap-nom','amap-siret','amap-cp','amap-id'].forEach(id=>document.getElementById(id).innerHTML=none+opts);
+  auditHeaders.forEach((h,i)=>{
+    const hl=h.toLowerCase();
+    if(/nom|name|raison|fournisseur|libelle|intitule/.test(hl))trySet('amap-nom',i);
+    if(/siret|siren/.test(hl))trySet('amap-siret',i);
+    if(/postal|^cp$|code.?post|zip/.test(hl))trySet('amap-cp',i);
+    if(/\bid\b|ct_num|ref|^code|numero/.test(hl))trySet('amap-id',i);
+  });
+  const tbl=document.getElementById('audit-preview-table');
+  let html='<thead><tr>'+auditHeaders.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>';
+  auditRawRows.slice(0,6).forEach(row=>{html+='<tr>'+auditHeaders.map((_,i)=>'<td>'+(row[i]||'')+'</td>').join('')+'</tr>';});
+  tbl.innerHTML=html+'</tbody>';
+}
+
+// --- Confirm mapping & prepare rows ---
+function confirmAuditMapping(){
+  const iSiret=parseInt(document.getElementById('amap-siret').value);
+  if(isNaN(iSiret)){alert('La colonne SIRET est obligatoire pour l\'audit.');return;}
+  const iNom=parseInt(document.getElementById('amap-nom').value);
+  const iCP=parseInt(document.getElementById('amap-cp').value);
+  const iID=parseInt(document.getElementById('amap-id').value);
+
+  auditResults=auditRawRows.map((row,idx)=>{
+    const siretRaw=(row[iSiret]||'').replace(/\s/g,'');
+    const siret=siretRaw.replace(/\D/g,'');
+    const nom=isNaN(iNom)?'':(row[iNom]||'').trim();
+    const cp=isNaN(iCP)?'':(row[iCP]||'').trim();
+    const id=isNaN(iID)?'':(row[iID]||'').trim();
+    let statut, info;
+    if(!siret||/^0+$/.test(siret)||siret.length<9){
+      // Pas de SIRET : si nom disponible on tentera une recherche par nom+CP
+      statut=nom?'pending-name':'no-siret';
+      info=nom?'Recherche par nom':'Pas de SIRET ni de nom';
+    }
+    else if(siret.length!==14){statut='invalid';info='Format invalide ('+siret.length+' chiffres, attendu 14)';}
+    else{statut='pending';info='';}
+    return{idx:idx+1,id,nom,cp,siretOriginal:siret,statut,siretApi:'',nomApi:'',actifApi:null,adresse:'',cpApi:'',communeApi:'',formeJuridique:'',nafApi:'',tva:'',telephone:'',email:'',siteWeb:'',nomMatch:null,info};
+  }).filter(r=>r.nom||r.siretOriginal);
+
+  const pending=auditResults.filter(r=>r.statut==='pending').length;
+  const pendingName=auditResults.filter(r=>r.statut==='pending-name').length;
+  const invalid=auditResults.filter(r=>r.statut==='invalid').length;
+  const nosiret=auditResults.filter(r=>r.statut==='no-siret').length;
+  document.getElementById('audit-recap').innerHTML=
+    '&#9989; <strong>'+auditResults.length+'</strong> fournisseurs charg&eacute;s &nbsp;&middot;&nbsp; '+
+    '<strong style="color:var(--success)">'+pending+'</strong> SIRET &agrave; v&eacute;rifier'+
+    (pendingName?'&nbsp;&middot;&nbsp;<strong style="color:var(--info)">'+pendingName+'</strong> recherche par nom':'') +
+    (invalid?'&nbsp;&middot;&nbsp;<strong style="color:var(--warn)">'+invalid+'</strong> formats invalides':'')+
+    (nosiret?'&nbsp;&middot;&nbsp;<strong style="color:var(--muted)">'+nosiret+'</strong> sans SIRET ni nom':'');
+  document.getElementById('astep-mapping').style.display='none';
+  document.getElementById('astep-process').style.display='block';
+  document.getElementById('audit-progress-wrap').style.display='block';
+  setAuditStep(3);
+  renderAuditTable(auditResults);
+}
+
+// --- Name comparison ---
+function normName(s){
+  return String(s).toUpperCase()
+    .replace(/\b(SAS|SARL|SA\b|SNC|SASU|EURL|EI\b|SCI|GIE|SC\b|SPRL|ASSOCIATION|ASSO|FONDATION|GROUPE|GIE|EHPAD|CLINIQUE)\b/g,'')
+    .replace(/[^A-Z0-9]/g,' ').replace(/\s+/g,' ').trim();
+}
+function namesSimilar(a,b){
+  if(!a||!b)return true;
+  const na=normName(a),nb=normName(b);
+  if(!na||!nb)return true;
+  if(na===nb)return true;
+  if(na.includes(nb)||nb.includes(na))return true;
+  const wa=na.split(' ').filter(w=>w.length>2);
+  const wb=new Set(nb.split(' ').filter(w=>w.length>2));
+  if(!wa.length||!wb.size)return true;
+  const inter=wa.filter(w=>wb.has(w)).length;
+  return inter/Math.max(wa.length,wb.size)>=0.5;
+}
+
+// --- Pause/resume ---
+function toggleAuditPause(){
+  if(auditPaused){
+    auditPaused=false;
+    document.getElementById('audit-pause-btn').className='btn btn-pause';
+    document.getElementById('audit-pause-btn').innerHTML='&#9208;&#65039; Pause';
+    document.getElementById('audit-paused-banner').classList.remove('show');
+    document.getElementById('audit-progress-fill').classList.remove('paused');
+    if(auditPauseResolve){auditPauseResolve();auditPauseResolve=null;}
+  }else{
+    auditPaused=true;
+    document.getElementById('audit-pause-btn').className='btn btn-resume';
+    document.getElementById('audit-pause-btn').innerHTML='&#9654;&#65039; Reprendre';
+    document.getElementById('audit-paused-banner').classList.add('show');
+    document.getElementById('audit-progress-fill').classList.add('paused');
+  }
+}
+function waitAuditPause(){
+  if(!auditPaused)return Promise.resolve();
+  return new Promise(res=>{auditPauseResolve=res;});
+}
+
+// --- Main audit loop ---
+async function runAudit(){
+  const toVerify=auditResults.filter(r=>r.statut==='pending'||r.statut==='pending-name');
+  if(!toVerify.length){alert('Aucun SIRET valide à vérifier.');return;}
+  auditRunning=true; auditPaused=false;
+  const t0=Date.now(); let done=0;
+  document.getElementById('audit-run-btn').style.display='none';
+  document.getElementById('audit-pause-btn').style.display='inline-flex';
+  const fill=document.getElementById('audit-progress-fill');
+  const prog=document.getElementById('audit-progress-text');
+  const eta=document.getElementById('audit-progress-eta');
+
+  for(let i=0;i<toVerify.length;i++){
+    await waitAuditPause();
+    const row=toVerify[i];
+    const pct=Math.round(i/toVerify.length*100);
+    fill.style.width=pct+'%';
+    const modeLabel=row.statut==='pending-name'?'🔤 nom':'🔢 SIRET';
+    prog.innerHTML='<strong>'+pct+'%</strong> &mdash; '+(i+1)+'/'+toVerify.length+' ['+modeLabel+'] : '+row.nom.slice(0,40)+'&hellip;';
+    if(done>2){const avg=(Date.now()-t0)/done;eta.textContent='Fin dans '+fmtDur(avg*(toVerify.length-i));}
+    row.statut='current'; renderAuditTable(auditResults);
+
+    try{
+      let resp, json, res;
+
+      if(row.siretOriginal&&row.siretOriginal.length===14){
+        // ── MODE 1 : vérification directe par SIRET ──
+        // On cherche exactement ce SIRET dans SIRENE
+        resp=await fetch(API+'?q='+encodeURIComponent(row.siretOriginal)+'&per_page=1');
+        if(!resp.ok)throw new Error('HTTP '+resp.status);
+        json=await resp.json();
+        res=json.results||[];
+        if(res.length){
+          const best=res[0];
+          const etab=(best.matching_etablissements||[best.siege||{}])[0]||{};
+          const siege=best.siege||{};
+          const siretApi=(etab.siret||siege.siret||'').replace(/\D/g,'');
+          const actif=etab.etat_administratif==='A'||siege.etat_administratif==='A';
+          const commune=etab.libelle_commune||siege.libelle_commune||'';
+          const nomApi=best.nom_complet||best.nom_raison_sociale||'';
+          const naf=(best.activite_principale||'')+(best.libelle_activite_principale?' — '+best.libelle_activite_principale:'');
+          // Vérification triple : SIRET identique + établissement actif + nom cohérent
+          const siretMatch=siretApi===row.siretOriginal;
+          const nameMatch=namesSimilar(row.nom,nomApi);
+          row.siretApi=siretApi; row.nomApi=nomApi; row.actifApi=actif;
+          row.communeApi=commune; row.nafApi=naf; row.nomMatch=nameMatch;
+          row.adresse=etab.adresse||siege.adresse||'';
+          row.cpApi=etab.code_postal||siege.code_postal||'';
+          row.formeJuridique=best.nature_juridique_label||'';
+          row.tva=best.numero_tva_intra||'';
+          row.telephone=siege.telephone||'';
+          row.email=siege.email||'';
+          row.siteWeb=siege.site_internet||'';
+          if(!siretMatch){
+            // SIRENE a retourné un autre SIRET → probablement introuvable
+            row.statut='not-found';
+            row.info='⚠️ SIRET non confirmé par SIRENE';
+          } else if(!actif&&!nameMatch){row.statut='ferme-diff';}
+          else if(!actif){row.statut='ferme';}
+          else if(!nameMatch){row.statut='nom-diff';}
+          else{row.statut='ok';}
+          row.info=(actif?'✅ Actif':'🔴 Fermé')+(commune?' · '+commune:'')+(siretMatch?'':' ⚠️ SIRET≠');
+        }else{
+          row.statut='not-found'; row.info='SIRET absent de SIRENE';
+        }
+      } else {
+        // ── MODE 2 : recherche par nom + code postal (pas de SIRET) ──
+        let q=encodeURIComponent(row.nom.slice(0,80));
+        if(row.cp)q+='&code_postal='+encodeURIComponent(row.cp);
+        resp=await fetch(API+'?q='+q+'&per_page=3');
+        if(!resp.ok)throw new Error('HTTP '+resp.status);
+        json=await resp.json();
+        res=json.results||[];
+        if(res.length){
+          // Choisir le meilleur résultat (nom le plus similaire)
+          const best=res.reduce((a,b)=>namesSimilar(row.nom,b.nom_complet||b.nom_raison_sociale||'')&&
+            !namesSimilar(row.nom,a.nom_complet||a.nom_raison_sociale||'')?b:a, res[0]);
+          const siege=best.siege||{};
+          const etab=(best.matching_etablissements||[siege])[0]||siege;
+          const siretApi=(etab.siret||siege.siret||'').replace(/\D/g,'');
+          const actif=etab.etat_administratif==='A'||siege.etat_administratif==='A';
+          const commune=etab.libelle_commune||siege.libelle_commune||'';
+          const nomApi=best.nom_complet||best.nom_raison_sociale||'';
+          const nameMatch=namesSimilar(row.nom,nomApi);
+          row.siretApi=siretApi; row.nomApi=nomApi; row.actifApi=actif;
+          row.communeApi=commune; row.nomMatch=nameMatch;
+          row.adresse=etab.adresse||siege.adresse||'';
+          row.cpApi=etab.code_postal||siege.code_postal||'';
+          row.formeJuridique=best.nature_juridique_label||'';
+          row.tva=best.numero_tva_intra||'';
+          row.telephone=siege.telephone||'';
+          row.email=siege.email||'';
+          row.siteWeb=siege.site_internet||'';
+          if(!nameMatch){
+            row.statut='not-found';
+            row.info='Nom trop différent de SIRENE';
+          } else if(!actif){
+            row.statut='ferme';
+            row.info='🔴 Fermé · SIRET trouvé: '+siretApi;
+          } else {
+            // Trouvé par nom → SIRET récupéré
+            row.statut='found-by-name';
+            row.info='✅ Trouvé par nom · SIRET: '+siretApi+(commune?' · '+commune:'');
+          }
+        }else{
+          row.statut='not-found'; row.info='Introuvable dans SIRENE';
+        }
+      }
+    }catch(e){row.statut='not-found';row.info='Erreur: '+e.message;}
+
+    done++; renderAuditTable(auditResults);
+    await new Promise(r=>setTimeout(r,380));
+  }
+
+  // Done
+  auditRunning=false;
+  fill.style.width='100%'; fill.classList.remove('paused');
+  const ok=auditResults.filter(r=>r.statut==='ok'||r.statut==='found-by-name').length;
+  const ferme=auditResults.filter(r=>r.statut==='ferme'||r.statut==='ferme-diff').length;
+  const diff=auditResults.filter(r=>r.statut==='nom-diff'||r.statut==='ferme-diff').length;
+  const nf=auditResults.filter(r=>r.statut==='not-found').length;
+  prog.innerHTML='&#9989; <strong>Termin&eacute; !</strong> &mdash; '+
+    '<strong style="color:var(--success)">'+ok+' OK</strong> &middot; '+
+    '<strong style="color:var(--danger)">'+ferme+' ferm&eacute;s</strong> &middot; '+
+    '<strong style="color:var(--warn)">'+diff+' noms &#8800;</strong> &middot; '+
+    '<strong style="color:var(--muted)">'+nf+' introuvables</strong>';
+  eta.textContent='Dur&eacute;e totale : '+fmtDur(Date.now()-t0);
+  document.getElementById('audit-pause-btn').style.display='none';
+  document.getElementById('audit-run-btn').style.display='inline-flex';
+  document.getElementById('audit-run-btn').innerHTML='&#9989; Termin&eacute;';
+  document.getElementById('audit-run-btn').disabled=true;
+  document.getElementById('audit-export-btn').disabled=false;
+  document.getElementById('audit-sage-btn').disabled=false;
+  document.getElementById('audit-actions-btn').disabled=false;
+  document.getElementById('audit-filter-bar').style.display='flex';
+  updateAuditKPI(); setAuditStep(4);
+}
+
+// --- KPI bar ---
+function updateAuditKPI(){
+  const ok=auditResults.filter(r=>r.statut==='ok'||r.statut==='found-by-name').length;
+  const ferme=auditResults.filter(r=>r.statut==='ferme'||r.statut==='ferme-diff').length;
+  const diff=auditResults.filter(r=>r.statut==='nom-diff').length;
+  const nf=auditResults.filter(r=>r.statut==='not-found').length;
+  const inv=auditResults.filter(r=>r.statut==='invalid').length;
+  const total=auditResults.filter(r=>!['no-siret','pending'].includes(r.statut)).length;
+  const pct=total?Math.round(ok/total*100):0;
+  const bar=document.getElementById('audit-kpi-bar');
+  bar.style.display='grid';
+  bar.innerHTML=
+    '<div class="audit-kpi kpi-ok"><div class="kpi-num">'+pct+'%</div><div class="kpi-label">Base &agrave; jour</div></div>'+
+    '<div class="audit-kpi kpi-ok"><div class="kpi-num">'+ok+'</div><div class="kpi-label">&#9989; OK SIRENE</div></div>'+
+    '<div class="audit-kpi kpi-ferme"><div class="kpi-num">'+ferme+'</div><div class="kpi-label">&#128308; &Eacute;tblissements ferm&eacute;s</div></div>'+
+    '<div class="audit-kpi kpi-diff"><div class="kpi-num">'+diff+'</div><div class="kpi-label">&#128203; Noms diff&eacute;rents</div></div>'+
+    '<div class="audit-kpi kpi-intro"><div class="kpi-num">'+nf+'</div><div class="kpi-label">&#10067; SIRET introuvables</div></div>'+
+    (inv?'<div class="audit-kpi kpi-invalid"><div class="kpi-num">'+inv+'</div><div class="kpi-label">&#9888; Formats invalides</div></div>':'');
+}
+
+// --- Filter ---
+let auditCurrentFilter='all';
+function filterAudit(f,btn){
+  auditCurrentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAuditTable(auditResults);
+}
+
+// --- Render table ---
+function renderAuditTable(rows){
+  // Apply filter
+  let filtered=rows;
+  if(auditCurrentFilter==='ok')filtered=rows.filter(r=>r.statut==='ok'||r.statut==='found-by-name');
+  else if(auditCurrentFilter==='found-by-name')filtered=rows.filter(r=>r.statut==='found-by-name');
+  else if(auditCurrentFilter==='ferme')filtered=rows.filter(r=>r.statut==='ferme'||r.statut==='ferme-diff');
+  else if(auditCurrentFilter==='nom-diff')filtered=rows.filter(r=>r.statut==='nom-diff'||r.statut==='ferme-diff');
+  else if(auditCurrentFilter==='not-found')filtered=rows.filter(r=>r.statut==='not-found');
+  else if(auditCurrentFilter==='actions')filtered=rows.filter(r=>!['ok','found-by-name','no-siret','pending','pending-name','current'].includes(r.statut));
+
+  const ok=rows.filter(r=>r.statut==='ok').length;
+  const foundByName=rows.filter(r=>r.statut==='found-by-name').length;
+  const ferme=rows.filter(r=>r.statut==='ferme'||r.statut==='ferme-diff').length;
+  const diff=rows.filter(r=>r.statut==='nom-diff'||r.statut==='ferme-diff').length;
+  const nf=rows.filter(r=>r.statut==='not-found').length;
+  const inv=rows.filter(r=>r.statut==='invalid').length;
+  const ns=rows.filter(r=>r.statut==='no-siret').length;
+  const pend=rows.filter(r=>r.statut==='pending'||r.statut==='pending-name'||r.statut==='current').length;
+
+  let html='<div class="stats-bar">'+
+    '<span class="pill p-ok">&#9989; '+ok+' OK</span>'+(foundByName?'<span class="pill" style="background:rgba(99,102,241,.15);color:#818cf8">&#128269; '+foundByName+' Trouv&eacute;s/nom</span>':'')+
+    '<span class="pill" style="background:rgba(239,68,68,.15);color:var(--danger)">&#128308; '+ferme+' Ferm&eacute;s</span>'+
+    '<span class="pill" style="background:rgba(250,204,21,.15);color:var(--warn)">&#128203; '+diff+' Noms &#8800;</span>'+
+    '<span class="pill p-err">&#10067; '+nf+' Introuvables</span>'+
+    (inv?'<span class="pill" style="background:rgba(251,146,60,.15);color:#fb923c">&#9888; '+inv+' Invalides</span>':'')+
+    (ns?'<span class="pill p-wait">&#8212; '+ns+' Sans SIRET</span>':'')+
+    (pend?'<span class="pill p-cur">&#9203; '+pend+' En attente</span>':'')+
+    '</div>';
+
+  html+='<div class="batch-wrap"><table class="batch-table"><thead><tr>'+
+    '<th>#</th><th>R&eacute;f. Sage</th><th>Nom fournisseur</th>'+
+    '<th>SIRET original</th><th>Statut SIRENE</th>'+
+    '<th>Raison sociale SIRENE</th><th>Actif</th><th>Commune</th>'+
+    '<th>Action Sage FRP&nbsp;1000</th>'+
+    '</tr></thead><tbody>';
+
+  filtered.forEach(r=>{
+    let pill, actionHtml, nomCell;
+    switch(r.statut){
+      case 'ok':
+        pill='<span class="pill p-ok">&#9989; OK</span>';
+        actionHtml='<span class="action-cell ac-none">Aucune action</span>';
+        break;
+      case 'found-by-name':
+        pill='<span class="pill" style="background:rgba(99,102,241,.15);color:#818cf8">&#128269; Trouv&eacute; par nom</span>';
+        actionHtml='<span class="action-cell ac-update">Saisir le SIRET dans CT_Siret Sage</span>';
+        break;
+      case 'ferme':
+        pill='<span class="pill" style="background:rgba(239,68,68,.15);color:var(--danger)">&#128308; Ferm&eacute;</span>';
+        actionHtml='<span class="action-cell ac-block">Bloquer le tiers Sage</span>';
+        break;
+      case 'nom-diff':
+        pill='<span class="pill" style="background:rgba(250,204,21,.15);color:var(--warn)">&#128203; Nom diff&eacute;rent</span>';
+        actionHtml='<span class="action-cell ac-update">Mettre &agrave; jour CT_Intitule</span>';
+        break;
+      case 'ferme-diff':
+        pill='<span class="pill" style="background:rgba(239,68,68,.15);color:var(--danger)">&#128308; Ferm&eacute; + Nom &#8800;</span>';
+        actionHtml='<span class="action-cell ac-block">Bloquer + v&eacute;rifier successeur</span>';
+        break;
+      case 'not-found':
+        pill='<span class="pill p-err">&#10067; Introuvable</span>';
+        actionHtml='<span class="action-cell ac-check">V&eacute;rifier manuellement</span>';
+        break;
+      case 'invalid':
+        pill='<span class="pill" style="background:rgba(251,146,60,.15);color:#fb923c">&#9888; Format invalide</span>';
+        actionHtml='<span class="action-cell ac-fix">Corriger CT_Siret dans Sage</span>';
+        break;
+      case 'no-siret':
+        pill='<span class="pill p-wait">&#8212; Sans SIRET</span>';
+        actionHtml='<span class="action-cell ac-check">SIRET &agrave; saisir dans Sage</span>';
+        break;
+      case 'pending-name':
+        pill='<span class="pill p-wait">&#9203; Rech. par nom</span>';
+        actionHtml='<span style="color:var(--muted)">&hellip;</span>';
+        break;
+      case 'current':
+        pill='<span class="pill p-cur">&#128269; En cours</span>';
+        actionHtml='<span style="color:var(--muted)">&hellip;</span>';
+        break;
+      default:
+        pill='<span class="pill p-wait">&#9203; En attente</span>';
+        actionHtml='<span style="color:var(--muted)">&hellip;</span>';
+    }
+    // Nom cell
+    if(r.nomApi&&r.nomMatch===false){
+      nomCell='<div class="nom-diff-cell">'+
+        '<span class="nom-sirene">'+r.nomApi+'</span>'+
+        '</div>';
+    }else if(r.nomApi){
+      nomCell='<span style="font-size:12px;color:var(--muted)">'+r.nomApi+'</span>';
+    }else{nomCell='<span style="color:var(--border)">—</span>';}
+
+    html+='<tr>'+
+      '<td style="color:var(--muted)">'+r.idx+'</td>'+
+      '<td style="color:var(--muted);font-size:12px;font-family:\'Courier New\',monospace">'+r.id+'</td>'+
+      '<td style="font-weight:600;color:var(--title)">'+r.nom+'</td>'+
+      '<td class="td-mono" style="color:var(--accent);font-size:12px">'+fmtSiret(r.siretOriginal)+'</td>'+
+      '<td>'+pill+'</td>'+
+      '<td>'+nomCell+'</td>'+
+      '<td style="text-align:center">'+
+        (r.actifApi===null?'<span style="color:var(--border)">—</span>':r.actifApi?'<span style="color:var(--success);font-weight:700">OUI</span>':'<span style="color:var(--danger);font-weight:700">NON</span>')+
+      '</td>'+
+      '<td style="font-size:12px;color:var(--muted)">'+( r.communeApi||'—')+'</td>'+
+      '<td>'+actionHtml+'</td>'+
+      '</tr>';
+  });
+
+  if(!filtered.length){html+='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Aucun r&eacute;sultat pour ce filtre</td></tr>';}
+  document.getElementById('audit-result').innerHTML=html+'</tbody></table></div>';
+}
+
+// --- Exports ---
+function getAuditAction(statut){
+  const m={'ok':'Aucune action','found-by-name':'Saisir SIRET dans Sage','ferme':'Bloquer le tiers Sage','nom-diff':'Mettre a jour CT_Intitule','ferme-diff':'Bloquer + verifier successeur','not-found':'Verifier manuellement','invalid':'Corriger CT_Siret','no-siret':'SIRET a saisir','pending':'','pending-name':'','current':''};
+  return m[statut]||'';
+}
+function exportAuditCSV(){
+  if(!auditResults.length)return;
+  const lines=['Ref_Sage;Nom_Fichier;SIRET_Fichier;Statut_SIRENE;Raison_Sociale_SIRENE;Actif_SIRENE;Adresse;CP;Commune;Forme_Juridique;Code_NAF;TVA_Intra;Telephone;Email;Site_Web;Action_Recommandee'];
+  const esc=v=>(v||'').replace(/;/g,' ');
+  auditResults.forEach(r=>{
+    lines.push([r.id,esc(r.nom),r.siretOriginal,r.statut,esc(r.nomApi),r.actifApi===null?'':r.actifApi?'OUI':'NON',esc(r.adresse||''),r.cpApi||'',r.communeApi,esc(r.formeJuridique||''),esc(r.nafApi),r.tva||'',r.telephone||'',r.email||'',r.siteWeb||'',getAuditAction(r.statut)].join(';'));
+  });
+  dlCSV(lines,'audit_fournisseurs_'+new Date().toISOString().slice(0,10)+'.csv','iso');
+}
+function exportAuditSage(){
+  // Format import Sage FRP 1000 — tiers à mettre à jour
+  const rows=auditResults.filter(r=>!['ok','no-siret','pending','current',''].includes(r.statut));
+  if(!rows.length){alert('Aucune mise à jour nécessaire ! La base est à jour.');return;}
+  const lines=['CT_Num;CT_Intitule;CT_Siret;CT_Siren;CT_Adresse;CT_CodePostal;CT_Ville;CT_NatureJuridique;CT_NumTVAIntracomm;CT_Telephone;CT_Email;CT_Site;Statut_SIRENE;Action_Sage'];
+  const esc=v=>(v||'').replace(/;/g,' ');
+  rows.forEach(r=>{
+    const siret=r.siretOriginal;
+    const siren=siret.slice(0,9);
+    const nomFinal=esc(r.nomApi||r.nom);
+    lines.push([r.id,nomFinal,siret,siren,esc(r.adresse||''),r.cpApi||'',r.communeApi||'',esc(r.formeJuridique||''),r.tva||'',r.telephone||'',r.email||'',r.siteWeb||'',r.statut,getAuditAction(r.statut)].join(';'));
+  });
+  dlCSV(lines,'sage_frp1000_mises_a_jour_'+new Date().toISOString().slice(0,10)+'.csv','iso');
+}
+function exportAuditActions(){
+  // Only rows needing action
+  const rows=auditResults.filter(r=>!['ok','no-siret','pending','current'].includes(r.statut));
+  if(!rows.length){alert('Aucune action requise !');return;}
+  const lines=['Priorite;CT_Num;Nom_Fournisseur;SIRET;Action;Nom_SIRENE;Actif'];
+  rows.forEach(r=>{
+    const prio=r.statut==='ferme'||r.statut==='ferme-diff'?'1-URGENT':r.statut==='invalid'?'2-CRITIQUE':r.statut==='nom-diff'?'3-NORMAL':'4-A_VERIFIER';
+    lines.push([prio,r.id,r.nom.replace(/;/g,' '),r.siretOriginal,getAuditAction(r.statut),r.nomApi.replace(/;/g,' '),r.actifApi===null?'':r.actifApi?'OUI':'NON'].join(';'));
+  });
+  dlCSV(lines,'actions_prioritaires_'+new Date().toISOString().slice(0,10)+'.csv','iso');
+}
+
+// --- Step indicator ---
+function setAuditStep(n){
+  for(let i=1;i<=4;i++){
+    const e=document.getElementById('astep'+i);
+    if(!e)continue;
+    e.classList.remove('active','done');
+    if(i<n)e.classList.add('done');
+    else if(i===n)e.classList.add('active');
+  }
+}
+
+// --- Reset audit ---
+function resetAudit(){
+  if(auditRunning&&!auditPaused&&!confirm('Vérification en cours. Vraiment réinitialiser ?'))return;
+  auditRunning=false; auditPaused=false; auditPauseResolve=null; auditCurrentFilter='all';
+  auditHeaders=[]; auditRawRows=[]; auditItems=[]; auditResults=[];
+  document.getElementById('astep-upload').style.display='block';
+  document.getElementById('astep-mapping').style.display='none';
+  document.getElementById('astep-process').style.display='none';
+  document.getElementById('audit-result').innerHTML='';
+  document.getElementById('audit-file-input').value='';
+  document.getElementById('audit-progress-fill').style.width='0%';
+  document.getElementById('audit-progress-fill').classList.remove('paused');
+  document.getElementById('audit-run-btn').disabled=false;
+  document.getElementById('audit-run-btn').innerHTML='&#128269; Lancer la v&eacute;rification';
+  document.getElementById('audit-run-btn').style.display='inline-flex';
+  document.getElementById('audit-pause-btn').style.display='none';
+  document.getElementById('audit-export-btn').disabled=true;
+  document.getElementById('audit-sage-btn').disabled=true;
+  document.getElementById('audit-actions-btn').disabled=true;
+  document.getElementById('audit-filter-bar').style.display='none';
+  document.getElementById('audit-kpi-bar').style.display='none';
+  document.getElementById('audit-paused-banner').classList.remove('show');
+  setAuditStep(1);
+}
+
+// =================== AIDE MODALE ===================
+function openHelp(){document.getElementById('help-modal').classList.add('open');document.body.style.overflow='hidden';}
+function closeHelp(){document.getElementById('help-modal').classList.remove('open');document.body.style.overflow='';}
+function showHelp(section,btn){
+  document.querySelectorAll('.help-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.help-toc-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('help-'+section).classList.add('active');
+  btn.classList.add('active');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+
+
+// =================== MODALE TOUS LES ÉTABLISSEMENTS D'UN SIREN ===================
+let etabAllData = [];         // tous les établissements chargés
+let etabFiltered = [];        // après filtre
+let etabCurrentFilter = 'all';
+let etabCurrentSiren = '';
+let etabPage = 1;
+const ETAB_PER_PAGE = 25;
+let etabTotalExpected = 0;
+
+async function listEtablissements(siren, nom) {
+  if (!siren || siren.length < 9) { alert('SIREN invalide.'); return; }
+  etabCurrentSiren = siren;
+  etabAllData = [];
+  etabPage = 1;
+  etabTotalExpected = 0;
+
+  // Afficher la modale
+  document.getElementById('etab-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('etab-loader').style.display = 'block';
+  document.getElementById('etab-table-wrap').style.display = 'none';
+  document.getElementById('etab-export-btn').disabled = true;
+  document.getElementById('etab-modal-title').textContent = '🏢 Établissements — ' + nom;
+  document.getElementById('etab-modal-sub').textContent = 'SIREN : ' + siren + ' · Chargement via API INSEE…';
+  document.getElementById('etab-stats').innerHTML = '';
+  document.getElementById('etab-search').value = '';
+  etabCurrentFilter = 'all';
+  document.querySelectorAll('.etab-filter-btn').forEach(b => b.classList.remove('etab-f-active'));
+  document.querySelector('.etab-filter-btn').classList.add('etab-f-active');
+
+  // Récupérer le nom via recherche-entreprises puis charger les établissements disponibles
+  try {
+    const resp = await fetch(API + '?q=' + siren + '&per_page=1');
+    const data = resp.ok ? await resp.json() : { results: [] };
+    const company = (data.results || []).find(r => r.siren === siren) || (data.results || [])[0] || null;
+    await loadAllEtabBySiren(siren, company);
+  } catch(e) {
+    await loadAllEtabBySiren(siren, null);
+  }
+}
+
+
+
+
+
+async function loadAllEtabBySiren(siren, company) {
+  // ── API INSEE SIRENE officielle — liste complète des établissements ──────
+  // Header : X-INSEE-Api-Key-Integration
+  // Endpoint : GET /api-sirene/3.11/siret?q=siren:SIREN&nombre=100&debut=N
+  // ─────────────────────────────────────────────────────────────────────────
+  const INSEE_KEY = sessionStorage.getItem('insee_api_key') || 'ecad76f8-3892-45bb-ad76-f8389255bb15';
+  const INSEE_API = 'https://api.insee.fr/api-sirene/3.11/siret';
+
+  try {
+    const nomEntreprise = company ? (company.nom_complet || company.nom_raison_sociale || '') : '';
+    const totalConnu    = company ? (company.nombre_etablissements || 0) : 0;
+
+    document.getElementById('etab-modal-sub').textContent =
+      'SIREN : ' + siren + (totalConnu ? ' · ' + totalConnu + ' établissements attendus' : '') + ' — chargement via API INSEE…';
+
+    // ── Pagination : 100 établissements par page ─────────────────────────
+    let debut = 0;
+    const NOMBRE = 100;
+    let total = Infinity;
+
+    while (etabAllData.length < total) {
+      const url = INSEE_API + '?q=siren:' + siren + '&nombre=' + NOMBRE + '&debut=' + debut;
+      const resp = await fetch(url, {
+        headers: { 'X-INSEE-Api-Key-Integration': INSEE_KEY, 'Accept': 'application/json' }
+      });
+
+      if (resp.status === 401 || resp.status === 403) {
+        // Clé invalide → fallback sur l'API publique
+        showEtabError('Clé API INSEE invalide ou expirée. Vérifiez la clé dans les paramètres.');
+        return;
+      }
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+      const data = await resp.json();
+
+      // Récupérer le total réel au premier appel
+      if (debut === 0) {
+        total = data.header?.total || data.etablissements?.length || 0;
+        document.getElementById('etab-modal-sub').textContent =
+          'SIREN : ' + siren + ' · ' + total + ' établissements — chargement…';
+      }
+
+      const etabs = data.etablissements || [];
+      if (!etabs.length) break;
+
+      for (const e of etabs) {
+        const siret = (e.siret || '').replace(/\D/g, '');
+        if (!siret || etabAllData.find(x => x.siret === siret)) continue;
+
+        const periode = (e.periodesEtablissement || [])[0] || {};
+        const adresse = e.adresseEtablissement || {};
+        const ul = e.uniteLegale || {};
+
+        const enseigne = periode.enseigne1Etablissement || periode.denominationUsuelleEtablissement || '';
+        const nom = ul.denominationUniteLegale
+          || (ul.nomUniteLegale ? ul.nomUniteLegale + ' ' + (ul.prenomUsuelUniteLegale || '') : '')
+          || nomEntreprise;
+
+        const adresseStr = [
+          adresse.numeroVoieEtablissement,
+          adresse.indiceRepetitionEtablissement,
+          adresse.typeVoieEtablissement,
+          adresse.libelleVoieEtablissement
+        ].filter(Boolean).join(' ');
+
+        const nafCode = periode.activitePrincipaleEtablissement || ul.activitePrincipaleUniteLegale || '';
+
+        etabAllData.push({
+          siret,
+          siege: e.etablissementSiege === 'true' || e.etablissementSiege === true,
+          enseigne, nom,
+          adresse: adresseStr,
+          cp: adresse.codePostalEtablissement || '',
+          commune: adresse.libelleCommuneEtablissement || adresse.libelleCommuneEtrangerEtablissement || '',
+          naf: nafCode,
+          actif: periode.etatAdministratifEtablissement === 'A',
+          dateCreation: e.dateCreationEtablissement || '',
+          dateFermeture: periode.dateFin || ''
+        });
+      }
+
+      debut += NOMBRE;
+      document.getElementById('etab-modal-sub').textContent =
+        'SIREN : ' + siren + ' · ' + etabAllData.length + ' / ' + total + ' établissements chargés…';
+
+      if (etabs.length < NOMBRE) break; // dernière page
+      if (debut < total) await new Promise(r => setTimeout(r, 200)); // politesse API
+    }
+
+    // ── Fin ───────────────────────────────────────────────────────────────
+    etabAllData.sort((a, b) => {
+      if (a.siege && !b.siege) return -1;
+      if (!a.siege && b.siege) return 1;
+      if (a.actif && !b.actif) return -1;
+      if (!a.actif && b.actif) return 1;
+      return (a.commune || '').localeCompare(b.commune || '');
+    });
+
+    document.getElementById('etab-modal-sub').textContent =
+      'SIREN : ' + siren + ' · ' + etabAllData.length + ' établissements · source : API INSEE Sirene';
+
+    // Trier : siège en premier, puis actifs, puis fermés par commune
+    etabAllData.sort((a, b) => {
+      if (a.siege && !b.siege) return -1;
+      if (!a.siege && b.siege) return 1;
+      if (a.actif && !b.actif) return -1;
+      if (!a.actif && b.actif) return 1;
+      return (a.commune || '').localeCompare(b.commune || '');
+    });
+
+    document.getElementById('etab-loader').style.display = 'none';
+    document.getElementById('etab-table-wrap').style.display = 'block';
+    document.getElementById('etab-export-btn').disabled = false;
+    renderEtabTable();
+
+  } catch(e) {
+    showEtabError('Erreur chargement établissements : ' + e.message);
+  }
+}
+
+function filterEtab(type, btn) {
+  if (btn) {
+    document.querySelectorAll('.etab-filter-btn').forEach(b => b.classList.remove('etab-f-active'));
+    btn.classList.add('etab-f-active');
+  }
+  if (type !== 'search') etabCurrentFilter = type;
+
+  const search = (document.getElementById('etab-search').value || '').toLowerCase();
+
+  etabFiltered = etabAllData.filter(e => {
+    const matchFilter =
+      etabCurrentFilter === 'all' ? true :
+      etabCurrentFilter === 'actif' ? e.actif :
+      etabCurrentFilter === 'ferme' ? !e.actif : true;
+    const matchSearch = !search ||
+      (e.siret||'').includes(search) ||
+      (e.commune||'').toLowerCase().includes(search) ||
+      (e.adresse||'').toLowerCase().includes(search) ||
+      (e.enseigne||'').toLowerCase().includes(search) ||
+      (e.naf||'').toLowerCase().includes(search);
+    return matchFilter && matchSearch;
+  });
+
+  renderEtabRows(etabFiltered);
+}
+
+function renderEtabTable() {
+  const actifs = etabAllData.filter(e => e.actif).length;
+  const fermes = etabAllData.length - actifs;
+  const nom = document.getElementById('etab-modal-title').textContent.replace('🏢 Établissements — ', '');
+
+  document.getElementById('etab-modal-sub').textContent =
+    'SIREN : ' + etabCurrentSiren + ' · ' + etabAllData.length + ' établissement(s) chargés';
+
+  document.getElementById('etab-stats').innerHTML =
+    '<span style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);padding:3px 10px;border-radius:10px;font-size:12px">✅ ' + actifs + ' actifs</span>' +
+    (fermes ? '<span style="background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);padding:3px 10px;border-radius:10px;font-size:12px;margin-left:4px">🔴 ' + fermes + ' fermés</span>' : '');
+
+  filterEtab(etabCurrentFilter, null);
+}
+
+function renderEtabRows(rows) {
+  const tbody = document.getElementById('etab-tbody');
+  tbody.innerHTML = rows.map((e, i) => {
+    const siretFmt = e.siret.replace(/(\d{3})(\d{3})(\d{3})(\d{5})/, '$1 $2 $3 $4');
+    const statut = e.actif
+      ? '<span class="etab-actif">✅ Actif</span>'
+      : '<span class="etab-ferme">🔴 Fermé</span>';
+    const date = e.dateCreation ? new Date(e.dateCreation).toLocaleDateString('fr-FR',{year:'numeric',month:'2-digit'}) : '—';
+    const label = e.enseigne || (e.siege ? 'Siège social' : '—');
+    const adresse = [e.adresse, e.cp, e.commune].filter(Boolean).join(' · ') || '—';
+
+    return '<tr>' +
+      '<td style="color:#475569;font-size:11px">' + (i+1) + '</td>' +
+      '<td><span class="etab-siret" data-siret="' + e.siret + '" onclick="copyText(this.dataset.siret,this)" title="Cliquer pour copier">' + siretFmt + '</span>' +
+        (e.siege ? '<span class="etab-siege">SIÈGE</span>' : '') + '</td>' +
+      '<td style="color:#e2e8f0;font-weight:500">' + escHtml(label) + '</td>' +
+      '<td style="color:#94a3b8;font-size:12px">' + escHtml(adresse) + '</td>' +
+      '<td style="color:#64748b;font-size:11px">' + escHtml(e.naf.substring(0,50)) + '</td>' +
+      '<td style="text-align:center">' + statut + '</td>' +
+      '<td style="color:#475569;font-size:12px">' + date + '</td>' +
+      '</tr>';
+  }).join('');
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#475569">Aucun établissement correspondant</td></tr>';
+  }
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showEtabError(msg) {
+  document.getElementById('etab-loader').innerHTML = '<div style="color:#f87171;padding:20px">⚠️ ' + msg + '</div>';
+}
+
+function closeEtabModal() {
+  document.getElementById('etab-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Fermer en cliquant sur le fond
+document.getElementById('etab-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEtabModal();
+});
+
+// Raccourci clavier Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('etab-modal').style.display !== 'none') {
+    closeEtabModal();
+  }
+});
+
+function exportEtabXlsx() {
+  if (!etabAllData.length) return;
+  const headers = ['SIRET','Siège','Enseigne / Nom commercial','Adresse','CP','Commune','Activité (NAF)','Statut','Date création'];
+  const rows = etabAllData.map(e => [
+    e.siret,
+    e.siege ? 'OUI' : '',
+    e.enseigne || '',
+    e.adresse || '',
+    e.cp || '',
+    e.commune || '',
+    e.naf || '',
+    e.actif ? 'ACTIF' : 'FERMÉ',
+    e.dateCreation || ''
+  ]);
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  ws['!cols'] = [{wch:18},{wch:6},{wch:35},{wch:30},{wch:8},{wch:22},{wch:40},{wch:8},{wch:12}];
+
+  for (let C = 0; C < headers.length; C++) {
+    const ref = XLSX.utils.encode_cell({r:0,c:C});
+    if (ws[ref]) ws[ref].s = {fill:{fgColor:{rgb:'1E293B'}},font:{bold:true,color:{rgb:'818CF8'},sz:10},alignment:{horizontal:'center'}};
+  }
+  rows.forEach((row, R) => {
+    const actif = row[7] === 'ACTIF';
+    for (let C = 0; C < headers.length; C++) {
+      const ref = XLSX.utils.encode_cell({r:R+1,c:C});
+      if (!ws[ref]) ws[ref] = {t:'s',v:''};
+      ws[ref].s = {
+        fill:{fgColor:{rgb: actif ? '0F1729' : '1A0A0A'}},
+        font:{color:{rgb: C===0 ? '818CF8' : actif ? 'CBD5E1' : '94A3B8'}},
+        alignment:{vertical:'center'}
+      };
+    }
+  });
+
+  const nom = document.getElementById('etab-modal-title').textContent.replace('🏢 Établissements — ','').substring(0,25);
+  XLSX.utils.book_append_sheet(wb, ws, 'Etablissements');
+  XLSX.writeFile(wb, 'SIRET_' + etabCurrentSiren + '_' + nom.replace(/[^a-zA-Z0-9]/g,'_') + '.xlsx');
+}
+
+</script>
+
+<!-- =================== MODALE ETABLISSEMENTS SIREN =================== -->
+<div id="etab-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;overflow-y:auto;padding:20px 10px">
+  <div style="max-width:900px;margin:0 auto;background:#0f1729;border:1px solid #334155;border-radius:14px;overflow:hidden">
+    <!-- Header -->
+    <div style="padding:18px 22px;background:linear-gradient(135deg,#0a1020,#0f1729);border-bottom:1px solid rgba(99,102,241,.3);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <div id="etab-modal-title" style="font-size:17px;font-weight:700;color:#fff"></div>
+        <div id="etab-modal-sub" style="font-size:12px;color:#64748b;margin-top:3px"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div id="etab-stats" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <button id="etab-export-btn" onclick="exportEtabXlsx()" disabled style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);padding:6px 14px;font-size:12px;border-radius:6px;cursor:pointer;font-family:inherit">&#128229; Export Excel</button>
+        <button onclick="closeEtabModal()" style="background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);padding:6px 12px;font-size:14px;border-radius:6px;cursor:pointer">✕</button>
+      </div>
+    </div>
+    <!-- Filtres -->
+    <div style="padding:12px 22px;border-bottom:1px solid #1e2d45;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;color:#64748b">Filtrer :</span>
+      <button class="etab-filter-btn etab-f-active" onclick="filterEtab('all',this)">Tous</button>
+      <button class="etab-filter-btn" onclick="filterEtab('actif',this)" style="color:#4ade80">✅ Actifs</button>
+      <button class="etab-filter-btn" onclick="filterEtab('ferme',this)" style="color:#f87171">🔴 Fermés</button>
+      <input id="etab-search" type="text" placeholder="🔍 Rechercher commune, adresse…" oninput="filterEtab('search',null)" style="margin-left:auto;background:#0a1628;border:1px solid #334155;border-radius:6px;padding:5px 10px;color:#e2e8f0;font-size:12px;width:220px;font-family:inherit">
+    </div>
+    <!-- Loader -->
+    <div id="etab-loader" style="padding:40px;text-align:center;color:#64748b">
+      <div class="spinner" style="margin:0 auto 12px"></div>Chargement des établissements…
+    </div>
+    <!-- Table -->
+    <div id="etab-table-wrap" style="display:none;overflow-x:auto">
+      <table id="etab-table" style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#0a1020;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+            <th style="padding:10px 14px;text-align:left;border-bottom:1px solid #1e2d45">#</th>
+            <th style="padding:10px 14px;text-align:left;border-bottom:1px solid #1e2d45">SIRET</th>
+            <th style="padding:10px 14px;text-align:left;border-bottom:1px solid #1e2d45">Enseigne / Nom</th>
+            <th style="padding:10px 14px;text-align:left;border-bottom:1px solid #1e2d45">Adresse</th>
+            <th style="padding:10px 14px;text-align:left;border-bottom:1px solid #1e2d45">Activité (NAF)</th>
+            <th style="padding:10px 14px;text-align:center;border-bottom:1px solid #1e2d45">Statut</th>
+            <th style="padding:10px 14px;text-align:left;border-bottom:1px solid #1e2d45">Depuis</th>
+          </tr>
+        </thead>
+        <tbody id="etab-tbody"></tbody>
+      </table>
+      <div id="etab-load-more" style="display:none;padding:14px;text-align:center">
+        <button onclick="loadMoreEtab()" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);padding:8px 20px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px">&#8595; Charger plus d'établissements</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
