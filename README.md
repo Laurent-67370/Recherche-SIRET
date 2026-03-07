@@ -7,6 +7,7 @@
 ![Licence](https://img.shields.io/badge/licence-MIT-blue)
 ![API](https://img.shields.io/badge/API-SIRENE%20officielle-green)
 ![Sage](https://img.shields.io/badge/Sage-FRP%201000-purple)
+![Standalone](https://img.shields.io/badge/mode-autonome-lightgrey)
 
 ---
 
@@ -14,14 +15,13 @@
 
 ```
 📁 dossier-installation/
-├── RECHERCHE_SIRET_FOURNISSEURS.html     ← Application principale
+├── RECHERCHE_SIRET_FOURNISSEURS.html     ← Application principale (version autonome)
 ├── GUIDE_EMPLOI_RECHERCHE_SIRET.html     ← Guide d'emploi interactif
 ├── xlsx.full.min.js                      ← Librairie exports Excel (fallback local)
 └── README.md                             ← Ce fichier
 ```
 
-> ⚠️ Les quatre fichiers doivent être placés dans le **même dossier**.  
-> 📂 Chemin réseau : `L:\COMPTE\FOURNISSEURS\HUB OUTILS COMPTA\`
+> ⚠️ Les quatre fichiers doivent être placés dans le **même dossier**.
 
 ---
 
@@ -29,6 +29,17 @@
 
 Ouvrir `RECHERCHE_SIRET_FOURNISSEURS.html` directement dans le navigateur (Chrome, Edge, Firefox).  
 **Aucune installation, aucun serveur, aucun Python requis.**
+
+---
+
+## ✨ Nouveautés v5.0
+
+| # | Fonctionnalité | Détail |
+|---|----------------|--------|
+| 🆕 | **Sélection multiple + export groupé** | Cochez plusieurs cartes résultat et exportez uniquement votre sélection |
+| 🆕 | **Historique persistant** | 50 dernières recherches conservées entre les sessions (localStorage) avec horodatage relatif |
+| 🆕 | **Badge « Nom ✕ » cliquable** | Réinitialise la recherche en un clic, accessible sur mobile |
+| 🆕 | **Export établissements filtré** | L'export de la modale établissements respecte le filtre actif (Actifs / Fermés / Tous) |
 
 ---
 
@@ -44,16 +55,21 @@ Champ unique intelligent qui détecte automatiquement le type de saisie :
 | 9 chiffres | 🏢 SIREN | Fiche entreprise complète + bouton liste établissements |
 | 14 chiffres | 🔢 SIRET | Vérification directe de l'établissement |
 
-**Bouton "Tous les établissements du SIREN"** → Modale avec liste complète via API INSEE, filtres actifs/fermés, recherche, export Excel.
+**Bouton "Tous les établissements du SIREN"** → Modale avec liste complète via API INSEE, filtres actifs/fermés, recherche, export Excel **respectant le filtre actif**.
 
 **Actions disponibles sur chaque résultat :**
 - 📋 Bouton sur chaque champ `CT_*` pour copier individuellement
 - **Tout copier** — copie tous les champs en tableau `champ[TAB]valeur` (collable dans Excel)
-- **📥 Export Excel Sage FRP 1000** — fichier `.xlsx` prêt à importer
-- **✖ Nouvelle recherche** — réinitialise le formulaire et les résultats
+- **☑️ Sélection multiple** — cliquer sur une carte (ou sa case) la sélectionne
+- **📥 Exporter la sélection** — fichier Excel avec uniquement les cartes cochées
+- **📥 Exporter tout** — fichier `.xlsx` complet prêt à importer dans Sage
+- **Badge Nom ✕** — réinitialise le formulaire et les résultats
+
+**Sélection multiple :**  
+Un bandeau sticky apparaît en bas dès qu'une carte est sélectionnée avec : compteur, *Tout sélectionner / Tout désélectionner*, *📥 Exporter la sélection* et *✕ Effacer la sélection*.
 
 **Historique des recherches :**  
-Les 20 derniers termes sont affichés en badges. Clic → relance la recherche. Persistant durant la session navigateur.
+Les **50 derniers** termes sont affichés en badges horodatés. Clic → relance la recherche. Persistant **entre les sessions** grâce au localStorage.
 
 ---
 
@@ -94,8 +110,8 @@ Les 20 derniers termes sont affichés en badges. Clic → relance la recherche. 
 Un guide interactif `GUIDE_EMPLOI_RECHERCHE_SIRET.html` est fourni avec l'application.
 
 - Accessible depuis l'application via le bouton **📚 Guide complet** dans l'en-tête
-- Bouton **← Retour à l'application** pour naviguer facilement entre les deux
-- Couvre les 3 onglets, la liste établissements, les exports et les conseils pratiques
+- Couvre les 3 onglets, la sélection multiple, l'historique, les exports et les conseils pratiques
+- Mis à jour pour la v5.0
 
 ---
 
@@ -157,15 +173,19 @@ Un guide interactif `GUIDE_EMPLOI_RECHERCHE_SIRET.html` est fourni avec l'applic
 
 L'outil charge `xlsx.full.min.js` selon la priorité suivante :
 1. **CDN Cloudflare** (si internet accessible) — chargement automatique
-2. **Fichier local** `xlsx.full.min.js` — fallback automatique si CDN bloqué (réseau proxy ABRAPA)
+2. **Fichier local** `xlsx.full.min.js` — fallback automatique si CDN bloqué (réseau proxy)
 
 ---
 
-## 🔒 Sécurité
+## 🔒 Sécurité & Stockage local
 
-- Aucune donnée transmise hormis les APIs SIRENE officielles
-- Fonctionne entièrement côté navigateur, sans serveur
-- Session stockée uniquement dans le `sessionStorage` local
+| Donnée | Stockage | Durée |
+|--------|----------|-------|
+| Historique des recherches | `localStorage` | Permanent (jusqu'à effacement manuel) |
+| Session traitement par lot | `sessionStorage` | Durée de la session navigateur |
+| Session audit | `sessionStorage` | Durée de la session navigateur |
+
+Aucune donnée n'est transmise hormis les appels aux APIs SIRENE officielles.
 
 ---
 
@@ -182,8 +202,8 @@ Pour remplacer la version installée :
 ## 📋 Compatibilité
 
 - Chrome / Edge / Firefox — versions récentes
-- Réseau ABRAPA (proxy corporate) — testé et fonctionnel
-- Aucune dépendance serveur — fichiers HTML autonomes
+- Fonctionne sur réseau avec proxy corporate (pas de dépendance réseau hors APIs SIRENE)
+- Aucune dépendance serveur — fichier HTML autonome
 
 ---
 
@@ -191,8 +211,8 @@ Pour remplacer la version installée :
 
 | Version | Date | Nouveautés |
 |---------|------|------------|
-| v5.0 | 06/03/2026 | Fusion onglets Recherche + Vérification · Liste établissements API INSEE · Audit dual mode SIRET + nom · CDN + fallback local xlsx · Guide d'emploi interactif connecté |
-| v4.2 | 03/2026 | Historique 20 recherches · Copie par champ · Recherche SIREN · Grille CT_* · Export Excel · Réinitialisation |
+| v5.0 | 03/2026 | Sélection multiple + export groupé · Historique persistant localStorage 50 entrées · Badge Nom ✕ cliquable · Export établissements respectant le filtre · Correction bug toLowerCase historique |
+| v4.2 | 03/2026 | Fusion onglets Recherche + Vérification · Liste établissements API INSEE · Audit dual mode SIRET + nom · CDN + fallback local xlsx · Guide d'emploi interactif |
 | v4.0 | 03/2026 | Audit base fournisseurs · Export 3 formats · Traitement par lot amélioré |
 | v3.0 | 02/2026 | Recherche unitaire · Traitement par lot · Vérification SIRET/SIREN |
 
@@ -202,7 +222,7 @@ Pour remplacer la version installée :
 
 ```
 Recherche-SIRET/
-├── RECHERCHE_SIRET_FOURNISSEURS.html    # Application principale
+├── RECHERCHE_SIRET_FOURNISSEURS.html    # Application principale (version autonome)
 ├── GUIDE_EMPLOI_RECHERCHE_SIRET.html   # Guide d'emploi interactif
 ├── xlsx.full.min.js                     # Librairie Excel (fallback local)
 └── README.md

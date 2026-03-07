@@ -45,6 +45,25 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
 .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--title);padding:10px 14px;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s}
 .field input:focus,.field select:focus{border-color:var(--accent)}
 .form-row{display:grid;gap:12px;align-items:end}
+/* ── Sélection multiple ── */
+.result-card{position:relative;}
+.rc-checkbox{
+  position:absolute;top:12px;right:12px;
+  width:18px;height:18px;cursor:pointer;accent-color:#f97316;
+  flex-shrink:0;
+}
+.result-card.selected{border-color:#f97316!important;background:rgba(249,115,22,.05)!important;}
+#selection-bar{
+  display:none;position:sticky;bottom:16px;
+  background:linear-gradient(135deg,#1e293b,#1a1f2e);
+  border:1px solid #f97316;border-radius:12px;
+  padding:12px 16px;margin-top:12px;
+  align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  box-shadow:0 4px 20px rgba(249,115,22,.25);z-index:100;
+}
+#selection-bar.visible{display:flex;}
+#sel-count{color:#f97316;font-weight:700;font-size:14px;}
+.sel-actions{display:flex;gap:8px;flex-wrap:wrap;}
 .fr4{grid-template-columns:1fr 160px 140px auto}
 .fr2{grid-template-columns:1fr auto}
 @media(max-width:700px){.fr4,.fr2{grid-template-columns:1fr}}
@@ -294,7 +313,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
   <div class="logo">&#127970;</div>
   <div style="flex:1">
     <h1>Recherche SIRET Fournisseurs <span class="badge">ABRAPA</span></h1>
-    <p>API SIRENE officielle &mdash; INSEE / data.gouv.fr &mdash; v4.0 &mdash; Audit base fournisseurs</p>
+    <p>API SIRENE officielle &mdash; INSEE / data.gouv.fr &mdash; v5.0 &mdash; S&eacute;lection multiple &mdash; Audit base fournisseurs</p>
   </div>
   <button class="help-btn" onclick="openHelp()">&#10067; Guide d&apos;utilisation</button>
   <a href="GUIDE_EMPLOI_RECHERCHE_SIRET.html" target="_blank" title="Ouvrir le guide complet" style="
@@ -373,8 +392,10 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
           <div class="sg-item"><div class="sg-num">3</div><div class="sg-text"><strong>Entr&eacute;e</strong> ou clic <em>Rechercher</em> &mdash; R&eacute;sultats class&eacute;s par pertinence SIRENE</div></div>
           <div class="sg-item"><div class="sg-num">4</div><div class="sg-text"><strong>&#128203; Copier un champ</strong> &mdash; Bouton <code>&#128203;</code> sur chaque ligne CT_* pour coller directement dans Sage</div></div>
           <div class="sg-item"><div class="sg-num">5</div><div class="sg-text"><strong>&#128203; Tout copier</strong> &mdash; Copie tous les champs CT_* en une seule fois, pr&ecirc;ts &agrave; coller dans Excel ou Sage</div></div>
-          <div class="sg-item"><div class="sg-num">6</div><div class="sg-text"><strong>&#128229; Export Excel Sage FRP&nbsp;1000</strong> &mdash; Fichier <code>.xlsx</code> avec tous les r&eacute;sultats + onglet <em>Notice import</em></div></div>
-          <div class="sg-item"><div class="sg-num">7</div><div class="sg-text"><strong>&#10006; Nouvelle recherche</strong> &mdash; Remet les champs et les r&eacute;sultats &agrave; z&eacute;ro</div></div>
+          <div class="sg-item"><div class="sg-num">6</div><div class="sg-text"><strong>S&eacute;lection multiple</strong> &mdash; Cliquez sur une carte (ou sa case &#9745;) pour la s&eacute;lectionner. Un bandeau appara&icirc;t en bas avec le compteur et les actions</div></div>
+          <div class="sg-item"><div class="sg-num">7</div><div class="sg-text"><strong>&#128229; Exporter la s&eacute;lection</strong> &mdash; Exporte uniquement les r&eacute;sultats coch&eacute;s. Le bouton <em>Exporter tout</em> exporte l&apos;ensemble comme avant</div></div>
+          <div class="sg-item"><div class="sg-num">8</div><div class="sg-text"><strong>&#9745; Tout s&eacute;lectionner / d&eacute;s&eacute;lectionner</strong> &mdash; Bascule globale dans le bandeau de s&eacute;lection</div></div>
+          <div class="sg-item"><div class="sg-num">9</div><div class="sg-text"><strong>Nom &#10005; (badge cliquable)</strong> &mdash; Cliquer le badge dans le champ de saisie remet les r&eacute;sultats &agrave; z&eacute;ro imm&eacute;diatement</div></div>
         </div>
         <div class="help-h4">Grille de champs affich&eacute;s par r&eacute;sultat</div>
         <table class="help-table">
@@ -386,7 +407,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
           </tbody>
         </table>
         <div class="help-h4">Historique des recherches</div>
-        <p class="help-p">Les 20 derniers termes recherch&eacute;s sont affich&eacute;s en badges sous le formulaire. Cliquer sur un badge relance la recherche instantan&eacute;ment. L&apos;historique est conserv&eacute; durant toute la session navigateur et effac&eacute; &agrave; sa fermeture.</p>
+        <p class="help-p">Les <strong>50 derniers</strong> termes recherch&eacute;s sont affich&eacute;s en badges horodat&eacute;s sous le formulaire (<em>il y a 3 min</em>, <em>lun</em>, <em>12/02</em>&hellip;). Cliquer sur un badge relance la recherche instantan&eacute;ment. L&apos;historique est <strong>conserv&eacute; entre les sessions</strong> gr&acirc;ce au localStorage du navigateur &mdash; il persiste m&ecirc;me apr&egrave;s fermeture compl&egrave;te du navigateur.</p>
         <div class="help-alert ha-info">&#128161; <strong>Astuce saisie Sage</strong> &mdash; Utilisez <em>Tout copier</em> pour coller un tableau champ/valeur directement dans Excel, puis saisissez la fiche tiers 1/3 depuis ce r&eacute;capitulatif sans jongler entre l&apos;outil et Sage.</div>
       </div>
 
@@ -472,6 +493,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
           <li><strong>Mises &agrave; jour Sage</strong> &mdash; Uniquement les lignes avec action requise, colonnes <code>CT_*</code> pr&ecirc;tes &agrave; importer</li>
           <li><strong>Actions par priorit&eacute;</strong> &mdash; Tri&eacute; de 1-URGENT &agrave; 4-&Agrave;_V&Eacute;RIFIER</li>
         </ul>
+        <div class="help-alert ha-info">&#128229; <strong>Export &eacute;tablissements</strong> &mdash; Le bouton d&apos;export de la modale &laquo;&nbsp;Tous les &eacute;tablissements du SIREN&nbsp;&raquo; respecte le filtre actif&nbsp;: si vous avez s&eacute;lectionn&eacute; <em>Actifs</em>, seuls les &eacute;tablissements actifs sont export&eacute;s. Le nom du fichier inclut le filtre appliqu&eacute;.</div>
         <div class="help-alert ha-ok">&#128274; <strong>IBAN et RIB en s&eacute;curit&eacute;</strong> &mdash; Les coordonn&eacute;es bancaires sont stock&eacute;es dans la table <code>F_REGLEMENTT</code> de Sage, distincte de la fiche tiers <code>F_COMPTET</code>. Elles ne sont jamais modifi&eacute;es par cet import.</div>
       </div>
 
@@ -533,11 +555,14 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="help-h4">&Agrave; quoi sert le bouton &laquo;&nbsp;Tout copier&nbsp;&raquo; ?</div>
         <p class="help-p">Il copie tous les champs CT_* du r&eacute;sultat s&eacute;lectionn&eacute; sous forme d&apos;un tableau champ/valeur (s&eacute;parateur tabulation). Vous pouvez le coller directement dans Excel ou dans un email pour saisir la fiche 1/3 dans Sage sans revenir &agrave; l&apos;outil. Les champs vides sont inclus avec une valeur vide.</p>
 
+        <div class="help-h4">Comment exporter uniquement certains r&eacute;sultats ?</div>
+        <p class="help-p">Dans l&apos;onglet <em>Recherche unitaire</em>, cliquez sur une ou plusieurs cartes r&eacute;sultat pour les s&eacute;lectionner (fond orange + case coch&eacute;e). Un bandeau appara&icirc;t en bas avec le compteur de s&eacute;lection. Cliquez <strong>Exporter la s&eacute;lection</strong> pour g&eacute;n&eacute;rer un fichier Excel ne contenant que les lignes choisies. Le bouton <strong>Exporter tout</strong> en haut exporte toujours l&apos;ensemble des r&eacute;sultats.</p>
+
         <div class="help-h4">&Agrave; quoi sert la recherche par SIREN&nbsp;?</div>
         <p class="help-p">Le SIREN (9 chiffres) identifie une entreprise, le SIRET (14 chiffres) identifie un &eacute;tablissement pr&eacute;cis. En saisissant un SIREN dans l&apos;onglet <em>V&eacute;rifier</em>, l&apos;outil liste tous les &eacute;tablissements de l&apos;entreprise (si&egrave;ge + annexes), utile pour les fournisseurs ayant plusieurs sites.</p>
 
         <div class="help-h4">L&apos;historique des recherches est-il permanent ?</div>
-        <p class="help-p">Non. L&apos;historique est stock&eacute; dans le <em>sessionStorage</em> du navigateur&nbsp;: il persiste tant que l&apos;onglet reste ouvert mais est effac&eacute; lorsque vous fermez le navigateur. Il n&apos;est pas partag&eacute; entre deux onglets diff&eacute;rents.</p>
+        <p class="help-p">Oui. L&apos;historique est d&eacute;sormais stock&eacute; dans le <em>localStorage</em> du navigateur&nbsp;: il persiste entre les sessions, m&ecirc;me apr&egrave;s fermeture compl&egrave;te du navigateur. Les 50 derni&egrave;res recherches sont conserv&eacute;es avec leur horodatage. Le bouton <em>Effacer</em> les supprime manuellement.</p>
 
         <div class="help-h4">Diff&eacute;rence entre le fichier HTML et le script Python ?</div>
         <table class="help-table">
@@ -579,11 +604,12 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
               placeholder="Ex: PHARMAT, 35240913400060 ou 352409134"
               oninput="onMainInput()"
               onkeydown="if(event.key==='Enter')smartSearch()">
-            <span id="search-mode-badge" style="
+            <span id="search-mode-badge" onclick="resetSearch()" style="
               position:absolute;right:10px;top:50%;transform:translateY(-50%);
-              font-size:11px;padding:2px 8px;border-radius:10px;pointer-events:none;
+              font-size:11px;padding:2px 8px;border-radius:10px;pointer-events:auto;
               background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3);
-              display:none"></span>
+              display:none;cursor:pointer;gap:5px;align-items:center;user-select:none"
+              title="Cliquer pour effacer"></span>
           </div>
         </div>
         <!-- Champs optionnels — visibles seulement en mode nom -->
@@ -596,7 +622,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
           <select id="q-status"><option value="">Tous</option><option value="A">Actif</option><option value="F">Ferm&eacute;</option></select>
         </div>
         <button class="btn btn-p" id="search-btn" onclick="smartSearch()">&#128269; Rechercher</button>
-        <button class="btn btn-sec" id="reset-btn" onclick="resetAll()" style="display:none">&#10006; Nouvelle recherche</button>
+        <button class="btn btn-sec" id="reset-btn" onclick="resetSearch()" style="display:none">&#10006; Nouvelle recherche</button>
       </div>
       <div id="search-hint" style="font-size:12px;color:var(--muted);margin-top:6px">
         &#128161; Saisir un <strong>nom</strong> pour rechercher &bull; un <strong>SIRET (14 chiffres)</strong> pour v&eacute;rifier &bull; un <strong>SIREN (9 chiffres)</strong> pour lister tous les &eacute;tablissements
@@ -607,6 +633,14 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
       <div class="hist-list" id="hist-list"></div>
     </div>
     <div id="result-area"><div class="empty-state"><div class="es-icon">&#127981;</div><p>Entrez un nom, un SIRET ou un SIREN</p></div></div>
+    <div id="selection-bar">
+      <span id="sel-count">0 sélectionné(s)</span>
+      <div class="sel-actions">
+        <button class="btn btn-sec" onclick="toggleSelectAll()" id="sel-all-btn" style="font-size:12px;padding:6px 12px">☑️ Tout sélectionner</button>
+        <button class="btn btn-p" onclick="exportSelection()" style="font-size:12px;padding:6px 14px">📥 Exporter la sélection</button>
+        <button class="btn btn-sec" onclick="clearSelection()" style="font-size:12px;padding:6px 10px;color:var(--muted)">✕</button>
+      </div>
+    </div>
   </div>
 
   <!-- TAB 2 -->
@@ -659,7 +693,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="alert a-warn" id="cp-warning" style="display:none;margin-bottom:14px"></div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-p" onclick="confirmMapping()">&#9989; Confirmer</button>
-          <button class="btn btn-s" onclick="resetAll()">&#8592; Recommencer</button>
+          <button class="btn btn-s" onclick="resetBatch()">&#8592; Recommencer</button>
         </div>
       </div>
       <div class="card" style="padding:16px 20px">
@@ -692,7 +726,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="action-bar">
           <button class="btn btn-p" id="run-btn" onclick="runBatch()">&#9889; Lancer la recherche</button>
           <button class="btn btn-pause" id="pause-btn" onclick="togglePause()" style="display:none">&#9208;&#65039; Pause</button>
-          <button class="btn btn-s" onclick="resetAll()">&#128465; R&eacute;initialiser</button>
+          <button class="btn btn-s" onclick="resetBatch()">&#128465; Réinitialiser</button>
           <button class="btn btn-g" id="export-btn" onclick="exportCSV()">
             &#8681; Exporter CSV <span id="export-count" style="background:rgba(34,197,94,.3);padding:1px 8px;border-radius:100px;font-size:11px;margin-left:2px"></span>
           </button>
@@ -1011,9 +1045,11 @@ function renderResults(data,container){
       telephone:siege.telephone||'',email:siege.email||'',siteWeb:siege.site_internet||''};
   });
   const isVerify = container.id==='direct-result';
+  selectedIndices = new Set();
+  updateSelectionBar();
   let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
-    +'<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--accent)">'+res.length+'</strong> r&eacute;sultat(s)</span>'
-    +'<button class="btn btn-p" onclick="exportSingleXlsx()" style="font-size:12px;padding:7px 16px">&#128229; Export Excel Sage FRP&nbsp;1000</button>'
+    +'<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--accent)">'+res.length+'</strong> résultat(s) — <span style="font-size:12px">cliquez une carte pour la sélectionner</span></span>'
+    +'<button class="btn btn-p" onclick="exportSingleXlsx()" style="font-size:12px;padding:7px 16px">&#128229; Exporter tout</button>'
     +'</div>';
   res.slice(0,8).forEach((r,idx)=>{
     const siege=r.siege||{};
@@ -1039,7 +1075,8 @@ function renderResults(data,container){
       return '<span style="color:var(--text)">'+val+'</span><button class="copy-btn copy-field" onclick="copyText(\''+v.replace(/'/g,"\\'")+'\'+ \'\',this)" title="Copier">📋</button>';
     }
 
-    html+='<div class="result-card">'
+    html+='<div class="result-card" id="rc-'+idx+'" onclick="toggleCard('+idx+',event)">'
+      +'<input type="checkbox" class="rc-checkbox" id="chk-'+idx+'" onclick="event.stopPropagation();toggleCard('+idx+',event)" title="Sélectionner ce résultat">'
       // En-tête carte
       +'<div class="result-header">'
         +'<div style="flex:1;min-width:0">'
@@ -1082,14 +1119,89 @@ function renderResults(data,container){
   container.innerHTML=html;
 }
 
+// =================== SÉLECTION MULTIPLE ===================
+let selectedIndices = new Set();
+
+function toggleCard(idx, e) {
+  // Éviter de déclencher si clic sur un bouton interne
+  if (e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.classList.contains('copy-btn') || e.target.classList.contains('copy-field') || e.target.classList.contains('siret-val'))) return;
+  const card = document.getElementById('rc-'+idx);
+  const chk  = document.getElementById('chk-'+idx);
+  if (!card || !chk) return;
+  if (selectedIndices.has(idx)) {
+    selectedIndices.delete(idx);
+    card.classList.remove('selected');
+    chk.checked = false;
+  } else {
+    selectedIndices.add(idx);
+    card.classList.add('selected');
+    chk.checked = true;
+  }
+  updateSelectionBar();
+}
+
+function updateSelectionBar() {
+  const bar = document.getElementById('selection-bar');
+  const cnt = document.getElementById('sel-count');
+  const btn = document.getElementById('sel-all-btn');
+  if (!bar) return;
+  const n = selectedIndices.size;
+  const total = lastSingleResults.length;
+  if (n > 0) {
+    bar.classList.add('visible');
+    cnt.textContent = n + ' sélectionné(s) sur ' + total;
+    if (btn) btn.textContent = n === total ? '☐ Tout désélectionner' : '☑️ Tout sélectionner';
+  } else {
+    bar.classList.remove('visible');
+    if (btn) btn.textContent = '☑️ Tout sélectionner';
+  }
+}
+
+function toggleSelectAll() {
+  const total = lastSingleResults.length;
+  if (selectedIndices.size === total) {
+    clearSelection();
+  } else {
+    for (let i = 0; i < total; i++) {
+      selectedIndices.add(i);
+      const card = document.getElementById('rc-'+i);
+      const chk  = document.getElementById('chk-'+i);
+      if (card) card.classList.add('selected');
+      if (chk)  chk.checked = true;
+    }
+    updateSelectionBar();
+  }
+}
+
+function clearSelection() {
+  selectedIndices.forEach(i => {
+    const card = document.getElementById('rc-'+i);
+    const chk  = document.getElementById('chk-'+i);
+    if (card) card.classList.remove('selected');
+    if (chk)  chk.checked = false;
+  });
+  selectedIndices.clear();
+  updateSelectionBar();
+}
+
+function exportSelection() {
+  if (!selectedIndices.size) { alert('Sélectionnez au moins un résultat.'); return; }
+  const rows = Array.from(selectedIndices).sort().map(i => lastSingleResults[i]);
+  exportXlsxRows(rows, 'selection');
+}
+
 // =================== EXPORT XLSX RECHERCHE UNITAIRE ===================
 let lastSingleResults=[];
 // Init historique au chargement
 document.addEventListener('DOMContentLoaded',()=>renderHistory());
 function exportSingleXlsx(){
-  if(!lastSingleResults.length){alert('Aucun r\u00e9sultat \u00e0 exporter.');return;}
+  if(!lastSingleResults.length){alert('Aucun résultat à exporter.');return;}
+  exportXlsxRows(lastSingleResults, 'recherche');
+}
+
+function exportXlsxRows(results, suffix){
   const headers=['CT_Num','CT_Intitule','CT_Siret','CT_Siren','CT_Adresse','CT_CodePostal','CT_Ville','CT_NatureJuridique','CT_NumTVAIntracomm','CT_Telephone','CT_Email','CT_Site','CODE_NAF','ACTIF_SIRENE'];
-  const rows=lastSingleResults.map(r=>(['',r.nom,r.siret,r.siren,r.adresse,r.cp,r.commune,r.formeJuridique,r.tva,r.telephone,r.email,r.siteWeb,r.naf,r.actif?'OUI':'NON']));
+  const rows=results.map(r=>(['',r.nom,r.siret,r.siren,r.adresse,r.cp,r.commune,r.formeJuridique,r.tva,r.telephone,r.email,r.siteWeb,r.naf,r.actif?'OUI':'NON']));
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
   ws['!cols']=[{wch:10},{wch:35},{wch:16},{wch:12},{wch:30},{wch:10},{wch:20},{wch:18},{wch:18},{wch:14},{wch:28},{wch:28},{wch:30},{wch:10}];
@@ -1126,8 +1238,8 @@ function exportSingleXlsx(){
   notice['!cols']=[{wch:75}];
   XLSX.utils.book_append_sheet(wb,ws,'Tiers SIRENE');
   XLSX.utils.book_append_sheet(wb,notice,'Notice import Sage');
-  const nom=(document.getElementById('q-name').value||'recherche').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
-  XLSX.writeFile(wb,'sage_frp1000_'+nom+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  const label=(document.getElementById('q-main')&&document.getElementById('q-main').value||suffix||'export').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
+  XLSX.writeFile(wb,'sage_frp1000_'+label+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
 
@@ -1144,6 +1256,8 @@ function detectSearchMode(val) {
 
 function onMainInput() {
   const val = document.getElementById('q-main').value.trim();
+  document.getElementById('reset-btn').style.display = val.length > 0 ? '' : 'none';
+
   const mode = detectSearchMode(val);
   const badge = document.getElementById('search-mode-badge');
   const fieldCp = document.getElementById('field-cp');
@@ -1159,25 +1273,25 @@ function onMainInput() {
   }
 
   if (mode === 'siret') {
-    badge.textContent = '🔢 SIRET'; badge.style.display = '';
+    badge.innerHTML = '🔢 SIRET <span style="opacity:.6;font-size:10px">✕</span>'; badge.style.display = 'flex';
     badge.style.background = 'rgba(34,197,94,.15)'; badge.style.color = '#4ade80';
     badge.style.borderColor = 'rgba(34,197,94,.3)';
     fieldCp.style.display = 'none'; fieldSt.style.display = 'none';
     hint.style.display = 'none';
   } else if (mode === 'siren') {
-    badge.textContent = '🏢 SIREN'; badge.style.display = '';
+    badge.innerHTML = '🏢 SIREN <span style="opacity:.6;font-size:10px">✕</span>'; badge.style.display = 'flex';
     badge.style.background = 'rgba(99,102,241,.15)'; badge.style.color = '#818cf8';
     badge.style.borderColor = 'rgba(99,102,241,.3)';
     fieldCp.style.display = 'none'; fieldSt.style.display = 'none';
     hint.style.display = 'none';
   } else if (mode === 'partial') {
-    badge.textContent = '⌨️ …'; badge.style.display = '';
+    badge.innerHTML = '⌨️ … <span style="opacity:.6;font-size:10px">✕</span>'; badge.style.display = 'flex';
     badge.style.background = 'rgba(250,204,21,.15)'; badge.style.color = '#fbbf24';
     badge.style.borderColor = 'rgba(250,204,21,.3)';
     fieldCp.style.display = 'none'; fieldSt.style.display = 'none';
     hint.style.display = 'none';
   } else {
-    badge.textContent = '🔤 Nom'; badge.style.display = '';
+    badge.innerHTML = '🔤 Nom <span style="opacity:.6;font-size:10px">✕</span>'; badge.style.display = 'flex';
     badge.style.background = 'rgba(249,115,22,.15)'; badge.style.color = '#fb923c';
     badge.style.borderColor = 'rgba(249,115,22,.3)';
     fieldCp.style.display = ''; fieldSt.style.display = '';
@@ -1186,6 +1300,8 @@ function onMainInput() {
 }
 
 async function smartSearch() {
+  document.getElementById('reset-btn').style.display = '';
+
   const raw = document.getElementById('q-main').value.trim();
   if (!raw) { alert('Entrez un nom, un SIRET ou un SIREN.'); return; }
 
@@ -1237,7 +1353,7 @@ async function smartSearch() {
 function search() { smartSearch(); }
 function searchSiret() { smartSearch(); }
 
-function resetAll() {
+function resetSearch() {
   document.getElementById('q-main').value = '';
   document.getElementById('q-cp').value = '';
   document.getElementById('q-status').value = '';
@@ -1249,26 +1365,32 @@ function resetAll() {
     '<div class="empty-state"><div class="es-icon">🏭</div><p>Entrez un nom, un SIRET ou un SIREN</p></div>';
   document.getElementById('reset-btn').style.display = 'none';
   lastSingleResults = [];
+
   document.getElementById('q-main').focus();
 }
-
-// Alias legacy
-function resetSearch() { resetAll(); }
-function resetSiret()  { resetAll(); }
+function resetSiret() { resetSearch(); }
 
 
 // =================== HISTORIQUE RECHERCHES ===================
-const HIST_KEY='siret_search_history';
+const HIST_KEY='siret_search_history_v2';
 function loadHistory(){
-  try{return JSON.parse(sessionStorage.getItem(HIST_KEY)||'[]');}catch{return[];}
+  try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]');}catch{return[];}
 }
 function saveHistory(term){
   if(!term||term.length<2)return;
-  let h=loadHistory().filter(x=>x.toLowerCase()!==term.toLowerCase());
-  h.unshift(term);
-  if(h.length>20)h=h.slice(0,20);
-  sessionStorage.setItem(HIST_KEY,JSON.stringify(h));
+  let h=loadHistory().filter(x=>(x.term||x).toLowerCase()!==term.toLowerCase());
+  h.unshift({term:term,ts:Date.now()});
+  if(h.length>50)h=h.slice(0,50);
+  localStorage.setItem(HIST_KEY,JSON.stringify(h));
   renderHistory();
+}
+function fmtAgo(ts){
+  const d=new Date(ts),now=new Date(),diff=now-d;
+  if(diff<60000)return'<1min';
+  if(diff<3600000)return Math.floor(diff/60000)+'min';
+  if(diff<86400000)return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(diff<604800000){const j=['dim','lun','mar','mer','jeu','ven','sam'];return j[d.getDay()];}
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
 }
 function renderHistory(){
   const h=loadHistory();
@@ -1276,7 +1398,7 @@ function renderHistory(){
   const list=document.getElementById('hist-list');
   if(!h.length){area.style.display='none';return;}
   area.style.display='';
-  list.innerHTML=h.map((t,i)=>'<span class="hist-item" data-idx="'+i+'" onclick="replaySearch(this.dataset.idx)">'+t+'</span>').join('');
+  list.innerHTML=h.map((entry,i)=>{const term=entry.term||entry;const ago=entry.ts?'<span style="font-size:10px;opacity:.5;margin-left:3px;">'+fmtAgo(entry.ts)+'</span>':'';return'<span class="hist-item" data-idx="'+i+'" onclick="replaySearch(this.dataset.idx)" title="'+term+'">'+term+ago+'</span>';}).join('');
 }
 function replaySearch(idx){
   const h=loadHistory();
@@ -1286,7 +1408,7 @@ function replaySearch(idx){
   search();
 }
 function clearHistory(){
-  sessionStorage.removeItem(HIST_KEY);
+  localStorage.removeItem(HIST_KEY);
   renderHistory();
 }
 
@@ -1595,7 +1717,7 @@ function exportSageIntrouvables(){
 }
 
 // =================== RESET ===================
-function resetAll(){
+function resetBatch(){
   if(isRunning&&!isPaused&&!confirm('Recherche en cours. Vraiment r&eacute;initialiser ?'))return;
   isRunning=false;isPaused=false;pauseResolve=null;
   batchRows=[];batchResults=[];csvHeaders=[];csvRawRows=[];currentIdx=0;
@@ -2390,8 +2512,9 @@ function closeEtabModal() {
 }
 
 // Fermer en cliquant sur le fond
-document.getElementById('etab-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeEtabModal();
+document.addEventListener('DOMContentLoaded', function() {
+  var m = document.getElementById('etab-modal');
+  if (m) m.addEventListener('click', function(e) { if (e.target === this) closeEtabModal(); });
 });
 
 // Raccourci clavier Escape
@@ -2402,9 +2525,10 @@ document.addEventListener('keydown', function(e) {
 });
 
 function exportEtabXlsx() {
+  const dataToExport = (etabFiltered && etabFiltered.length) ? etabFiltered : etabAllData;
   if (!etabAllData.length) return;
   const headers = ['SIRET','Siège','Enseigne / Nom commercial','Adresse','CP','Commune','Activité (NAF)','Statut','Date création'];
-  const rows = etabAllData.map(e => [
+  const rows = dataToExport.map(e => [
     e.siret,
     e.siege ? 'OUI' : '',
     e.enseigne || '',

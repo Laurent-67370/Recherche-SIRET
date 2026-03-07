@@ -2,639 +2,442 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guide d'emploi — Recherche SIRET Fournisseurs</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guide d'emploi — Recherche SIRET Fournisseurs v5.0 — ABRAPA</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { color-scheme: dark; }
-  body {
-    background: #0f172a !important;
-    color: #cbd5e1 !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-    font-size: 15px;
-    line-height: 1.7;
-    padding: 0 0 60px;
-  }
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#162032;--border:#334155;
+  --accent:#f97316;--accent2:#fb923c;--text:#cbd5e1;--heading:#f1f5f9;
+  --muted:#64748b;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--info:#818cf8;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;font-size:15px}
 
-  /* HEADER */
-  .header {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-    border-bottom: 3px solid #f97316 !important;
-    padding: 36px 40px 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .header::before {
-    content: '';
-    position: absolute; top: -40px; right: -40px;
-    width: 220px; height: 220px;
-    background: radial-gradient(circle, rgba(249,115,22,.12) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .header-badge {
-    display: inline-block;
-    background: transparent !important;
-    border: 2px solid #f97316 !important;
-    color: #f97316 !important;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 3px 12px;
-    border-radius: 20px;
-    margin-bottom: 12px;
-  }
-  .header h1 {
-    color: #fff !important;
-    font-size: clamp(22px, 3vw, 32px);
-    font-weight: 800;
-    margin-bottom: 8px;
-  }
-  .header p {
-    color: #94a3b8 !important;
-    font-size: 14px;
-  }
-  .header-meta {
-    display: flex;
-    gap: 16px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .meta-badge {
-    background: rgba(249,115,22,.1) !important;
-    border: 1px solid rgba(249,115,22,.3) !important;
-    color: #fb923c !important;
-    font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 12px;
-  }
+/* ── HEADER ── */
+.site-header{background:linear-gradient(135deg,#0f172a,#1a1f3a);border-bottom:2px solid var(--accent);padding:28px 40px 24px;position:sticky;top:0;z-index:200}
+.site-header h1{color:var(--heading);font-size:22px;font-weight:800;display:flex;align-items:center;gap:12px}
+.site-header h1 span.badge{background:transparent;border:2px solid var(--accent);color:var(--accent);font-size:11px;padding:2px 10px;border-radius:20px;font-weight:700;letter-spacing:.5px}
+.site-header p{color:var(--muted);font-size:13px;margin-top:4px}
+.version-badge{background:rgba(249,115,22,.15);border:1px solid var(--accent);color:var(--accent);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700;white-space:nowrap}
 
-  /* CONTENEUR */
-  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--surface2);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto}
+.sidebar-title{color:var(--muted);font-size:10px;font-weight:700;letter-spacing:1px;padding:0 20px 8px;text-transform:uppercase}
+.nav-item{display:block;padding:9px 20px;color:var(--text);text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:.2s}
+.nav-item:hover{background:rgba(249,115,22,.08);color:var(--heading)}
+.nav-item.active{border-left-color:var(--accent);color:var(--accent);background:rgba(249,115,22,.08);font-weight:600}
+.nav-sub{padding-left:34px;font-size:12px;color:var(--muted)}
+.nav-divider{height:1px;background:var(--border);margin:12px 16px}
 
-  /* INTRO BOX */
-  .intro-box {
-    background: #1e293b !important;
-    border-left: 4px solid #f97316 !important;
-    border-radius: 0 8px 8px 0;
-    padding: 20px 24px;
-    margin: 32px 0 24px;
-    font-size: 15px;
-  }
+/* ── CONTENT ── */
+.content{padding:40px 48px;max-width:860px}
+.section{margin-bottom:56px}
+.section-anchor{display:block;position:relative;top:-90px;visibility:hidden}
 
-  /* SOMMAIRE */
-  .toc {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-bottom: 36px;
-  }
-  .toc-title {
-    color: #f97316 !important;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-  }
-  .toc a {
-    color: #94a3b8 !important;
-    text-decoration: none;
-    font-size: 13px;
-    display: block;
-    padding: 3px 0;
-    transition: color .2s;
-  }
-  .toc a:hover { color: #f97316 !important; }
-  .toc-num { color: #f97316 !important; margin-right: 6px; font-weight: 700; }
+h2{color:var(--heading);font-size:20px;font-weight:800;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}
+h2 .tag-new{background:var(--accent);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;letter-spacing:.5px}
+h2 .tag-update{background:rgba(99,102,241,.3);border:1px solid var(--info);color:var(--info);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700}
+h3{color:var(--heading);font-size:14px;font-weight:700;margin:20px 0 10px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent2)}
+p{margin-bottom:12px;color:var(--text)}
+strong{color:var(--heading)}
+code{background:rgba(249,115,22,.15);color:var(--accent2);padding:1px 6px;border-radius:4px;font-size:13px;font-family:monospace}
 
-  /* SECTIONS */
-  .section {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-    border-radius: 12px;
-    padding: 28px 32px;
-    margin-bottom: 24px;
-    scroll-margin-top: 20px;
-  }
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #334155 !important;
-  }
-  .section-num {
-    background: linear-gradient(135deg, #f97316, #fb923c) !important;
-    color: #fff !important;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .section h2 {
-    color: #fff !important;
-    font-size: 18px;
-    font-weight: 700;
-  }
-  .section h3 {
-    color: #f97316 !important;
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    margin: 20px 0 10px;
-  }
-  .section p { color: #cbd5e1 !important; margin-bottom: 10px; }
-  .section ul, .section ol {
-    padding-left: 20px;
-    margin-bottom: 12px;
-  }
-  .section li {
-    color: #cbd5e1 !important;
-    margin-bottom: 6px;
-  }
-  .section li::marker { color: #f97316 !important; }
+/* ── ALERTES ── */
+.alert{padding:12px 16px;border-radius:8px;margin:14px 0;font-size:13px;display:flex;gap:10px;align-items:flex-start}
+.alert-info{background:rgba(99,102,241,.1);border-left:4px solid var(--info)}
+.alert-warn{background:rgba(245,158,11,.1);border-left:4px solid var(--warn)}
+.alert-ok{background:rgba(34,197,94,.1);border-left:4px solid var(--ok)}
+.alert-danger{background:rgba(239,68,68,.1);border-left:4px solid var(--danger)}
+.alert-new{background:rgba(249,115,22,.12);border-left:4px solid var(--accent)}
 
-  /* ÉTAPES */
-  .steps { counter-reset: step; }
-  .step-item {
-    position: relative;
-    padding-left: 52px;
-    margin-bottom: 16px;
-    counter-increment: step;
-  }
-  .step-item::before {
-    content: counter(step);
-    position: absolute;
-    left: 0; top: 0;
-    width: 34px; height: 34px;
-    background: rgba(249,115,22,.15) !important;
-    border: 2px solid #f97316 !important;
-    color: #f97316 !important;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800;
-    font-size: 14px;
-  }
-  .step-item strong { color: #fff !important; }
+/* ── TABLEAUX ── */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--surface);color:var(--accent);font-weight:700;padding:9px 12px;text-align:left;border-bottom:2px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.tag-ok{background:rgba(34,197,94,.15);color:var(--ok)}
+.tag-warn{background:rgba(245,158,11,.15);color:var(--warn)}
+.tag-danger{background:rgba(239,68,68,.15);color:var(--danger)}
+.tag-info{background:rgba(99,102,241,.15);color:var(--info)}
 
-  /* BADGES MODE */
-  .mode-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin: 16px 0;
-  }
-  .mode-card {
-    background: #0f172a !important;
-    border: 1px solid #334155 !important;
-    border-radius: 8px;
-    padding: 14px 16px;
-    transition: transform .2s, box-shadow .2s;
-  }
-  .mode-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(249,115,22,.15); }
-  .mode-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 10px;
-    border-radius: 10px;
-    display: inline-block;
-    margin-bottom: 8px;
-  }
-  .badge-nom   { background: rgba(249,115,22,.15) !important; color: #fb923c !important; border: 1px solid rgba(249,115,22,.3) !important; }
-  .badge-siren { background: rgba(99,102,241,.15) !important; color: #818cf8 !important; border: 1px solid rgba(99,102,241,.3) !important; }
-  .badge-siret { background: rgba(34,197,94,.15)  !important; color: #4ade80 !important; border: 1px solid rgba(34,197,94,.3)  !important; }
-  .mode-card p { color: #94a3b8 !important; font-size: 13px; margin: 0; }
-  .mode-card strong { color: #fff !important; }
+/* ── ÉTAPES ── */
+.steps{counter-reset:step;margin:14px 0}
+.step{display:flex;gap:14px;margin-bottom:12px;align-items:flex-start}
+.step-num{counter-increment:step;content:counter(step);background:var(--accent);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;margin-top:1px}
+.step-num::before{content:counter(step)}
+.step-text{flex:1;font-size:14px;padding-top:3px}
 
-  /* TABLEAU */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 14px 0;
-    font-size: 13px;
-  }
-  th {
-    background: rgba(249,115,22,.15) !important;
-    color: #f97316 !important;
-    padding: 10px 14px;
-    text-align: left;
-    font-weight: 700;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-  }
-  td {
-    padding: 9px 14px;
-    color: #cbd5e1 !important;
-    border-bottom: 1px solid #1e293b !important;
-  }
-  tr:nth-child(even) td { background: rgba(255,255,255,.02) !important; }
+/* ── NOUVEAUTÉ CARDS ── */
+.what-new{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.wn-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;transition:.2s}
+.wn-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.wn-card .wn-icon{font-size:22px;margin-bottom:8px}
+.wn-card .wn-title{color:var(--heading);font-weight:700;font-size:13px;margin-bottom:4px}
+.wn-card .wn-desc{color:var(--muted);font-size:12px;line-height:1.5}
 
-  /* HIGHLIGHT BOX */
-  .highlight-box {
-    background: linear-gradient(135deg, rgba(249,115,22,.15), rgba(249,115,22,.05)) !important;
-    border: 1px solid rgba(249,115,22,.3) !important;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin: 16px 0;
-  }
-  .highlight-box p { color: #cbd5e1 !important; margin: 0; }
+/* ── SELECTION DEMO ── */
+.demo-bar{background:linear-gradient(135deg,var(--surface),#1a1f2e);border:1px solid var(--accent);border-radius:10px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0;box-shadow:0 4px 16px rgba(249,115,22,.2)}
+.demo-count{color:var(--accent);font-weight:700;font-size:13px}
+.demo-btns{display:flex;gap:8px;flex-wrap:wrap}
+.demo-btn{background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);color:var(--accent);font-size:12px;padding:5px 12px;border-radius:6px;font-weight:600}
+.demo-btn-p{background:var(--accent);color:#fff;font-size:12px;padding:5px 12px;border-radius:6px;font-weight:600}
 
-  /* QUOTE BOX */
-  .quote-box {
-    border-left: 5px solid #f97316 !important;
-    background: rgba(249,115,22,.05) !important;
-    padding: 12px 18px;
-    border-radius: 0 6px 6px 0;
-    margin: 14px 0;
-  }
-  .quote-box p { color: #94a3b8 !important; font-size: 13px; margin: 0; font-style: italic; }
-
-  /* STATUTS AUDIT */
-  .statut-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px;
-    margin: 14px 0;
-  }
-  .statut-item {
-    background: #0f172a !important;
-    border: 1px solid #334155 !important;
-    border-radius: 8px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .statut-icon { font-size: 18px; flex-shrink: 0; }
-  .statut-item p { color: #94a3b8 !important; font-size: 12px; margin: 2px 0 0; }
-  .statut-item strong { color: #fff !important; font-size: 13px; }
-
-  /* CONSEIL */
-  .conseil {
-    background: rgba(99,102,241,.1) !important;
-    border: 1px solid rgba(99,102,241,.3) !important;
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin: 14px 0;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .conseil-icon { font-size: 18px; flex-shrink: 0; }
-  .conseil p { color: #a5b4fc !important; font-size: 13px; margin: 0; }
-
-  /* CODE INLINE */
-  code {
-    background: rgba(249,115,22,.2) !important;
-    color: #fb923c !important;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-family: 'Consolas', monospace;
-  }
-
-  /* FOOTER */
-  .footer {
-    text-align: center;
-    padding: 32px 24px;
-    color: #475569 !important;
-    font-size: 12px;
-    border-top: 1px solid #1e293b !important;
-    margin-top: 40px;
-  }
-
-  @media (max-width: 768px) {
-    .container { padding: 0 15px; }
-    .section { padding: 20px 18px; }
-    .header { padding: 24px 20px; }
-    .step-item { padding-left: 44px; }
-    .mode-grid { grid-template-columns: 1fr; }
-  }
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .content{padding:24px 20px}
+  .what-new{grid-template-columns:1fr}
+  .site-header{padding:20px}
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="container">
-    <div class="header-badge">Guide d'emploi</div>
-    <h1>🔍 Recherche SIRET Fournisseurs</h1>
-    <p>Guide pratique d'utilisation — Service Comptabilité &amp; Finance ABRAPA</p>
-    <a href="RECHERCHE_SIRET_FOURNISSEURS.html" style="
-      display:inline-flex;align-items:center;gap:8px;
-      background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);
-      color:#f97316;text-decoration:none;font-size:13px;font-weight:600;
-      padding:8px 16px;border-radius:8px;margin-bottom:16px;
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      transition:background .2s"
-      onmouseover="this.style.background='rgba(249,115,22,.3)'"
-      onmouseout="this.style.background='rgba(249,115,22,.15)'">
-      &#8592; Retour à l'application
-    </a>
-    <div class="header-meta">
-      <span class="meta-badge">📅 Version 5.0 — Mars 2026</span>
-      <span class="meta-badge">👤 Usage interne ABRAPA</span>
-      <span class="meta-badge">🌐 Fonctionne sans installation</span>
+<header class="site-header">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <h1>📖 Guide d'emploi &nbsp;<span class="badge">ABRAPA</span></h1>
+      <p>Recherche SIRET Fournisseurs — Comptabilité &amp; Finance</p>
     </div>
+    <span class="version-badge">v5.0 — Mars 2026</span>
   </div>
+</header>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="sidebar">
+    <div class="sidebar-title">Sommaire</div>
+    <a href="#nouveautes" class="nav-item active">🆕 Nouveautés v5.0</a>
+    <a href="#presentation" class="nav-item">🏠 Présentation</a>
+    <a href="#recherche" class="nav-item">🔍 Recherche unitaire</a>
+    <a class="nav-item nav-sub" href="#selection">↳ Sélection multiple</a>
+    <a class="nav-item nav-sub" href="#historique">↳ Historique persistant</a>
+    <a href="#batch" class="nav-item">📋 Traitement par lot</a>
+    <a href="#verif" class="nav-item">✅ Vérifier un SIRET</a>
+    <a class="nav-item nav-sub" href="#etablissements">↳ Établissements SIREN</a>
+    <a href="#audit" class="nav-item">📊 Audit base fournisseurs</a>
+    <a href="#sage" class="nav-item">🗂️ Import Sage FRP 1000</a>
+    <div class="nav-divider"></div>
+    <a href="#faq" class="nav-item">❓ FAQ</a>
+  </nav>
+
+  <!-- ── CONTENU ── -->
+  <main class="content">
+
+    <!-- ══════════ NOUVEAUTÉS v5.0 ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="nouveautes"></a>
+      <h2>🆕 Nouveautés v5.0 <span class="tag-new">NOUVEAU</span></h2>
+      <div class="what-new">
+        <div class="wn-card">
+          <div class="wn-icon">☑️</div>
+          <div class="wn-title">Sélection multiple + export groupé</div>
+          <div class="wn-desc">Cochez plusieurs cartes résultat et exportez uniquement votre sélection en un clic. Bandeau sticky avec compteur et bascule globale.</div>
+        </div>
+        <div class="wn-card">
+          <div class="wn-icon">🕐</div>
+          <div class="wn-title">Historique persistant</div>
+          <div class="wn-desc">50 dernières recherches conservées entre les sessions (localStorage). Horodatage relatif sur chaque badge — plus de perte à la fermeture du navigateur.</div>
+        </div>
+        <div class="wn-card">
+          <div class="wn-icon">🔤</div>
+          <div class="wn-title">Badge « Nom ✕ » cliquable</div>
+          <div class="wn-desc">Le badge de type de saisie affiché dans le champ fait office de bouton de réinitialisation instantanée — accessible même sur mobile.</div>
+        </div>
+        <div class="wn-card">
+          <div class="wn-icon">📥</div>
+          <div class="wn-title">Export établissements filtré</div>
+          <div class="wn-desc">L'export de la modale « Tous les établissements du SIREN » respecte le filtre actif (Actifs / Fermés / Tous). Le nom du fichier indique le filtre appliqué.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PRÉSENTATION ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="presentation"></a>
+      <h2>🏠 Présentation générale</h2>
+      <p>Cet outil interroge l'<strong>API SIRENE officielle</strong> (recherche-entreprises.api.gouv.fr — INSEE / data.gouv.fr) pour enrichir et auditer la base fournisseurs ABRAPA dans Sage FRP&nbsp;1000. Il fonctionne comme un fichier HTML autonome, sans installation ni serveur.</p>
+
+      <table>
+        <thead><tr><th>Onglet</th><th>Usage</th><th>Export</th></tr></thead>
+        <tbody>
+          <tr><td>🔍 Recherche unitaire</td><td>Trouver le SIRET d'un fournisseur par son nom + <strong>sélection multiple</strong></td><td>📥 Excel Sage FRP 1000 (tout ou sélection)</td></tr>
+          <tr><td>📋 Traitement par lot</td><td>Compléter les SIRET manquants d'un fichier CSV / Excel</td><td>📥 CSV complet + CSV Sage</td></tr>
+          <tr><td>✅ Vérifier un SIRET</td><td>Valider un SIRET 14 chiffres ou lister les établissements d'un SIREN</td><td>📥 Excel Sage FRP 1000</td></tr>
+          <tr><td>📊 Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse</td><td>📥 3 formats</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-warn">
+        ⚠️ <strong>Connexion internet indispensable.</strong> Les 4 modules interrogent l'API SIRENE en temps réel. Le fichier HTML s'ouvre directement dans le navigateur.
+      </div>
+    </div>
+
+    <!-- ══════════ RECHERCHE UNITAIRE ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="recherche"></a>
+      <h2>🔍 Recherche &amp; Vérification</h2>
+      <p>Recherche un fournisseur par son nom dans SIRENE et affiche jusqu'à 8 résultats sous forme de fiches détaillées avec tous les champs Sage FRP&nbsp;1000.</p>
+
+      <h3>Déroulement</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Saisir le nom du fournisseur</strong> — Une partie du nom suffit. Ex&nbsp;: <code>PHARMAT</code>, <code>Boehringer</code>, <code>SUPER U 67</code></div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Code postal (optionnel)</strong> — Affine les résultats pour les enseignes nationales</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Entrée</strong> ou clic <em>Rechercher</em> — Résultats classés par pertinence SIRENE</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>📋 Copier un champ</strong> — Bouton 📋 sur chaque ligne CT_* pour coller directement dans Sage</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>📋 Tout copier</strong> — Copie tous les champs CT_* en une seule fois, prêts à coller dans Excel ou Sage</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Sélectionner des cartes</strong> — Cliquer sur une carte (ou sa case ☑) pour la sélectionner ; un bandeau apparaît en bas</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>📥 Exporter la sélection</strong> — Fichier Excel avec uniquement les résultats cochés. Le bouton <em>Exporter tout</em> en haut exporte tous les résultats.</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Nom ✕ (badge cliquable)</strong> — Cliquer le badge dans le champ réinitialise la recherche instantanément</div></div>
+      </div>
+
+      <!-- SÉLECTION MULTIPLE -->
+      <a class="section-anchor" id="selection"></a>
+      <h3>☑️ Sélection multiple <span class="tag-new" style="font-size:10px;padding:2px 7px">NOUVEAU</span></h3>
+      <p>Après une recherche, chaque carte résultat est sélectionnable. Le bandeau sticky apparaît dès qu'au moins une carte est cochée&nbsp;:</p>
+
+      <div class="demo-bar">
+        <span class="demo-count">2 sélectionné(s) sur 5</span>
+        <div class="demo-btns">
+          <span class="demo-btn">☑️ Tout sélectionner</span>
+          <span class="demo-btn-p">📥 Exporter la sélection</span>
+          <span class="demo-btn">✕</span>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Action</th><th>Résultat</th></tr></thead>
+        <tbody>
+          <tr><td>Clic sur une carte</td><td>Sélectionne / désélectionne la carte (fond orange)</td></tr>
+          <tr><td>Clic sur la case ☑</td><td>Même effet, sans propager aux boutons internes</td></tr>
+          <tr><td>☑️ Tout sélectionner</td><td>Coche toutes les cartes visibles d'un coup</td></tr>
+          <tr><td>☐ Tout désélectionner</td><td>Apparaît quand tout est coché — décoche tout</td></tr>
+          <tr><td>📥 Exporter la sélection</td><td>Excel Sage FRP 1000 avec uniquement les lignes choisies</td></tr>
+          <tr><td>📥 Exporter tout (en haut)</td><td>Excel avec l'ensemble des résultats (comportement inchangé)</td></tr>
+          <tr><td>✕ (bandeau)</td><td>Efface la sélection sans relancer la recherche</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-info">
+        💡 <strong>Cas d'usage typique&nbsp;:</strong> votre recherche retourne 5 résultats dont 2 établissements actifs pertinents. Cochez-les, cliquez <em>Exporter la sélection</em> — le fichier Excel ne contiendra que ces 2 lignes prêtes pour Sage.
+      </div>
+
+      <!-- HISTORIQUE -->
+      <a class="section-anchor" id="historique"></a>
+      <h3>🕐 Historique persistant <span class="tag-update" style="font-size:10px;padding:2px 7px">MIS À JOUR</span></h3>
+      <p>Les <strong>50 dernières</strong> recherches sont affichées en badges horodatés sous le formulaire. L'horodatage est relatif&nbsp;: <em>il y a 3 min</em>, <em>lun</em>, <em>12/02</em>…</p>
+
+      <table>
+        <thead><tr><th>Fonctionnalité</th><th>Détail</th></tr></thead>
+        <tbody>
+          <tr><td>Stockage</td><td><strong>localStorage</strong> — persiste entre les sessions, même après fermeture complète du navigateur</td></tr>
+          <tr><td>Capacité</td><td>50 entrées maximum (FIFO — la plus ancienne est supprimée)</td></tr>
+          <tr><td>Horodatage</td><td>Affiché en relatif sur chaque badge</td></tr>
+          <tr><td>Rejouer</td><td>Clic sur un badge = relance la recherche immédiatement</td></tr>
+          <tr><td>Effacer</td><td>Bouton <em>Effacer</em> dans le bloc historique</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-warn">
+        ⚠️ L'historique est propre à chaque navigateur et poste. Il n'est <strong>pas partagé</strong> entre deux postes ou deux profils de navigateur différents.
+      </div>
+    </div>
+
+    <!-- ══════════ TRAITEMENT PAR LOT ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="batch"></a>
+      <h2>📋 Traitement par lot</h2>
+      <p>Lit un fichier CSV ou Excel, détecte les lignes sans SIRET (ou avec SIRET nul/zéro) et interroge SIRENE pour chacune. Les SIRET déjà renseignés sont conservés sans appel API.</p>
+
+      <h3>Formats acceptés</h3>
+      <ul style="margin:0 0 14px 20px;line-height:2">
+        <li><strong>Excel</strong> (.xlsx, .xls) — Export direct depuis Sage FRP 1000</li>
+        <li><strong>CSV / TXT</strong> — Séparateur <code>;</code> ou <code>,</code> auto-détecté, encodage ISO-8859-1 ou UTF-8</li>
+        <li>Colonnes minimales&nbsp;: <strong>Nom fournisseur</strong> + optionnel SIRET + optionnel Code postal</li>
+      </ul>
+
+      <h3>Déroulement</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Import</strong> — Glisser-déposer ou cliquer la zone de dépôt</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Mapping</strong> — Associer chaque colonne (détection automatique des colonnes Sage <code>CT_*</code>). Si le champ CP contient des références Sage (F1000…) : laisser sur <em>(aucune)</em></div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Lancer</strong> — Pause/reprise possible à tout moment. Session sauvegardée automatiquement toutes les 10 lignes</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Export</strong> — CSV complet ou <strong>Export Sage FRP 1000</strong> (colonnes <code>CT_*</code> enrichies)</div></div>
+      </div>
+
+      <table>
+        <thead><tr><th>Statut</th><th>Signification</th></tr></thead>
+        <tbody>
+          <tr><td>✅ Trouvé</td><td>SIRET localisé via SIRENE — tous les champs CT_* enrichis</td></tr>
+          <tr><td>🔵 Conservé</td><td>SIRET déjà présent dans le fichier source — aucune requête API</td></tr>
+          <tr><td>❌ Introuvable</td><td>Aucun résultat — vérifier le nom ou saisir manuellement</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-warn">
+        ⚠️ <strong>Session</strong> — En cas de fermeture accidentelle de l'onglet, un bandeau de restauration apparaît au rechargement. Fermer complètement le navigateur efface la session batch.
+      </div>
+    </div>
+
+    <!-- ══════════ VÉRIFIER UN SIRET ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="verif"></a>
+      <h2>✅ Vérifier un SIRET ou SIREN</h2>
+      <p>Valide un numéro SIRET (14 chiffres) ou interroge tous les établissements d'une entreprise via son SIREN (9 chiffres). Affiche la même fiche détaillée que la recherche unitaire.</p>
+
+      <table>
+        <thead><tr><th>Saisie</th><th>Comportement</th><th>Cas d'usage</th></tr></thead>
+        <tbody>
+          <tr><td><strong>14 chiffres</strong> (SIRET)</td><td>Vérifie l'établissement exact</td><td>Contrôle avant saisie dans Sage</td></tr>
+          <tr><td><strong>9 chiffres</strong> (SIREN)</td><td>Liste tous les établissements de l'entreprise</td><td>Trouver le bon site parmi plusieurs</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-info">
+        💡 Saisir le SIREN ou SIRET avec ou sans espaces — les chiffres seuls sont extraits automatiquement.
+      </div>
+
+      <!-- ÉTABLISSEMENTS -->
+      <a class="section-anchor" id="etablissements"></a>
+      <h3>🏢 Modale « Tous les établissements du SIREN » <span class="tag-update" style="font-size:10px;padding:2px 7px">MIS À JOUR</span></h3>
+      <p>Disponible depuis chaque carte résultat (boutons <em>Recherche unitaire</em> et <em>Vérifier</em>). Charge l'intégralité des établissements d'une entreprise avec filtrage et export.</p>
+
+      <table>
+        <thead><tr><th>Filtre</th><th>Contenu exporté</th><th>Nom du fichier</th></tr></thead>
+        <tbody>
+          <tr><td>Tous</td><td>Tous les établissements</td><td><code>etablissements_SIREN_DATE.xlsx</code></td></tr>
+          <tr><td>Actifs uniquement</td><td>Uniquement les actifs</td><td><code>etablissements_SIREN_actifs_DATE.xlsx</code></td></tr>
+          <tr><td>Fermés uniquement</td><td>Uniquement les fermés</td><td><code>etablissements_SIREN_fermes_DATE.xlsx</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-new">
+        🆕 <strong>v5.0</strong> — L'export respecte désormais le filtre actif. Avant cette version, le bouton exportait toujours la totalité des établissements quel que soit le filtre sélectionné.
+      </div>
+    </div>
+
+    <!-- ══════════ AUDIT ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="audit"></a>
+      <h2>📊 Audit base fournisseurs</h2>
+      <p>Compare <strong>en masse</strong> les SIRET déjà enregistrés dans Sage avec la base SIRENE officielle. Détecte les établissements fermés, les raisons sociales changées et les SIRET invalides.</p>
+
+      <h3>Export recommandé depuis Sage FRP 1000</h3>
+      <p>Menu <em>Fichier → Liste → Tiers</em>, exporter avec au minimum&nbsp;: <code>CT_Num</code>, <code>CT_Intitule</code>, <code>CT_Siret</code>. Le code postal (<code>CT_CodePostal</code>) améliore la comparaison des noms.</p>
+
+      <table>
+        <thead><tr><th>Statut</th><th>Signification</th><th>Priorité</th><th>Action Sage</th></tr></thead>
+        <tbody>
+          <tr><td>✅ OK</td><td>SIRET actif, raison sociale concordante</td><td>—</td><td>Aucune</td></tr>
+          <tr><td>🔴 Fermé</td><td>Radié dans SIRENE</td><td><span class="tag tag-danger">URGENT</span></td><td>Bloquer le tiers</td></tr>
+          <tr><td>🔴 Fermé + Nom ≠</td><td>Clos et raison sociale différente</td><td><span class="tag tag-danger">URGENT</span></td><td>Bloquer + chercher successeur</td></tr>
+          <tr><td>⚠️ Format invalide</td><td>SIRET ≠ 14 chiffres dans Sage</td><td><span class="tag tag-warn">CRITIQUE</span></td><td>Corriger CT_Siret</td></tr>
+          <tr><td>📝 Nom différent</td><td>Raison sociale modifiée</td><td><span class="tag tag-info">NORMAL</span></td><td>Mettre à jour CT_Intitule</td></tr>
+          <tr><td>❓ Introuvable</td><td>SIRET absent de SIRENE</td><td>À vérifier</td><td>Vérification manuelle</td></tr>
+          <tr><td>— Sans SIRET</td><td>Champ CT_Siret vide dans Sage</td><td>À compléter</td><td>SIRET à saisir via Recherche</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3 exports disponibles après audit</h3>
+      <ul style="margin:0 0 14px 20px;line-height:2">
+        <li><strong>Rapport complet</strong> — Tous les fournisseurs avec leur statut et les données SIRENE</li>
+        <li><strong>Mises à jour Sage</strong> — Uniquement les lignes avec action requise, colonnes <code>CT_*</code> prêtes à importer</li>
+        <li><strong>Actions par priorité</strong> — Trié de 1-URGENT à 4-À_VÉRIFIER</li>
+      </ul>
+
+      <div class="alert alert-ok">
+        🔒 <strong>IBAN et RIB en sécurité</strong> — Les coordonnées bancaires sont stockées dans la table <code>F_REGLEMENTT</code> de Sage, distincte de la fiche tiers <code>F_COMPTET</code>. Elles ne sont jamais modifiées par cet import.
+      </div>
+    </div>
+
+    <!-- ══════════ IMPORT SAGE ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="sage"></a>
+      <h2>🗂️ Import dans Sage FRP 1000</h2>
+
+      <div class="steps">
+        <div class="step"><div class="step-num"></div><div class="step-text">Dans Sage FRP 1000 : <strong>Fichier → Import → Tiers</strong></div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text">Sélectionner le fichier CSV (encodage <strong>ISO-8859-1</strong>, séparateur <strong>;</strong>) ou Excel exporté par l'outil</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text">Vérifier la correspondance des colonnes — les en-têtes <code>CT_*</code> sont reconnus automatiquement</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text">Sage identifie chaque tiers par <strong>CT_Num</strong> : code existant → mise à jour ; code absent → création</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text"><strong>Tester sur 5–10 tiers</strong> avant l'import complet</div></div>
+      </div>
+
+      <table>
+        <thead><tr><th>Situation</th><th>Comportement Sage</th></tr></thead>
+        <tbody>
+          <tr><td>CT_Num existe + champ renseigné</td><td>✅ Mise à jour du champ</td></tr>
+          <tr><td>CT_Num existe + champ <strong>vide</strong></td><td>⚠️ Champ écrasé à blanc</td></tr>
+          <tr><td>CT_Num n'existe pas</td><td>✅ Création d'un nouveau tiers</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-warn">
+        ⚠️ <strong>Précaution premier import</strong> — Téléphone, email et site web ne sont renseignés que pour une minorité d'entreprises dans SIRENE. Si ces valeurs sont déjà saisies manuellement dans Sage, préférez n'importer que <code>CT_Siret</code>, <code>CT_Intitule</code>, <code>CT_Adresse</code>, <code>CT_CodePostal</code>, <code>CT_Ville</code> lors du premier passage.
+      </div>
+    </div>
+
+    <!-- ══════════ FAQ ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="faq"></a>
+      <h2>❓ Questions fréquentes</h2>
+
+      <h3>Comment exporter uniquement certains résultats ?</h3>
+      <p>Dans l'onglet <em>Recherche unitaire</em>, cliquez sur une ou plusieurs cartes pour les sélectionner (fond orange + case cochée). Un bandeau sticky apparaît en bas. Cliquez <strong>📥 Exporter la sélection</strong> pour générer un fichier Excel ne contenant que les lignes choisies. Le bouton <strong>Exporter tout</strong> en haut exporte toujours l'ensemble.</p>
+
+      <h3>L'historique des recherches est-il permanent ?</h3>
+      <p>Oui depuis la v5.0. L'historique est stocké dans le <em>localStorage</em> du navigateur : il persiste entre les sessions, même après fermeture complète du navigateur. Les 50 dernières recherches sont conservées avec leur horodatage. Le bouton <em>Effacer</em> les supprime manuellement.</p>
+
+      <h3>L'export de la modale établissements exporte-t-il tout ?</h3>
+      <p>Non depuis la v5.0. L'export respecte le filtre actif&nbsp;: si vous êtes sur <em>Actifs uniquement</em>, seuls les établissements actifs sont exportés. Le nom du fichier inclut le filtre appliqué (<code>_actifs</code> ou <code>_fermes</code>).</p>
+
+      <h3>Peut-on renommer le fichier HTML ?</h3>
+      <p>Oui, sans aucune restriction. Le fichier ne contient aucune référence à son propre nom.</p>
+
+      <h3>Pourquoi certains fournisseurs sont introuvables ?</h3>
+      <p>Plusieurs raisons possibles : nom trop abrégé ou différent de la raison sociale officielle, entreprise étrangère (hors registre français), micro-entreprise non inscrite au RCS, ou SIRET effectivement radié. Essayez différentes formulations du nom.</p>
+
+      <h3>Le nom trouvé est différent du nom dans Sage — est-ce normal ?</h3>
+      <p>Oui. SIRENE utilise la raison sociale <strong>officielle</strong> (ex&nbsp;: <em>PHARMAT SAS</em>) alors que Sage peut contenir un nom commercial abrégé (ex&nbsp;: <em>PHARMAT</em>). L'outil signale les écarts significatifs avec le statut <em>Nom différent</em> en ignorant les formes juridiques (SAS, SARL…).</p>
+
+      <h3>La recherche est-elle limitée en volume ?</h3>
+      <p>L'API SIRENE est gratuite et sans clé API. Elle applique un rate limit : l'outil attend automatiquement 380&nbsp;ms entre chaque requête (~&nbsp;150 fournisseurs/minute). En cas de dépassement (HTTP 429), une pause de 2&nbsp;s est insérée automatiquement.</p>
+
+      <h3>À quoi sert le bouton « Tout copier » ?</h3>
+      <p>Il copie tous les champs CT_* du résultat sous forme d'un tableau champ/valeur (séparateur tabulation), collable directement dans Excel ou un email. Les champs vides sont inclus avec une valeur vide.</p>
+
+      <h3>À quoi sert la recherche par SIREN ?</h3>
+      <p>Le SIREN (9 chiffres) identifie une entreprise, le SIRET (14 chiffres) identifie un établissement précis. En saisissant un SIREN dans l'onglet <em>Vérifier</em>, l'outil liste tous les établissements (siège + annexes), utile pour les fournisseurs ayant plusieurs sites.</p>
+
+      <h3>La session batch est-elle sauvegardée ?</h3>
+      <p>Oui pour les onglets <em>Traitement par lot</em> et <em>Audit</em> : la progression est sauvegardée dans le sessionStorage. Un bandeau de restauration apparaît au rechargement. Fermer complètement le navigateur efface la session batch (mais pas l'historique des recherches unitaires).</p>
+
+      <h3>Peut-on utiliser cet outil hors connexion ?</h3>
+      <p>Non. Les 4 modules interrogent l'API SIRENE en temps réel. Une connexion internet est indispensable.</p>
+    </div>
+
+    <div style="padding:24px;background:var(--surface);border-radius:10px;border:1px solid var(--border);text-align:center;color:var(--muted);font-size:12px;margin-top:20px">
+      Recherche SIRET Fournisseurs v5.0 — ABRAPA Comptabilité &amp; Finance — Mars 2026
+    </div>
+
+  </main>
 </div>
 
-<div class="container">
-
-  <!-- INTRO -->
-  <div class="intro-box">
-    <strong style="color:#fff">Qu'est-ce que cet outil ?</strong><br>
-    Une application web autonome permettant de rechercher, vérifier et auditer les numéros SIRET et SIREN des fournisseurs ABRAPA, directement connectée aux bases officielles <strong style="color:#f97316">INSEE SIRENE</strong> et <strong style="color:#f97316">data.gouv.fr</strong>. Aucune installation requise — s'ouvre directement dans le navigateur.
-  </div>
-
-  <!-- SOMMAIRE -->
-  <div class="toc">
-    <div class="toc-title">📋 Sommaire</div>
-    <a href="#demarrage"><span class="toc-num">1.</span> Démarrage rapide</a>
-    <a href="#recherche"><span class="toc-num">2.</span> Onglet Recherche &amp; Vérification</a>
-    <a href="#lot"><span class="toc-num">3.</span> Onglet Traitement par lot</a>
-    <a href="#audit"><span class="toc-num">4.</span> Onglet Audit base fournisseurs</a>
-    <a href="#etablissements"><span class="toc-num">5.</span> Liste des établissements d'un SIREN</a>
-    <a href="#exports"><span class="toc-num">6.</span> Les exports disponibles</a>
-    <a href="#conseils"><span class="toc-num">7.</span> Conseils pratiques</a>
-  </div>
-
-  <!-- SECTION 1 -->
-  <div class="section" id="demarrage">
-    <div class="section-header">
-      <div class="section-num">1</div>
-      <h2>Démarrage rapide</h2>
-    </div>
-
-    <h3>Prérequis</h3>
-    <p>Deux fichiers doivent être placés dans le <strong style="color:#fff">même dossier</strong> sur votre poste :</p>
-    <ul>
-      <li><code>RECHERCHE_SIRET_FOURNISSEURS.html</code> — l'application</li>
-      <li><code>xlsx.full.min.js</code> — librairie pour les exports Excel</li>
-    </ul>
-
-    <h3>Lancement</h3>
-    <div class="steps">
-      <div class="step-item"><strong>Ouvrir</strong> le fichier <code>RECHERCHE_SIRET_FOURNISSEURS.html</code> avec votre navigateur (double-clic ou clic droit → Ouvrir avec → Chrome / Edge)</div>
-      <div class="step-item"><strong>Vérifier</strong> que la connexion internet est active — l'outil interroge les bases de données gouvernementales en temps réel</div>
-      <div class="step-item"><strong>Utiliser</strong> les 3 onglets selon votre besoin</div>
-    </div>
-
-    <div class="conseil">
-      <span class="conseil-icon">💡</span>
-      <p>Si les exports Excel ne fonctionnent pas, vérifiez que <code>xlsx.full.min.js</code> est bien présent dans le même dossier que le fichier HTML.</p>
-    </div>
-  </div>
-
-  <!-- SECTION 2 -->
-  <div class="section" id="recherche">
-    <div class="section-header">
-      <div class="section-num">2</div>
-      <h2>🔍 Onglet Recherche &amp; Vérification</h2>
-    </div>
-
-    <p>Un seul champ de saisie intelligent qui s'adapte automatiquement selon ce que vous tapez.</p>
-
-    <div class="mode-grid">
-      <div class="mode-card">
-        <span class="mode-badge badge-nom">🔤 Mode Nom</span>
-        <strong>Recherche par nom</strong>
-        <p>Tapez le nom du fournisseur. Ajoutez un code postal pour affiner. Ex : <em>PHARMAT</em> ou <em>SUPER U</em></p>
-      </div>
-      <div class="mode-card">
-        <span class="mode-badge badge-siren">🏢 Mode SIREN</span>
-        <strong>9 chiffres exactement</strong>
-        <p>Retourne la fiche entreprise complète et le bouton pour lister tous les établissements.</p>
-      </div>
-      <div class="mode-card">
-        <span class="mode-badge badge-siret">🔢 Mode SIRET</span>
-        <strong>14 chiffres exactement</strong>
-        <p>Vérification directe de l'établissement avec toutes ses informations Sage.</p>
-      </div>
-    </div>
-
-    <h3>Informations retournées</h3>
-    <table>
-      <tr><th>Champ Sage</th><th>Information</th></tr>
-      <tr><td><code>CT_Intitule</code></td><td>Raison sociale officielle</td></tr>
-      <tr><td><code>CT_Siret</code></td><td>Numéro SIRET (14 chiffres)</td></tr>
-      <tr><td><code>CT_Siren</code></td><td>Numéro SIREN (9 chiffres)</td></tr>
-      <tr><td><code>CT_Adresse</code></td><td>Adresse du siège ou établissement</td></tr>
-      <tr><td><code>CT_CodePostal / CT_Ville</code></td><td>Code postal et commune</td></tr>
-      <tr><td><code>CT_NatureJuridique</code></td><td>Forme juridique (SA, SARL, Association…)</td></tr>
-      <tr><td><code>CT_NumTVAIntracomm</code></td><td>N° TVA intracommunautaire (si disponible)</td></tr>
-      <tr><td><code>CODE_NAF</code></td><td>Code activité principale</td></tr>
-    </table>
-
-    <h3>Export depuis la recherche unitaire</h3>
-    <p>Le bouton <strong style="color:#f97316">Export Excel Sage FRP 1000</strong> génère un fichier <code>.xlsx</code> prêt à l'import dans Sage, avec une notice d'import incluse dans un second onglet.</p>
-
-    <div class="conseil">
-      <span class="conseil-icon">💡</span>
-      <p>L'historique des recherches est conservé pendant toute la session. Cliquez sur un terme de l'historique pour relancer la recherche.</p>
-    </div>
-  </div>
-
-  <!-- SECTION 3 -->
-  <div class="section" id="lot">
-    <div class="section-header">
-      <div class="section-num">3</div>
-      <h2>📋 Onglet Traitement par lot</h2>
-    </div>
-
-    <p>Permet de compléter automatiquement les SIRET manquants à partir d'un fichier exporté de Sage FRP 1000.</p>
-
-    <h3>Étapes</h3>
-    <div class="steps">
-      <div class="step-item"><strong>Importer</strong> votre fichier CSV ou Excel extrait de Sage (colonnes minimales : Nom, Code postal, SIRET)</div>
-      <div class="step-item"><strong>Mapper les colonnes</strong> — indiquer quelle colonne correspond au nom, au code postal, au SIRET</div>
-      <div class="step-item"><strong>Lancer la vérification</strong> — l'outil interroge SIRENE pour chaque ligne sans SIRET valide</div>
-      <div class="step-item"><strong>Exporter les résultats</strong> en CSV complet, CSV Sage, ou Excel coloré</div>
-    </div>
-
-    <h3>Fonctionnalités avancées</h3>
-    <ul>
-      <li><strong style="color:#fff">Pause / Reprise</strong> — vous pouvez interrompre et reprendre le traitement sans tout recommencer</li>
-      <li><strong style="color:#fff">Sauvegarde de session</strong> — la progression est conservée en cas de fermeture accidentelle</li>
-      <li><strong style="color:#fff">Barre de progression</strong> — avancement en temps réel avec compteur et vitesse</li>
-    </ul>
-
-    <div class="quote-box">
-      <p>Les lignes avec un SIRET déjà renseigné et valide sont conservées sans modification. Seules les lignes sans SIRET (ou SIRET invalide) sont recherchées.</p>
-    </div>
-  </div>
-
-  <!-- SECTION 4 -->
-  <div class="section" id="audit">
-    <div class="section-header">
-      <div class="section-num">4</div>
-      <h2>📊 Onglet Audit base fournisseurs</h2>
-    </div>
-
-    <p>Vérifie en masse la cohérence de toute votre base fournisseurs Sage avec les données officielles SIRENE.</p>
-
-    <h3>Étapes</h3>
-    <div class="steps">
-      <div class="step-item"><strong>Importer</strong> l'export complet de votre base fournisseurs Sage (.xlsx)</div>
-      <div class="step-item"><strong>Mapper les colonnes</strong> — CT_Intitule, CT_Siret, CT_CodePostal</div>
-      <div class="step-item"><strong>Lancer l'audit</strong> — vérification automatique de chaque fournisseur</div>
-      <div class="step-item"><strong>Filtrer et exporter</strong> les résultats selon le statut</div>
-    </div>
-
-    <h3>Les statuts possibles</h3>
-    <div class="statut-grid">
-      <div class="statut-item">
-        <span class="statut-icon">✅</span>
-        <div><strong>OK</strong><p>SIRET confirmé, établissement actif, nom cohérent</p></div>
-      </div>
-      <div class="statut-item">
-        <span class="statut-icon">🔍</span>
-        <div><strong>Trouvé par nom</strong><p>Pas de SIRET dans Sage — trouvé par recherche nom + CP. Action : saisir le SIRET dans Sage</p></div>
-      </div>
-      <div class="statut-item">
-        <span class="statut-icon">⚠️</span>
-        <div><strong>Nom différent</strong><p>SIRET correct mais nom différent entre Sage et SIRENE</p></div>
-      </div>
-      <div class="statut-item">
-        <span class="statut-icon">🔴</span>
-        <div><strong>Fermé</strong><p>L'établissement est administrativement fermé dans SIRENE</p></div>
-      </div>
-      <div class="statut-item">
-        <span class="statut-icon">❌</span>
-        <div><strong>Non trouvé</strong><p>SIRET non confirmé ou introuvable dans SIRENE</p></div>
-      </div>
-      <div class="statut-item">
-        <span class="statut-icon">⏭️</span>
-        <div><strong>Sans SIRET</strong><p>Ni SIRET ni nom suffisant pour rechercher</p></div>
-      </div>
-    </div>
-
-    <h3>Mode de vérification dual</h3>
-    <ul>
-      <li><strong style="color:#fff">Avec SIRET</strong> → vérification directe : le SIRET de Sage est-il confirmé par SIRENE ?</li>
-      <li><strong style="color:#fff">Sans SIRET</strong> → recherche automatique par nom + code postal comme fallback</li>
-    </ul>
-  </div>
-
-  <!-- SECTION 5 -->
-  <div class="section" id="etablissements">
-    <div class="section-header">
-      <div class="section-num">5</div>
-      <h2>🏢 Liste des établissements d'un SIREN</h2>
-    </div>
-
-    <p>Accessible depuis la fiche résultat d'une recherche SIREN via le bouton <strong style="color:#818cf8">Tous les établissements du SIREN</strong>.</p>
-
-    <div class="highlight-box">
-      <p>✨ <strong style="color:#fff">Alimenté par l'API INSEE officielle</strong> — retourne la liste <em>complète</em> de tous les établissements (ex : 91 établissements pour ABRAPA), avec pagination automatique.</p>
-    </div>
-
-    <h3>Fonctionnalités de la modale</h3>
-    <ul>
-      <li><strong style="color:#fff">Filtres</strong> : Tous / Actifs / Fermés</li>
-      <li><strong style="color:#fff">Recherche</strong> : par commune, adresse, SIRET, code NAF</li>
-      <li><strong style="color:#fff">Siège social</strong> : identifié par un badge orange</li>
-      <li><strong style="color:#fff">SIRET cliquable</strong> : clic pour copier dans le presse-papier</li>
-      <li><strong style="color:#fff">Export Excel</strong> : liste complète formatée avec statuts colorés</li>
-    </ul>
-
-    <div class="conseil">
-      <span class="conseil-icon">💡</span>
-      <p>Utile pour identifier quel SIRET correspond à un établissement ABRAPA précis (EHPAD, SSIAD, aide à domicile…) avant de le renseigner dans Sage.</p>
-    </div>
-  </div>
-
-  <!-- SECTION 6 -->
-  <div class="section" id="exports">
-    <div class="section-header">
-      <div class="section-num">6</div>
-      <h2>📥 Les exports disponibles</h2>
-    </div>
-
-    <table>
-      <tr><th>Export</th><th>Format</th><th>Contenu</th><th>Disponible depuis</th></tr>
-      <tr>
-        <td><strong style="color:#fff">Excel Sage FRP 1000</strong></td>
-        <td><code>.xlsx</code></td>
-        <td>Tous les champs Sage + notice d'import</td>
-        <td>Recherche unitaire</td>
-      </tr>
-      <tr>
-        <td><strong style="color:#fff">CSV complet</strong></td>
-        <td><code>.csv</code></td>
-        <td>Toutes les colonnes avec statuts</td>
-        <td>Traitement par lot · Audit</td>
-      </tr>
-      <tr>
-        <td><strong style="color:#fff">CSV Sage</strong></td>
-        <td><code>.csv</code></td>
-        <td>Format d'import direct Sage FRP 1000</td>
-        <td>Traitement par lot · Audit</td>
-      </tr>
-      <tr>
-        <td><strong style="color:#fff">Excel coloré</strong></td>
-        <td><code>.xlsx</code></td>
-        <td>Résultats avec code couleur par statut</td>
-        <td>Audit · Établissements SIREN</td>
-      </tr>
-    </table>
-
-    <div class="quote-box">
-      <p>Tous les fichiers CSV sont encodés en <strong>ISO-8859-1</strong> avec séparateur point-virgule — compatible nativement avec Excel français et Sage FRP 1000.</p>
-    </div>
-  </div>
-
-  <!-- SECTION 7 -->
-  <div class="section" id="conseils">
-    <div class="section-header">
-      <div class="section-num">7</div>
-      <h2>💡 Conseils pratiques</h2>
-    </div>
-
-    <h3>Optimiser la recherche par nom</h3>
-    <ul>
-      <li>Utilisez un <strong style="color:#fff">nom court</strong> plutôt que la raison sociale complète : <code>PHARMAT</code> plutôt que <code>SAS PHARMAT DISTRIBUTION</code></li>
-      <li>Ajoutez le <strong style="color:#fff">code postal</strong> pour lever les ambiguïtés sur les noms courants</li>
-      <li>En cas de résultat inexact, essayez sans le code postal pour élargir la recherche</li>
-    </ul>
-
-    <h3>Préparer un fichier pour le traitement par lot</h3>
-    <ul>
-      <li>Exportez depuis Sage : menu <strong style="color:#fff">Fichier → Exporter → Tiers fournisseurs</strong></li>
-      <li>Colonnes minimales requises : <code>CT_Intitule</code>, <code>CT_CodePostal</code>, <code>CT_Siret</code></li>
-      <li>Le fichier peut contenir d'autres colonnes — elles seront ignorées</li>
-    </ul>
-
-    <h3>TVA intracommunautaire</h3>
-    <p>Le numéro TVA intra (<code>CT_NumTVAIntracomm</code>) est retourné automatiquement <strong style="color:#fff">si l'information est disponible dans SIRENE</strong>. Les associations non assujetties à la TVA (comme ABRAPA) n'ont pas ce champ renseigné.</p>
-
-    <h3>En cas de problème de connexion</h3>
-    <ul>
-      <li>Vérifiez que vous n'êtes pas en mode hors-ligne</li>
-      <li>Si l'export Excel échoue, vérifiez que <code>xlsx.full.min.js</code> est dans le même dossier</li>
-      <li>En cas de message "Erreur HTTP 429", attendez quelques secondes — la limite de requêtes API a été temporairement atteinte</li>
-    </ul>
-
-    <div class="highlight-box">
-      <p>🔑 <strong style="color:#fff">Clé API INSEE intégrée</strong> — valable indéfiniment. En cas d'expiration, contacter le responsable de l'outil pour mise à jour.</p>
-    </div>
-  </div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  <div class="container">
-    Guide d'emploi — Recherche SIRET Fournisseurs v5.0 &nbsp;·&nbsp; Service Comptabilité &amp; Finance ABRAPA &nbsp;·&nbsp; Mars 2026
-  </div>
-</div>
-
+<script>
+// Navigation active au scroll
+const sections = document.querySelectorAll('.section-anchor');
+const navItems = document.querySelectorAll('.nav-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  navItems.forEach(n => {
+    n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+  });
+});
+</script>
 </body>
 </html>
