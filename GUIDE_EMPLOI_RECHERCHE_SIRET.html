@@ -103,7 +103,17 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <h1>📖 Guide d'emploi &nbsp;<span class="badge">ABRAPA</span></h1>
       <p>Recherche SIRET Fournisseurs — Comptabilité &amp; Finance</p>
     </div>
-    <span class="version-badge">v5.0 — Mars 2026</span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <a href="index.html" onclick="event.preventDefault(); if(document.referrer){location.href=document.referrer;}else if(window.opener){window.close();}else{history.back();}" style="
+        display:inline-flex;align-items:center;gap:6px;
+        background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);
+        color:#f97316;text-decoration:none;font-size:13px;font-weight:600;
+        padding:7px 14px;border-radius:8px;transition:all .2s;font-family:inherit;white-space:nowrap
+      " onmouseover="this.style.background='rgba(249,115,22,.3)'" onmouseout="this.style.background='rgba(249,115,22,.15)'">
+        ← Retour à l'application
+      </a>
+      <span class="version-badge">v5.0 — Mars 2026</span>
+    </div>
   </div>
 </header>
 
