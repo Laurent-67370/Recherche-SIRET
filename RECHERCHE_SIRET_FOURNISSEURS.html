@@ -443,6 +443,8 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
           </tbody>
         </table>
         <div class="help-alert ha-info">&#128204; <strong>Donn&eacute;es en temps r&eacute;el</strong> &mdash; Chaque requ&ecirc;te interroge directement l&apos;API SIRENE. Une connexion internet est indispensable. Le fichier HTML fonctionne sans installation ni serveur.</div>
+        <div class="help-h4">&#129001; Indicateur statut API</div>
+        <p class="help-p">Un voyant dans le header indique en temps r&eacute;el si les APIs SIRENE sont accessibles&nbsp;: <strong style="color:#22c55e">&#9679;&nbsp;Vert</strong> = les deux APIs r&eacute;pondent, <strong style="color:#f59e0b">&#9679;&nbsp;Jaune</strong> = une seule disponible, <strong style="color:#ef4444">&#9679;&nbsp;Rouge</strong> = aucune joignable (connexion &agrave; v&eacute;rifier). Cliquer sur le voyant affiche la latence par API et l&apos;heure de la derni&egrave;re v&eacute;rification. Le bouton <strong>&#8635;&nbsp;Tester</strong> force un retest imm&eacute;diat. V&eacute;rification automatique toutes les 5&nbsp;minutes.</p>
         <div class="help-h4">Champs remont&eacute;s par l&apos;API</div>
         <table class="help-table">
           <thead><tr><th>Champ API</th><th>Colonne Sage FRP&nbsp;1000</th><th>Disponibilit&eacute;</th></tr></thead>
@@ -488,6 +490,8 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
             <tr><td colspan="2">Code NAF + libell&eacute; activit&eacute;</td></tr>
           </tbody>
         </table>
+        <div class="help-h4">S&eacute;lection multiple &amp; export group&eacute;</div>
+        <p class="help-p">Cliquez sur une ou plusieurs cartes r&eacute;sultat pour les s&eacute;lectionner (fond orange + case coch&eacute;e). Un bandeau sticky appara&icirc;t en bas avec&nbsp;: compteur de lignes, <strong>Tout s&eacute;lectionner&nbsp;/ d&eacute;s&eacute;lectionner</strong> et <strong>&#128229;&nbsp;Exporter la s&eacute;lection</strong> — g&eacute;n&egrave;re un fichier Excel ne contenant que les lignes choisies. Le bouton <strong>Exporter tout</strong> en haut exporte toujours l&apos;int&eacute;gralit&eacute; des r&eacute;sultats.</p>
         <div class="help-h4">Historique des recherches</div>
         <p class="help-p">Les <strong>50 derniers</strong> termes recherch&eacute;s sont affich&eacute;s en badges horodat&eacute;s sous le formulaire (<em>il y a 3 min</em>, <em>lun</em>, <em>12/02</em>&hellip;). Cliquer sur un badge relance la recherche instantan&eacute;ment. L&apos;historique est <strong>conserv&eacute; entre les sessions</strong> gr&acirc;ce au localStorage du navigateur &mdash; il persiste m&ecirc;me apr&egrave;s fermeture compl&egrave;te du navigateur.</p>
         <div class="help-alert ha-info">&#128161; <strong>Astuce saisie Sage</strong> &mdash; Utilisez <em>Tout copier</em> pour coller un tableau champ/valeur directement dans Excel, puis saisissez la fiche tiers 1/3 depuis ce r&eacute;capitulatif sans jongler entre l&apos;outil et Sage.</div>
@@ -667,20 +671,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <div class="help-h4">Le traitement par lot accepte-t-il les fichiers Excel&nbsp;? <span class="help-tag ht-new">v5.1</span></div>
         <p class="help-p">Oui depuis la v5.1. Le traitement par lot accepte d&eacute;sormais les m&ecirc;mes formats que l&apos;Audit&nbsp;: <strong>.xlsx</strong>, <strong>.xls</strong>, <strong>.csv</strong> et <strong>.txt</strong>. Le format est d&eacute;tect&eacute; automatiquement au d&eacute;p&ocirc;t du fichier, sans configuration suppl&eacute;mentaire.</p>
 
-        <div class="help-h4">Diff&eacute;rence entre le fichier HTML et le script Python ?</div>
-        <table class="help-table">
-          <thead><tr><th></th><th>HTML (navigateur)</th><th>Python (ligne de commande)</th></tr></thead>
-          <tbody>
-            <tr><td>Usage</td><td>Interface graphique, accessible &agrave; tous</td><td>Automatisation, workflow batch</td></tr>
-            <tr><td>Format entr&eacute;e</td><td>CSV, Excel (.xlsx / .xls)</td><td>Excel uniquement (.xlsx)</td></tr>
-            <tr><td>Format sortie</td><td>CSV + Excel (.xlsx)</td><td>Excel color&eacute; + CSV</td></tr>
-            <tr><td>Copie champ par champ</td><td>&#9989; Bouton &#128203; sur chaque CT_*</td><td>&mdash;</td></tr>
-            <tr><td>Recherche SIREN</td><td>&#9989; Onglet V&eacute;rifier</td><td>&mdash;</td></tr>
-            <tr><td>Historique recherches</td><td>&#9989; Session navigateur</td><td>&mdash;</td></tr>
-            <tr><td>Mode audit</td><td>Onglet d&eacute;di&eacute;</td><td><code>--mode verify</code></td></tr>
-          </tbody>
-        </table>
-      </div>
+        
 
     </div><!-- /modal-body -->
   </div><!-- /modal -->
