@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guide d'emploi — Recherche SIRET Fournisseurs v5.0 — ABRAPA</title>
+<title>Guide d'emploi — Recherche SIRET Fournisseurs v5.1 — ABRAPA</title>
 <style>
 :root{
   --bg:#0f172a;--surface:#1e293b;--surface2:#162032;--border:#334155;
@@ -112,7 +112,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       " onmouseover="this.style.background='rgba(249,115,22,.3)'" onmouseout="this.style.background='rgba(249,115,22,.15)'">
         ← Retour à l'application
       </a>
-      <span class="version-badge">v5.0 — Mars 2026</span>
+      <span class="version-badge">v5.1 — Mars 2026</span>
     </div>
   </div>
 </header>
@@ -122,7 +122,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <!-- ── SIDEBAR ── -->
   <nav class="sidebar">
     <div class="sidebar-title">Sommaire</div>
-    <a href="#nouveautes" class="nav-item active">🆕 Nouveautés v5.0</a>
+    <a href="#nouveautes" class="nav-item active">🆕 Nouveautés v5.1</a>
     <a href="#presentation" class="nav-item">🏠 Présentation</a>
     <a href="#recherche" class="nav-item">🔍 Recherche unitaire</a>
     <a class="nav-item nav-sub" href="#selection">↳ Sélection multiple</a>
@@ -133,16 +133,17 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <a href="#audit" class="nav-item">📊 Audit base fournisseurs</a>
     <a href="#sage" class="nav-item">🗂️ Import Sage FRP 1000</a>
     <div class="nav-divider"></div>
+    <a href="#api-status-section" class="nav-item">🟢 Indicateur API</a>
     <a href="#faq" class="nav-item">❓ FAQ</a>
   </nav>
 
   <!-- ── CONTENU ── -->
   <main class="content">
 
-    <!-- ══════════ NOUVEAUTÉS v5.0 ══════════ -->
+    <!-- ══════════ NOUVEAUTÉS v5.1 ══════════ -->
     <div class="section">
       <a class="section-anchor" id="nouveautes"></a>
-      <h2>🆕 Nouveautés v5.0 <span class="tag-new">NOUVEAU</span></h2>
+      <h2>🆕 Nouveautés v5.1 <span class="tag-new">NOUVEAU</span></h2>
       <div class="what-new">
         <div class="wn-card">
           <div class="wn-icon">☑️</div>
@@ -164,6 +165,21 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <div class="wn-title">Export établissements filtré</div>
           <div class="wn-desc">L'export de la modale « Tous les établissements du SIREN » respecte le filtre actif (Actifs / Fermés / Tous). Le nom du fichier indique le filtre appliqué.</div>
         </div>
+        <div class="wn-card">
+          <div class="wn-icon">📊</div>
+          <div class="wn-title">Résumé visuel batch</div>
+          <div class="wn-desc">Après chaque traitement par lot, un graphique donut SVG + KPI cards affiche le taux d'enrichissement, la durée totale et la ventilation trouvés / conservés / introuvables.</div>
+        </div>
+        <div class="wn-card">
+          <div class="wn-icon">📂</div>
+          <div class="wn-title">Import Excel dans le Batch</div>
+          <div class="wn-desc">Le Traitement par lot accepte désormais les mêmes formats que l'Audit : .xlsx, .xls, .csv, .txt. Détection automatique du format au dépôt du fichier.</div>
+        </div>
+        <div class="wn-card">
+          <div class="wn-icon">🔍</div>
+          <div class="wn-title">Comparaison champ par champ (Audit)</div>
+          <div class="wn-desc">Bouton « Comparer » sur chaque ligne audit : modale Sage vs SIRENE avec badge Diff/OK par champ, bouton Accepter individuel et Tout accepter.</div>
+        </div>
       </div>
     </div>
 
@@ -179,7 +195,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <tr><td>🔍 Recherche unitaire</td><td>Trouver le SIRET d'un fournisseur par son nom + <strong>sélection multiple</strong></td><td>📥 Excel Sage FRP 1000 (tout ou sélection)</td></tr>
           <tr><td>📋 Traitement par lot</td><td>Compléter les SIRET manquants d'un fichier CSV / Excel</td><td>📥 CSV complet + CSV Sage</td></tr>
           <tr><td>✅ Vérifier un SIRET</td><td>Valider un SIRET 14 chiffres ou lister les établissements d'un SIREN</td><td>📥 Excel Sage FRP 1000</td></tr>
-          <tr><td>📊 Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse</td><td>📥 3 formats</td></tr>
+          <tr><td>📊 Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse + <strong>comparaison champ par champ</strong></td><td>📥 3 formats</td></tr>
         </tbody>
       </table>
 
@@ -359,6 +375,39 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <li><strong>Actions par priorité</strong> — Trié de 1-URGENT à 4-À_VÉRIFIER</li>
       </ul>
 
+      <h3>📊 Comparaison champ par champ <span class="tag-new">NOUVEAU v5.1</span></h3>
+      <p>Sur chaque ligne du tableau d'audit (statuts OK, Nom ≠, Fermé, Trouvé/nom), un bouton <strong>📊 Comparer</strong> ouvre une modale de rapprochement Sage ↔ SIRENE.</p>
+      <table>
+        <thead><tr><th>Champ comparé</th><th>Colonne Sage</th></tr></thead>
+        <tbody>
+          <tr><td>Raison sociale</td><td><code>CT_Intitule</code></td></tr>
+          <tr><td>SIRET</td><td><code>CT_Siret</code></td></tr>
+          <tr><td>Adresse</td><td><code>CT_Adresse</code></td></tr>
+          <tr><td>Code postal</td><td><code>CT_CodePostal</code></td></tr>
+          <tr><td>Ville</td><td><code>CT_Ville</code></td></tr>
+          <tr><td>Forme juridique</td><td><code>CT_NatureJuridique</code></td></tr>
+          <tr><td>N° TVA intracommunautaire</td><td><code>CT_NumTVAIntracomm</code></td></tr>
+          <tr><td>Téléphone</td><td><code>CT_Telephone</code></td></tr>
+          <tr><td>Email</td><td><code>CT_Email</code></td></tr>
+          <tr><td>Code NAF</td><td>Référence uniquement</td></tr>
+        </tbody>
+      </table>
+      <div class="steps" style="margin-top:14px">
+        <div class="step"><div class="step-num"></div><div class="step-text">Chaque champ reçoit un badge <strong style="color:#f59e0b">🔺 Diff</strong> (valeurs différentes), <strong style="color:#22c55e">= OK</strong> (identiques) ou <strong style="color:#f97316">✅ Accepté</strong></div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text">Cliquez <strong>✅ Accepter</strong> sur un champ pour marquer la valeur SIRENE à retenir — ou <strong>Tout accepter</strong> en bas de modale</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text">Les valeurs acceptées sont stockées dans l'objet <code>row.accepted</code> et intégrées lors des exports Sage</div></div>
+        <div class="step"><div class="step-num"></div><div class="step-text">Le bouton <strong>🔄 Réinitialiser</strong> annule toutes les acceptations de cette ligne</div></div>
+      </div>
+
+      <h3>📈 Résumé visuel après traitement par lot <span class="tag-new">NOUVEAU v5.1</span></h3>
+      <p>À la fin de chaque traitement par lot, un panneau de synthèse s'affiche automatiquement avant le tableau de résultats&nbsp;:</p>
+      <ul style="margin:0 0 14px 20px;line-height:2">
+        <li><strong>Graphique donut SVG</strong> — 3 segments colorés : 🟢 Trouvés / 🟣 Conservés (SIRET déjà présent) / 🔴 Introuvables</li>
+        <li><strong>Taux d'enrichissement</strong> affiché au centre du donut</li>
+        <li><strong>4 KPI cards</strong> — Total traité · Trouvés · Conservés · Introuvables avec pourcentages</li>
+        <li><strong>Durée totale</strong> du traitement</li>
+      </ul>
+
       <div class="alert alert-ok">
         🔒 <strong>IBAN et RIB en sécurité</strong> — Les coordonnées bancaires sont stockées dans la table <code>F_REGLEMENTT</code> de Sage, distincte de la fiche tiers <code>F_COMPTET</code>. Elles ne sont jamais modifiées par cet import.
       </div>
@@ -391,6 +440,36 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
+    <!-- ══════════ INDICATEUR STATUT API ══════════ -->
+    <div class="section">
+      <a class="section-anchor" id="api-status-section"></a>
+      <h2>🟢 Indicateur statut API <span class="tag-new">NOUVEAU v5.1</span></h2>
+      <p>Un voyant de statut est affiché en permanence dans le header de l'application, à gauche du bouton Guide. Il indique en temps réel si les deux APIs SIRENE sont accessibles.</p>
+
+      <table>
+        <thead><tr><th>Couleur</th><th>Signification</th></tr></thead>
+        <tbody>
+          <tr><td>🟢 Vert</td><td>Les deux APIs répondent normalement — fonctionnement optimal</td></tr>
+          <tr><td>🟡 Jaune</td><td>Une seule API est disponible — certaines fonctions peuvent être ralenties</td></tr>
+          <tr><td>🔴 Rouge</td><td>Aucune API n'est joignable — vérifier la connexion internet</td></tr>
+          <tr><td>⚫ Gris</td><td>Vérification en cours (état initial au chargement)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Tooltip de détail</h3>
+      <p>Un clic sur le voyant ouvre un panneau de détail avec :</p>
+      <ul style="margin:0 0 14px 20px;line-height:2">
+        <li>Statut individuel de chaque API : <strong>recherche-entreprises.api.gouv.fr</strong> (recherche unitaire, batch, audit) et <strong>api.insee.fr</strong> (liste établissements d'un SIREN)</li>
+        <li>La <strong>latence en millisecondes</strong> pour chaque API</li>
+        <li>L'<strong>heure de la dernière vérification</strong></li>
+        <li>Bouton <strong>↻ Tester</strong> pour forcer un retest immédiat</li>
+      </ul>
+
+      <div class="alert alert-ok">
+        🔄 <strong>Vérification automatique</strong> — Le statut est actualisé automatiquement <strong>toutes les 5 minutes</strong> en arrière-plan, sans aucune action requise. Le premier test s'effectue 1,5 seconde après l'ouverture de l'outil.
+      </div>
+    </div>
+
     <!-- ══════════ FAQ ══════════ -->
     <div class="section">
       <a class="section-anchor" id="faq"></a>
@@ -404,6 +483,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
       <h3>L'export de la modale établissements exporte-t-il tout ?</h3>
       <p>Non depuis la v5.0. L'export respecte le filtre actif&nbsp;: si vous êtes sur <em>Actifs uniquement</em>, seuls les établissements actifs sont exportés. Le nom du fichier inclut le filtre appliqué (<code>_actifs</code> ou <code>_fermes</code>).</p>
+
+      <h3>À quoi sert le bouton « Comparer » dans l'Audit ? <span class="tag-new">v5.1</span></h3>
+      <p>Ce bouton ouvre une modale de comparaison côte à côte entre les données Sage et les données SIRENE fraîchement récupérées. Chaque champ (raison sociale, SIRET, adresse, CP, ville, TVA…) est affiché avec son statut Diff/OK. Vous pouvez accepter champ par champ ou en une seule fois via « Tout accepter ». Les valeurs acceptées sont incluses dans les exports Sage FRP&nbsp;1000 générés depuis l'onglet Audit.</p>
+
+      <h3>À quoi sert le voyant statut API dans le header ? <span class="tag-new">v5.1</span></h3>
+      <p>Il indique en temps réel si les APIs SIRENE sont accessibles. 🟢 vert = tout fonctionne, 🟡 jaune = partielle, 🔴 rouge = hors ligne. Cliquer sur le voyant affiche le détail par API avec la latence et l'heure de la dernière vérification. La vérification s'effectue automatiquement toutes les 5 minutes.</p>
 
       <h3>Peut-on renommer le fichier HTML ?</h3>
       <p>Oui, sans aucune restriction. Le fichier ne contient aucune référence à son propre nom.</p>
@@ -431,7 +516,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     </div>
 
     <div style="padding:24px;background:var(--surface);border-radius:10px;border:1px solid var(--border);text-align:center;color:var(--muted);font-size:12px;margin-top:20px">
-      Recherche SIRET Fournisseurs v5.0 — ABRAPA Comptabilité &amp; Finance — Mars 2026
+      Recherche SIRET Fournisseurs v5.1 — ABRAPA Comptabilité &amp; Finance — Mars 2026
     </div>
 
   </main>

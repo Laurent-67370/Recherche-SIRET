@@ -3,7 +3,7 @@
 > Outil de recherche, vérification et audit SIRET/SIREN pour la comptabilité ABRAPA.  
 > Basé sur l'API SIRENE officielle INSEE et l'API recherche-entreprises (data.gouv.fr).
 
-![Version](https://img.shields.io/badge/version-5.0-orange)
+![Version](https://img.shields.io/badge/version-5.1-orange)
 ![Licence](https://img.shields.io/badge/licence-MIT-blue)
 ![API](https://img.shields.io/badge/API-SIRENE%20officielle-green)
 ![Sage](https://img.shields.io/badge/Sage-FRP%201000-purple)
@@ -29,6 +29,17 @@
 
 Ouvrir `RECHERCHE_SIRET_FOURNISSEURS.html` directement dans le navigateur (Chrome, Edge, Firefox).  
 **Aucune installation, aucun serveur, aucun Python requis.**
+
+---
+
+## ✨ Nouveautés v5.1
+
+| # | Fonctionnalité | Détail |
+|---|----------------|--------|
+| 🆕 | **Comparaison champ par champ (Audit)** | Bouton 📊 Comparer sur chaque ligne : modale Sage ↔ SIRENE avec badge Diff/OK par champ, Accepter individuel et Tout accepter |
+| 🆕 | **Résumé visuel batch** | Donut SVG + 4 KPI cards automatiques après chaque traitement par lot (taux d'enrichissement, durée, ventilation) |
+| 🆕 | **Import Excel dans le Batch** | Le traitement par lot accepte désormais `.xlsx`, `.xls`, `.csv`, `.txt` — détection automatique du format |
+| 🆕 | **Indicateur statut API** | Voyant 🟢/🟡/🔴 dans le header — test live des deux APIs SIRENE toutes les 5 min, tooltip avec latence et bouton ↻ Tester |
 
 ---
 
@@ -76,10 +87,16 @@ Les **50 derniers** termes sont affichés en badges horodatés. Clic → relance
 ### Onglet 2 — Traitement par lot
 
 1. Exporter la liste tiers depuis Sage (Fichier → Export)
-2. Glisser-déposer le fichier CSV ou Excel
+2. Glisser-déposer le fichier **CSV, TXT ou Excel (.xlsx/.xls)** — détection automatique du format
 3. Associer les colonnes (détection automatique `CT_*`)
 4. Lancer — pause/reprise possible
-5. Exporter CSV compatible Sage + export Excel coloré
+5. Consulter le **résumé visuel** (donut SVG + KPI cards) puis exporter
+
+**Indicateur statut API :**  
+Un voyant 🟢/🟡/🔴 dans le header vérifie automatiquement les deux APIs SIRENE toutes les 5 minutes. Clic → tooltip détaillé (latence par API, heure de vérification, bouton ↻ Tester).
+
+**Résumé visuel automatique :**  
+Après chaque traitement, un panneau s'affiche avec un graphique donut SVG (trouvés / conservés / introuvables), le taux d'enrichissement et la durée totale.
 
 ---
 
@@ -88,7 +105,8 @@ Les **50 derniers** termes sont affichés en badges horodatés. Clic → relance
 1. Exporter depuis Sage : `CT_Num`, `CT_Intitule`, `CT_Siret` (+ `CT_CodePostal` recommandé)
 2. Vérification dual mode : par **SIRET** (confirmation directe) ou par **nom** (fallback si SIRET absent)
 3. Filtrer par statut, consulter les KPI
-4. Exporter rapport / mises à jour / actions par priorité
+4. **Comparer champ par champ** via le bouton 📊 Comparer sur chaque ligne
+5. Exporter rapport / mises à jour / actions par priorité
 
 **Statuts de l'audit :**
 
@@ -103,6 +121,9 @@ Les **50 derniers** termes sont affichés en badges horodatés. Clic → relance
 | ❓ Introuvable | SIRET absent de SIRENE | À VÉRIFIER | Vérification manuelle |
 | — Sans SIRET | Champ `CT_Siret` vide | À VÉRIFIER | SIRET à saisir |
 
+**Comparaison champ par champ :**  
+Sur chaque ligne avec données SIRENE disponibles (statuts OK, Nom ≠, Fermé, Trouvé/nom), le bouton **📊 Comparer** ouvre une modale affichant côte à côte les valeurs Sage et SIRENE pour 10 champs (`CT_Intitule`, `CT_Siret`, `CT_Adresse`, `CT_CodePostal`, `CT_Ville`, `CT_NatureJuridique`, `CT_NumTVAIntracomm`, `CT_Telephone`, `CT_Email`, Code NAF). Chaque champ peut être accepté individuellement ou via **Tout accepter**.
+
 ---
 
 ## 📖 Guide d'emploi
@@ -110,8 +131,8 @@ Les **50 derniers** termes sont affichés en badges horodatés. Clic → relance
 Un guide interactif `GUIDE_EMPLOI_RECHERCHE_SIRET.html` est fourni avec l'application.
 
 - Accessible depuis l'application via le bouton **📚 Guide complet** dans l'en-tête
-- Couvre les 3 onglets, la sélection multiple, l'historique, les exports et les conseils pratiques
-- Mis à jour pour la v5.0
+- Couvre les 4 onglets, la sélection multiple, l'historique, la comparaison champ par champ, les exports et les conseils pratiques
+- Mis à jour pour la **v5.1**
 
 ---
 
@@ -211,7 +232,8 @@ Pour remplacer la version installée :
 
 | Version | Date | Nouveautés |
 |---------|------|------------|
-| v5.0 | 03/2026 | Sélection multiple + export groupé · Historique persistant localStorage 50 entrées · Badge Nom ✕ cliquable · Export établissements respectant le filtre · Correction bug toLowerCase historique |
+| v5.1 | 03/2026 | Comparaison champ par champ dans l'Audit · Résumé visuel batch (donut SVG + KPI) · Import Excel (.xlsx/.xls) dans le Batch · Indicateur statut API (voyant 🟢/🟡/🔴, tooltip latence) |
+| v5.0 | 03/2026 | Sélection multiple + export groupé · Historique persistant localStorage · Badge Nom ✕ cliquable · Export établissements respectant le filtre |
 | v4.2 | 03/2026 | Fusion onglets Recherche + Vérification · Liste établissements API INSEE · Audit dual mode SIRET + nom · CDN + fallback local xlsx · Guide d'emploi interactif |
 | v4.0 | 03/2026 | Audit base fournisseurs · Export 3 formats · Traitement par lot amélioré |
 | v3.0 | 02/2026 | Recherche unitaire · Traitement par lot · Vérification SIRET/SIREN |
@@ -236,4 +258,4 @@ MIT — Libre d'utilisation, de modification et de distribution.
 
 ---
 
-*Développé pour le département Comptabilité & Finance — ABRAPA — v5.0*
+*Développé pour le département Comptabilité & Finance — ABRAPA — v5.1*

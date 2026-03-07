@@ -217,7 +217,76 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 .empty-state .es-icon{font-size:38px;margin-bottom:10px}
 /* AUDIT TAB */
+
+/* -- Modale comparaison champ par champ -- */
+#compare-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:16px}
+#compare-modal.open{display:flex}
+.cmp-box{background:#1e293b;border:1px solid #334155;border-radius:16px;width:100%;max-width:760px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.cmp-header{padding:18px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.cmp-header h3{color:#f1f5f9;font-size:15px;font-weight:800;flex:1;margin:0}
+.cmp-body{overflow-y:auto;padding:16px 20px;flex:1}
+.cmp-legend{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.cmp-leg{font-size:12px;display:flex;align-items:center;gap:6px}
+.cmp-leg-dot{width:8px;height:8px;border-radius:50%}
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px}
+.cmp-table th{background:#0f172a;color:#f97316;padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #334155;position:sticky;top:0}
+.cmp-table td{padding:8px 10px;border-bottom:1px solid rgba(51,65,85,.5);vertical-align:middle}
+.cmp-row-diff td{background:rgba(250,204,21,.04)}
+.cmp-row-ok td{background:rgba(34,197,94,.03)}
+.cmp-row-accepted td{background:rgba(249,115,22,.06)}
+.cmp-field-name{color:#94a3b8;font-weight:600;font-size:12px;white-space:nowrap}
+.cmp-val-sage{color:#cbd5e1}
+.cmp-val-sirene{color:#f1f5f9;font-weight:600}
+.cmp-val-empty{color:#475569;font-style:italic}
+.cmp-badge-diff{background:rgba(250,204,21,.15);color:#f59e0b;border:1px solid rgba(250,204,21,.3);font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700}
+.cmp-badge-ok{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700}
+.cmp-badge-accepted{background:rgba(249,115,22,.15);color:#f97316;border:1px solid rgba(249,115,22,.4);font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700}
+.cmp-accept-btn{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.4);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;transition:.2s}
+.cmp-accept-btn:hover{background:rgba(34,197,94,.3)}
+.cmp-accept-btn.accepted{background:rgba(249,115,22,.15);color:#f97316;border-color:rgba(249,115,22,.4)}
+.cmp-footer{padding:14px 20px;border-top:1px solid #334155;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;flex-wrap:wrap}
+@media(max-width:600px){.cmp-table th:nth-child(2),.cmp-table td:nth-child(2){display:none}}
+
+/* -- Indicateur statut API -- */
+#api-status{display:inline-flex;align-items:center;gap:7px;background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:.2s;white-space:nowrap;font-family:inherit}
+#api-status:hover{border-color:var(--accent);color:var(--title)}
+.api-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;animation:pulse-dot 2s ease-in-out infinite}
+.api-dot.green{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.6)}
+.api-dot.yellow{background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,.6)}
+.api-dot.red{background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.6)}
+.api-dot.grey{background:#475569;animation:none}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+/* Tooltip statut */
+#api-tooltip{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px 14px;min-width:220px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#api-tooltip.open{display:block}
+#api-tooltip-wrap{position:relative}
+.api-tt-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:#cbd5e1}
+.api-tt-row .api-dot{animation:none}
+.api-tt-label{flex:1;color:#94a3b8}
+.api-tt-val{font-weight:600}
+.api-tt-sep{border:none;border-top:1px solid #334155;margin:6px 0}
+.api-tt-refresh{font-size:10px;color:#475569;text-align:right;margin-top:4px}
 .audit-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+/* -- Batch summary -- */
+#batch-summary{display:none;margin-bottom:20px;}
+.bs-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;animation:fadeInUp .4s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.bs-title{font-size:15px;font-weight:800;color:#f1f5f9;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.bs-grid{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:center}
+.bs-donut{position:relative;width:160px;height:160px;flex-shrink:0;margin:0 auto}
+.bs-donut svg{width:160px;height:160px;transform:rotate(-90deg)}
+.bs-donut-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.bs-donut-label .bs-pct{font-size:24px;font-weight:800;color:#f97316;line-height:1}
+.bs-donut-label .bs-sub{font-size:11px;color:#64748b;margin-top:2px}
+.bs-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.bs-kpi{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.bs-kpi .bs-kpi-val{font-size:26px;font-weight:800;line-height:1;margin-bottom:4px}
+.bs-kpi .bs-kpi-lbl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px}
+.bs-kpi .bs-kpi-pct{font-size:11px;font-weight:600;margin-top:3px}
+.bs-legend{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.bs-leg-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.bs-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+@media(max-width:600px){.bs-grid{grid-template-columns:1fr}}
 .audit-kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:border-color .2s}
 .audit-kpi:hover{border-color:var(--accent)}
 .audit-kpi .kpi-num{font-size:28px;font-weight:800;line-height:1}
@@ -313,7 +382,20 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
   <div class="logo">&#127970;</div>
   <div style="flex:1">
     <h1>Recherche SIRET Fournisseurs <span class="badge">ABRAPA</span></h1>
-    <p>API SIRENE officielle &mdash; INSEE / data.gouv.fr &mdash; v5.0 &mdash; S&eacute;lection multiple &mdash; Audit base fournisseurs</p>
+    <p>API SIRENE officielle &mdash; INSEE / data.gouv.fr &mdash; v5.1 &mdash; S&eacute;lection multiple &mdash; Audit base fournisseurs</p>
+  </div>
+  <div id="api-tooltip-wrap">
+    <button id="api-status" onclick="toggleApiTooltip()" title="Statut des APIs SIRENE">
+      <span class="api-dot grey" id="api-dot-main"></span>
+      <span id="api-status-text">API…</span>
+    </button>
+    <div id="api-tooltip">
+      <div class="api-tt-row"><span class="api-dot grey" id="tt-dot-sirene"></span><span class="api-tt-label">recherche-entreprises</span><span class="api-tt-val" id="tt-val-sirene">…</span></div>
+      <div class="api-tt-row"><span class="api-dot grey" id="tt-dot-insee"></span><span class="api-tt-label">API INSEE (SIREN)</span><span class="api-tt-val" id="tt-val-insee">…</span></div>
+      <hr class="api-tt-sep">
+      <div class="api-tt-refresh" id="tt-last-check">Dernière vérification : —</div>
+      <div style="text-align:right;margin-top:6px"><button onclick="checkApiStatus(true)" style="background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);color:#f97316;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit">↻ Tester</button></div>
+    </div>
   </div>
   <button class="help-btn" onclick="openHelp()">&#10067; Guide d&apos;utilisation</button>
   <a href="GUIDE_EMPLOI_RECHERCHE_SIRET.html" target="_blank" title="Ouvrir le guide complet" style="
@@ -357,7 +439,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
             <tr><td>&#128269; Recherche unitaire</td><td>Trouver le SIRET d&apos;un fournisseur par son nom</td><td>&#128229; Excel Sage FRP&nbsp;1000</td></tr>
             <tr><td>&#128203; Traitement par lot</td><td>Compl&eacute;ter les SIRET manquants d&apos;un fichier CSV / Excel</td><td>&#128229; CSV complet + CSV Sage</td></tr>
             <tr><td>&#9989; V&eacute;rifier un SIRET</td><td>Valider un SIRET 14 chiffres existant</td><td>&mdash;</td></tr>
-            <tr><td>&#128202; Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse</td><td>&#128229; 3 formats</td></tr>
+            <tr><td>&#128202; Audit base fournisseurs</td><td>Comparer la base Sage avec SIRENE en masse + comparaison champ par champ</td><td>&#128229; 3 formats</td></tr>
           </tbody>
         </table>
         <div class="help-alert ha-info">&#128204; <strong>Donn&eacute;es en temps r&eacute;el</strong> &mdash; Chaque requ&ecirc;te interroge directement l&apos;API SIRENE. Une connexion internet est indispensable. Le fichier HTML fonctionne sans installation ni serveur.</div>
@@ -417,7 +499,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         <p class="help-p">Lit un fichier CSV ou Excel, d&eacute;tecte les lignes sans SIRET (ou avec SIRET nul/z&eacute;ro) et interroge SIRENE pour chacune. Les SIRET d&eacute;j&agrave; renseign&eacute;s sont conserv&eacute;s sans appel API.</p>
         <div class="help-h4">Formats accept&eacute;s</div>
         <ul class="help-ul">
-          <li><strong>Excel</strong> (.xlsx, .xls) &mdash; Export direct depuis Sage FRP&nbsp;1000</li>
+          <li><strong>Excel</strong> (.xlsx, .xls) &mdash; Export direct depuis Sage FRP&nbsp;1000 <span class="help-tag ht-new">NOUVEAU v5.1</span></li>
           <li><strong>CSV / TXT</strong> &mdash; S&eacute;parateur <code>;</code> ou <code>,</code> auto-d&eacute;tect&eacute;, encodage ISO-8859-1 ou UTF-8</li>
           <li>Colonnes minimales&nbsp;: <strong>Nom fournisseur</strong> + optionnel SIRET + optionnel Code postal</li>
         </ul>
@@ -437,6 +519,8 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
             <tr><td>&#10060; Introuvable</td><td>Aucun r&eacute;sultat &mdash; v&eacute;rifier le nom ou saisir manuellement</td></tr>
           </tbody>
         </table>
+        <div class="help-h4">&#128200; R&eacute;sum&eacute; visuel apr&egrave;s traitement <span class="help-tag ht-new">NOUVEAU v5.1</span></div>
+        <p class="help-p">Une fois le traitement termin&eacute;, un panneau de synth&egrave;se s&apos;affiche automatiquement avec un donut SVG (trouv&eacute;s / conserv&eacute;s / introuvables), le taux d&apos;enrichissement, 4 KPI cards et la dur&eacute;e totale du traitement.</p>
         <div class="help-alert ha-warn">&#9888;&#65039; <strong>Session</strong> &mdash; En cas de fermeture accidentelle de l&apos;onglet, un bandeau de restauration appara&icirc;t au rechargement pour reprendre l&apos;o&ugrave; vous en &eacute;tiez. Fermer compl&egrave;tement le navigateur efface la session.</div>
       </div>
 
@@ -494,6 +578,16 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
           <li><strong>Actions par priorit&eacute;</strong> &mdash; Tri&eacute; de 1-URGENT &agrave; 4-&Agrave;_V&Eacute;RIFIER</li>
         </ul>
         <div class="help-alert ha-info">&#128229; <strong>Export &eacute;tablissements</strong> &mdash; Le bouton d&apos;export de la modale &laquo;&nbsp;Tous les &eacute;tablissements du SIREN&nbsp;&raquo; respecte le filtre actif&nbsp;: si vous avez s&eacute;lectionn&eacute; <em>Actifs</em>, seuls les &eacute;tablissements actifs sont export&eacute;s. Le nom du fichier inclut le filtre appliqu&eacute;.</div>
+        <div class="help-h4">&#128202; Comparaison champ par champ <span class="help-tag ht-new">NOUVEAU v5.1</span></div>
+        <p class="help-p">Sur chaque ligne du tableau d&apos;audit (statuts OK, Nom&nbsp;&ne;, Ferm&eacute;, Trouv&eacute;/nom), le bouton <strong>&#128202; Comparer</strong> ouvre une modale de rapprochement Sage&nbsp;&harr;&nbsp;SIRENE.</p>
+        <ul class="help-ul">
+          <li>10 champs compar&eacute;s&nbsp;: CT_Intitule, CT_Siret, CT_Adresse, CT_CodePostal, CT_Ville, CT_NatureJuridique, CT_NumTVAIntracomm, CT_Telephone, CT_Email, Code NAF</li>
+          <li>Badge <strong style="color:#f59e0b">&#9651;&nbsp;Diff</strong> / <strong style="color:#22c55e">=&nbsp;OK</strong> / <strong style="color:#f97316">&#9989;&nbsp;Accept&eacute;</strong> par champ</li>
+          <li>Bouton <strong>&#9989; Accepter</strong> par champ ou <strong>Tout accepter</strong> en un clic</li>
+          <li>Valeurs accept&eacute;es int&eacute;gr&eacute;es dans les exports Sage g&eacute;n&eacute;r&eacute;s depuis l&apos;onglet Audit</li>
+        </ul>
+        <div class="help-h4">&#128200; R&eacute;sum&eacute; visuel apr&egrave;s traitement par lot <span class="help-tag ht-new">NOUVEAU v5.1</span></div>
+        <p class="help-p">Apr&egrave;s chaque traitement par lot, un panneau de synth&egrave;se s&apos;affiche automatiquement&nbsp;: graphique donut SVG (trouv&eacute;s / conserv&eacute;s / introuvables), taux d&apos;enrichissement au centre, 4 KPI cards et dur&eacute;e totale.</p>
         <div class="help-alert ha-ok">&#128274; <strong>IBAN et RIB en s&eacute;curit&eacute;</strong> &mdash; Les coordonn&eacute;es bancaires sont stock&eacute;es dans la table <code>F_REGLEMENTT</code> de Sage, distincte de la fiche tiers <code>F_COMPTET</code>. Elles ne sont jamais modifi&eacute;es par cet import.</div>
       </div>
 
@@ -563,6 +657,15 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
 
         <div class="help-h4">L&apos;historique des recherches est-il permanent ?</div>
         <p class="help-p">Oui. L&apos;historique est d&eacute;sormais stock&eacute; dans le <em>localStorage</em> du navigateur&nbsp;: il persiste entre les sessions, m&ecirc;me apr&egrave;s fermeture compl&egrave;te du navigateur. Les 50 derni&egrave;res recherches sont conserv&eacute;es avec leur horodatage. Le bouton <em>Effacer</em> les supprime manuellement.</p>
+
+        <div class="help-h4">&#128202; &Agrave; quoi sert le voyant statut API dans le header ? <span class="help-tag ht-new">v5.1</span></div>
+        <p class="help-p">Ce voyant indique en temps r&eacute;el si les deux APIs SIRENE sont accessibles. <strong>&#129001;&nbsp;Vert</strong>&nbsp;= les deux APIs r&eacute;pondent normalement. <strong>&#129003;&nbsp;Jaune</strong>&nbsp;= une seule est disponible. <strong>&#128308;&nbsp;Rouge</strong>&nbsp;= aucune n&apos;est joignable (connexion internet &agrave; v&eacute;rifier). Cliquer sur le voyant affiche le d&eacute;tail avec la latence de chaque API et l&apos;heure de la derni&egrave;re v&eacute;rification. Le bouton <strong>&#8635;&nbsp;Tester</strong> force un retest imm&eacute;diat. La v&eacute;rification automatique s&apos;effectue toutes les 5&nbsp;minutes.</p>
+
+        <div class="help-h4">&#128202; &Agrave; quoi sert le bouton &laquo;&nbsp;Comparer&nbsp;&raquo; dans l&apos;Audit ? <span class="help-tag ht-new">v5.1</span></div>
+        <p class="help-p">Ce bouton ouvre une modale de comparaison c&ocirc;te &agrave; c&ocirc;te entre les donn&eacute;es Sage et celles r&eacute;cup&eacute;r&eacute;es de SIRENE. Vous pouvez accepter chaque champ individuellement ou tout accepter en une fois. Les valeurs accept&eacute;es sont incluses dans les exports Sage FRP&nbsp;1000.</p>
+
+        <div class="help-h4">Le traitement par lot accepte-t-il les fichiers Excel&nbsp;? <span class="help-tag ht-new">v5.1</span></div>
+        <p class="help-p">Oui depuis la v5.1. Le traitement par lot accepte d&eacute;sormais les m&ecirc;mes formats que l&apos;Audit&nbsp;: <strong>.xlsx</strong>, <strong>.xls</strong>, <strong>.csv</strong> et <strong>.txt</strong>. Le format est d&eacute;tect&eacute; automatiquement au d&eacute;p&ocirc;t du fichier, sans configuration suppl&eacute;mentaire.</p>
 
         <div class="help-h4">Diff&eacute;rence entre le fichier HTML et le script Python ?</div>
         <table class="help-table">
@@ -790,6 +893,7 @@ header p{font-size:13px;color:var(--muted);margin-top:2px}
         </div>
       </div>
 
+      <div id="batch-summary"></div>
       <div id="batch-result"></div>
     </div>
   </div>
@@ -1620,6 +1724,48 @@ async function runBatch(){
   document.getElementById('run-btn').disabled=true;
   document.getElementById('paused-banner').classList.remove('show');
   setStep(4); clearSession(); updateExportCount();
+  showBatchSummary(batchResults);
+}
+
+// =================== BATCH SUMMARY ===================
+function showBatchSummary(results){
+  var found    = results.filter(function(r){return r.statut==="found";}).length;
+  var kept     = results.filter(function(r){return r.statut==="kept";}).length;
+  var notfound = results.filter(function(r){return r.statut==="notfound";}).length;
+  var total    = found + kept + notfound;
+  if(!total) return;
+  var pctFound    = Math.round(found/total*100);
+  var pctKept     = Math.round(kept/total*100);
+  var pctNF       = 100 - pctFound - pctKept;
+  var successRate = Math.round((found+kept)/total*100);
+  var durLabel    = fmtDur(Date.now()-startTime);
+  var R=60, circ=2*Math.PI*R;
+  function seg(pct,offset,color){
+    var len=circ*pct/100;
+    return '<circle cx="80" cy="80" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="22" stroke-dasharray="'+len+' '+(circ-len)+'" stroke-dashoffset="'+(-offset/100*circ)+'" stroke-linecap="butt"/>';
+  }
+  var donutSVG='<svg viewBox="0 0 160 160">';
+  donutSVG+='<circle cx="80" cy="80" r="'+R+'" fill="none" stroke="#1e293b" stroke-width="22"/>';
+  if(found)   donutSVG+=seg(pctFound,0,'#22c55e');
+  if(kept)    donutSVG+=seg(pctKept,pctFound,'#818cf8');
+  if(notfound)donutSVG+=seg(pctNF,pctFound+pctKept,'#ef4444');
+  donutSVG+='</svg>';
+  var legend="";
+  if(found)    legend+='<div class="bs-leg-item"><div class="bs-leg-dot" style="background:#22c55e"></div><span>'+found+' trouv&eacute;(s) &mdash; '+pctFound+'%</span></div>';
+  if(kept)     legend+='<div class="bs-leg-item"><div class="bs-leg-dot" style="background:#818cf8"></div><span>'+kept+' conserv&eacute;(s) &mdash; '+pctKept+'%</span></div>';
+  if(notfound) legend+='<div class="bs-leg-item"><div class="bs-leg-dot" style="background:#ef4444"></div><span>'+notfound+' introuvable(s) &mdash; '+pctNF+'%</span></div>';
+  var kpis='<div class="bs-kpi"><div class="bs-kpi-val" style="color:#f97316">'+total+'</div><div class="bs-kpi-lbl">Total trait&eacute;s</div></div>';
+  if(found)    kpis+='<div class="bs-kpi"><div class="bs-kpi-val" style="color:#22c55e">'+found+'</div><div class="bs-kpi-lbl">Trouv&eacute;s SIRENE</div><div class="bs-kpi-pct" style="color:#22c55e">'+pctFound+'%</div></div>';
+  if(kept)     kpis+='<div class="bs-kpi"><div class="bs-kpi-val" style="color:#818cf8">'+kept+'</div><div class="bs-kpi-lbl">Conserv&eacute;s</div><div class="bs-kpi-pct" style="color:#818cf8">'+pctKept+'%</div></div>';
+  if(notfound) kpis+='<div class="bs-kpi"><div class="bs-kpi-val" style="color:#ef4444">'+notfound+'</div><div class="bs-kpi-lbl">Introuvables</div><div class="bs-kpi-pct" style="color:#ef4444">'+pctNF+'%</div></div>';
+  var el=document.getElementById("batch-summary");
+  el.style.display="block";
+  el.innerHTML='<div class="bs-card">';
+  el.innerHTML+='<div class="bs-title">&#128202; R&eacute;sum&eacute; du traitement <span style="margin-left:auto;font-size:12px;color:var(--muted);font-weight:400">&#9201; '+durLabel+'</span></div>';
+  el.innerHTML+='<div class="bs-grid">';
+  el.innerHTML+='<div><div class="bs-donut">'+donutSVG+'<div class="bs-donut-label"><div class="bs-pct">'+successRate+'%</div><div class="bs-sub">enrichis</div></div></div><div class="bs-legend">'+legend+'</div></div>';
+  el.innerHTML+='<div class="bs-kpis">'+kpis+'</div>';
+  el.innerHTML+='</div></div>';
 }
 
 // =================== RENDER TABLE ===================
@@ -2118,6 +2264,7 @@ function renderAuditTable(rows){
     '<th>SIRET original</th><th>Statut SIRENE</th>'+
     '<th>Raison sociale SIRENE</th><th>Actif</th><th>Commune</th>'+
     '<th>Action Sage FRP&nbsp;1000</th>'+
+    '<th>D&eacute;tail</th>'+
     '</tr></thead><tbody>';
 
   filtered.forEach(r=>{
@@ -2188,6 +2335,7 @@ function renderAuditTable(rows){
       '</td>'+
       '<td style="font-size:12px;color:var(--muted)">'+( r.communeApi||'—')+'</td>'+
       '<td>'+actionHtml+'</td>'+
+      '<td style="text-align:center">'+((['ok','nom-diff','ferme','ferme-diff','found-by-name'].indexOf(r.statut)>-1&&r.nomApi)?'<button class="btn" onclick="openCompare('+r.idx+')" style="font-size:11px;padding:4px 10px;background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.4)">&#128202; Comparer</button>':'<span style="color:var(--border)">\u2014</span>')+'</td>'+
       '</tr>';
   });
 
@@ -2195,6 +2343,181 @@ function renderAuditTable(rows){
   document.getElementById('audit-result').innerHTML=html+'</tbody></table></div>';
 }
 
+
+
+// =================== STATUT API ===================
+var apiCheckTimer = null;
+
+async function checkApiStatus(manual){
+  // Marquer "en cours"
+  setApiDot('main','grey'); document.getElementById('api-status-text').textContent='Vérif…';
+
+  var t0 = Date.now();
+  var okSirene = false, latSirene = '—';
+  var okInsee  = false, latInsee  = '—';
+
+  // Test 1 — recherche-entreprises (ping léger)
+  try{
+    var ts = Date.now();
+    var r = await fetch('https://recherche-entreprises.api.gouv.fr/search?q=test&per_page=1',{signal:AbortSignal.timeout(5000)});
+    if(r.ok||r.status===400){okSirene=true; latSirene=(Date.now()-ts)+'ms';}
+    else{latSirene='HTTP '+r.status;}
+  }catch(e){latSirene='Timeout';}
+
+  // Test 2 — api.insee.fr (head sur un SIRET générique)
+  try{
+    var ts2 = Date.now();
+    var INSEE_KEY = sessionStorage.getItem('insee_api_key')||'ecad76f8-3892-45bb-ad76-f8389255bb15';
+    var r2 = await fetch('https://api.insee.fr/api-sirene/3.11/siret/00000000000000',{
+      method:'GET', signal:AbortSignal.timeout(5000),
+      headers:{'X-INSEE-Api-Key-Integration':INSEE_KEY,'Accept':'application/json'}
+    });
+    // 404 = clé valide, établissement inexistant → API fonctionnelle
+    if(r2.ok||r2.status===404||r2.status===400){okInsee=true; latInsee=(Date.now()-ts2)+'ms';}
+    else if(r2.status===401||r2.status===403){latInsee='Clé invalide';}
+    else{latInsee='HTTP '+r2.status;}
+  }catch(e){latInsee='Timeout';}
+
+  // Mise à jour UI
+  setApiDot('sirene', okSirene?'green':'red');
+  setApiDot('insee',  okInsee ?'green':'red');
+  document.getElementById('tt-val-sirene').textContent = okSirene ? ('✅ '+latSirene) : ('❌ '+latSirene);
+  document.getElementById('tt-val-insee').textContent  = okInsee  ? ('✅ '+latInsee)  : ('❌ '+latInsee);
+
+  var now = new Date();
+  document.getElementById('tt-last-check').textContent =
+    'Dernière vérification : '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
+
+  if(okSirene && okInsee){
+    setApiDot('main','green');
+    document.getElementById('api-status-text').textContent='API OK';
+    document.getElementById('api-status').title='APIs SIRENE opérationnelles';
+  } else if(okSirene || okInsee){
+    setApiDot('main','yellow');
+    document.getElementById('api-status-text').textContent='API partielle';
+    document.getElementById('api-status').title='Une API est indisponible';
+  } else {
+    setApiDot('main','red');
+    document.getElementById('api-status-text').textContent='API hors ligne';
+    document.getElementById('api-status').title='APIs SIRENE indisponibles — vérifier la connexion internet';
+  }
+
+  // Planifier prochain check auto dans 5 min
+  if(apiCheckTimer) clearTimeout(apiCheckTimer);
+  apiCheckTimer = setTimeout(function(){checkApiStatus(false);}, 5*60*1000);
+}
+
+function setApiDot(which, color){
+  var ids = which==='main' ? ['api-dot-main'] : ['tt-dot-'+which];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){el.className='api-dot '+color;}
+  });
+}
+
+function toggleApiTooltip(){
+  var tt = document.getElementById('api-tooltip');
+  tt.classList.toggle('open');
+  // Fermer au clic ailleurs
+  if(tt.classList.contains('open')){
+    setTimeout(function(){
+      document.addEventListener('click', function handler(e){
+        if(!document.getElementById('api-tooltip-wrap').contains(e.target)){
+          tt.classList.remove('open');
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 10);
+  }
+}
+
+// Lancer le check au chargement (délai 1.5s pour ne pas bloquer le premier rendu)
+window.addEventListener('load', function(){ setTimeout(function(){checkApiStatus(false);}, 1500); });
+
+// =================== COMPARAISON CHAMP PAR CHAMP ===================
+var cmpCurrentIdx = null;
+var cmpFields = [
+  {key:'nom',    sageKey:'nom',    apiKey:'nomApi',    label:'CT_Intitule'},
+  {key:'siret',  sageKey:'siretOriginal', apiKey:'siretApi', label:'CT_Siret'},
+  {key:'adresse',sageKey:null,    apiKey:'adresse',   label:'CT_Adresse'},
+  {key:'cp',     sageKey:'cp',    apiKey:'cpApi',     label:'CT_CodePostal'},
+  {key:'commune',sageKey:null,    apiKey:'communeApi',label:'CT_Ville'},
+  {key:'forme',  sageKey:null,    apiKey:'formeJuridique',label:'CT_NatureJuridique'},
+  {key:'tva',    sageKey:null,    apiKey:'tva',       label:'CT_NumTVAIntracomm'},
+  {key:'tel',    sageKey:null,    apiKey:'telephone', label:'CT_Telephone'},
+  {key:'email',  sageKey:null,    apiKey:'email',     label:'CT_Email'},
+  {key:'naf',    sageKey:null,    apiKey:'nafApi',    label:'Code NAF'}
+];
+
+function openCompare(idx){
+  var row = auditResults.filter(function(r){return r.idx===idx;})[0];
+  if(!row) return;
+  cmpCurrentIdx = idx;
+  if(!row.accepted) row.accepted = {};
+  document.getElementById('cmp-title').textContent = row.nom + ' \u2014 Comparaison Sage vs SIRENE';
+  renderCompareTable(row);
+  document.getElementById('compare-modal').classList.add('open');
+}
+function closeCompare(){
+  document.getElementById('compare-modal').classList.remove('open');
+  cmpCurrentIdx = null;
+}
+function renderCompareTable(row){
+  var html = '';
+  cmpFields.forEach(function(f){
+    var valSage = f.sageKey ? (row[f.sageKey]||'') : '';
+    var valApi  = row[f.apiKey] || '';
+    if(!valApi) return;
+    var accepted = row.accepted && row.accepted[f.key];
+    var sageNorm = valSage.toLowerCase().trim();
+    var apiNorm  = valApi.toLowerCase().trim();
+    var diff = valSage && sageNorm !== apiNorm;
+    var rowClass = accepted ? 'cmp-row-accepted' : (diff ? 'cmp-row-diff' : 'cmp-row-ok');
+    var badge = accepted
+      ? '<span class="cmp-badge-accepted">&#9989; Accept&eacute;</span>'
+      : (diff ? '<span class="cmp-badge-diff">&#9651; Diff</span>' : '<span class="cmp-badge-ok">= OK</span>');
+    var showBtn = valApi && (diff || !valSage);
+    var btnClass = accepted ? 'cmp-accept-btn accepted' : 'cmp-accept-btn';
+    var btnLabel = accepted ? '&#8635; R&eacute;tablir' : '&#9989; Accepter';
+    html += '<tr class="'+rowClass+'">'
+      + '<td class="cmp-field-name">'+f.label+'</td>'
+      + '<td class="'+(valSage?'cmp-val-sage':'cmp-val-empty')+'">'+(valSage||'<em>vide</em>')+'</td>'
+      + '<td class="cmp-val-sirene">'+valApi+'</td>'
+      + '<td>'+badge+'</td>'
+      + '<td>'+(showBtn ? '<button class="'+btnClass+'" onclick="toggleField(\''+f.key+'\')">'+btnLabel+'</button>' : '<span style="color:#334155">&mdash;</span>')+'</td>'
+      + '</tr>';
+  });
+  if(!html) html = '<tr><td colspan="5" style="text-align:center;color:#475569;padding:20px">Aucune donn&eacute;e SIRENE disponible</td></tr>';
+  document.getElementById('cmp-tbody').innerHTML = html;
+}
+function toggleField(key){
+  var row = auditResults.filter(function(r){return r.idx===cmpCurrentIdx;})[0];
+  if(!row) return;
+  if(!row.accepted) row.accepted = {};
+  var f = cmpFields.filter(function(f){return f.key===key;})[0];
+  if(!f) return;
+  if(row.accepted[key]) delete row.accepted[key];
+  else row.accepted[key] = row[f.apiKey] || '';
+  renderCompareTable(row);
+}
+function acceptAllFields(){
+  var row = auditResults.filter(function(r){return r.idx===cmpCurrentIdx;})[0];
+  if(!row) return;
+  if(!row.accepted) row.accepted = {};
+  cmpFields.forEach(function(f){
+    var valSage = f.sageKey ? (row[f.sageKey]||'') : '';
+    var valApi  = row[f.apiKey] || '';
+    if(valApi && valSage.toLowerCase().trim() !== valApi.toLowerCase().trim()) row.accepted[f.key] = valApi;
+    else if(valApi && !valSage) row.accepted[f.key] = valApi;
+  });
+  renderCompareTable(row);
+}
+function resetAllFields(){
+  var row = auditResults.filter(function(r){return r.idx===cmpCurrentIdx;})[0];
+  if(!row) return;
+  row.accepted = {};
+  renderCompareTable(row);
+}
 // --- Exports ---
 function getAuditAction(statut){
   const m={'ok':'Aucune action','found-by-name':'Saisir SIRET dans Sage','ferme':'Bloquer le tiers Sage','nom-diff':'Mettre a jour CT_Intitule','ferme-diff':'Bloquer + verifier successeur','not-found':'Verifier manuellement','invalid':'Corriger CT_Siret','no-siret':'SIRET a saisir','pending':'','pending-name':'','current':''};
@@ -2211,15 +2534,26 @@ function exportAuditCSV(){
 }
 function exportAuditSage(){
   // Format import Sage FRP 1000 — tiers à mettre à jour
+  // Les valeurs acceptées via la modale "Comparer" ont la priorité sur les valeurs SIRENE brutes
   const rows=auditResults.filter(r=>!['ok','no-siret','pending','current',''].includes(r.statut));
   if(!rows.length){alert('Aucune mise à jour nécessaire ! La base est à jour.');return;}
   const lines=['CT_Num;CT_Intitule;CT_Siret;CT_Siren;CT_Adresse;CT_CodePostal;CT_Ville;CT_NatureJuridique;CT_NumTVAIntracomm;CT_Telephone;CT_Email;CT_Site;Statut_SIRENE;Action_Sage'];
   const esc=v=>(v||'').replace(/;/g,' ');
+  // acc() : valeur acceptée via modale Comparer > valeur SIRENE brute > fallback
+  const acc=(r,key,fallback)=>(r.accepted&&r.accepted[key]!==undefined ? r.accepted[key] : fallback)||'';
   rows.forEach(r=>{
-    const siret=r.siretOriginal;
-    const siren=siret.slice(0,9);
-    const nomFinal=esc(r.nomApi||r.nom);
-    lines.push([r.id,nomFinal,siret,siren,esc(r.adresse||''),r.cpApi||'',r.communeApi||'',esc(r.formeJuridique||''),r.tva||'',r.telephone||'',r.email||'',r.siteWeb||'',r.statut,getAuditAction(r.statut)].join(';'));
+    const siret  = acc(r,'siret',  r.siretOriginal);
+    const siren  = (siret||'').replace(/\D/g,'').slice(0,9);
+    const nom    = esc(acc(r,'nom',    r.nomApi||r.nom));
+    const adresse= esc(acc(r,'adresse',r.adresse));
+    const cp     = acc(r,'cp',     r.cpApi);
+    const ville  = acc(r,'commune',r.communeApi);
+    const forme  = esc(acc(r,'forme',  r.formeJuridique));
+    const tva    = acc(r,'tva',    r.tva);
+    const tel    = acc(r,'tel',    r.telephone);
+    const email  = acc(r,'email',  r.email);
+    const site   = r.siteWeb||'';
+    lines.push([r.id,nom,siret,siren,adresse,cp,ville,forme,tva,tel,email,site,r.statut,getAuditAction(r.statut)].join(';'));
   });
   dlCSV(lines,'sage_frp1000_mises_a_jour_'+new Date().toISOString().slice(0,10)+'.csv','iso');
 }
@@ -2637,5 +2971,32 @@ function exportEtabXlsx() {
   </div>
 </div>
 
+
+<!-- ===== MODALE COMPARAISON CHAMP PAR CHAMP ===== -->
+<div id="compare-modal" onclick="if(event.target===this)closeCompare()">
+  <div class="cmp-box">
+    <div class="cmp-header">
+      <span style="font-size:20px">&#128202;</span>
+      <h3 id="cmp-title">Comparaison Sage vs SIRENE</h3>
+      <button onclick="closeCompare()" style="background:none;border:none;color:#64748b;font-size:18px;cursor:pointer;padding:4px 8px">&#10005;</button>
+    </div>
+    <div class="cmp-body">
+      <div class="cmp-legend">
+        <div class="cmp-leg"><div class="cmp-leg-dot" style="background:#f59e0b"></div><span style="color:#94a3b8">Valeur diff&eacute;rente</span></div>
+        <div class="cmp-leg"><div class="cmp-leg-dot" style="background:#22c55e"></div><span style="color:#94a3b8">Identique</span></div>
+        <div class="cmp-leg"><div class="cmp-leg-dot" style="background:#f97316"></div><span style="color:#94a3b8">Accept&eacute; pour export</span></div>
+      </div>
+      <table class="cmp-table">
+        <thead><tr><th>Champ Sage</th><th>Valeur Sage</th><th>Valeur SIRENE</th><th>Diff.</th><th>Action</th></tr></thead>
+        <tbody id="cmp-tbody"></tbody>
+      </table>
+    </div>
+    <div class="cmp-footer">
+      <button class="btn btn-sec" style="font-size:12px" onclick="acceptAllFields()">&#9989; Tout accepter</button>
+      <button class="btn btn-s" style="font-size:12px" onclick="resetAllFields()">&#8635; R&eacute;initialiser</button>
+      <button class="btn btn-p" style="font-size:12px" onclick="closeCompare()">Fermer</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
